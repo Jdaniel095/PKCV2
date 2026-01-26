@@ -2448,6 +2448,12 @@ const API = "https://script.google.com/macros/s/AKfycbwtYCRruaW-882HCf_Zo90gFhBX
 let enviando = false; // ⛔ bloquea envíos múltiples
 
 
+function resetBotonEnvio(btn) {
+  enviando = false;
+  btn.disabled = false;
+  btn.textContent = "Enviar";
+}
+
 
 function marcarError(input, mensaje) {
     input.classList.remove("input-ok");
@@ -2590,15 +2596,15 @@ document
 
 document.getElementById("sendAllBtn").onclick = async () => {
 
-    if (enviando) return; // ⛔ evita doble click
-    enviando = true;
+  if (enviando) return;
+  enviando = true;
 
-    const btn = document.getElementById("sendAllBtn");
-    btn.disabled = true;
-    btn.textContent = "⏳ Guardando cuentas...";
+  const btn = document.getElementById("sendAllBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Guardando cuentas...";
 
-    
-    
+  try {
+
     let nombreReal = document.getElementById("nombreRealModal").value.trim();
     let campfire   = document.getElementById("campfireModal").value.trim();
     let nombresPokeInputs = document.querySelectorAll(".nombrePokeInput");
@@ -2606,115 +2612,78 @@ document.getElementById("sendAllBtn").onclick = async () => {
     let nombresPoke = Array.from(nombresPokeInputs, i => i.value.trim());
     let codigos     = Array.from(codigoInputs, i => i.value.trim());
 
-    
-    // Limpiar estilos previos
     nombresPokeInputs.forEach(i => i.classList.remove("input-error", "input-ok"));
     codigoInputs.forEach(i => i.classList.remove("input-error", "input-ok"));
 
-    
-
-    // VALIDACIONES
-    
+    // ✅ VALIDACIONES
     if (!nombreReal) {
-        mostrarToast("⚠ El nombre real es obligatorio");
-        return;
+      mostrarToast("⚠ El nombre real es obligatorio");
+      return;
     }
 
-    // Validar solo letras y tildes en Nombre Real
     const nombreRealRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     if (!nombreRealRegex.test(nombreReal)) {
-        mostrarToast("⚠ El nombre real solo puede contener letras y tildes (sin números ni símbolos)");
-        return;
+      mostrarToast("⚠ El nombre real solo puede contener letras");
+      return;
     }
 
     if (!nombresPoke.every(name => name)) {
-        mostrarToast("⚠ Todos los campos de nombre en Pokémon son obligatorios");
-        return;
+      mostrarToast("⚠ Todos los nombres Pokémon son obligatorios");
+      return;
     }
 
     if (codigos.some(codigo => codigo.length !== 12 || !/^\d{12}$/.test(codigo))) {
-        mostrarToast("⚠ Todos los códigos deben ser de 12 dígitos");
-        return;
+      mostrarToast("⚠ Todos los códigos deben ser de 12 dígitos");
+      return;
     }
 
-    // Validar duplicados contra la base de datos
     for (let i = 0; i < codigos.length; i++) {
-        let cod = codigos[i];
-        let name = nombresPoke[i].trim().toLowerCase();
-        let codInput = codigoInputs[i];
-        let nameInput = nombresPokeInputs[i];
+      let cod = codigos[i];
+      let name = nombresPoke[i].trim().toLowerCase();
+      let codInput = codigoInputs[i];
+      let nameInput = nombresPokeInputs[i];
 
-        // Duplicados
-        if (codigosExistentes.has(cod)) {
-            marcarError(codInput, "Código ya existe en la base");
-            return;
-        }
+      if (codigosExistentes.has(cod)) {
+        marcarError(codInput, "Código ya existe");
+        return;
+      }
 
-        if (nombresPokemonExistentes.has(name)) {
-            marcarError(nameInput, "Nombre Pokémon ya registrado");
-            return;
-        }
+      if (nombresPokemonExistentes.has(name)) {
+        marcarError(nameInput, "Nombre Pokémon ya registrado");
+        return;
+      }
 
-        // Duplicado interno en el formulario
-        for (let j = i + 1; j < codigos.length; j++) {
-            if (codigos[j] === cod) {
-                marcarError(codInput, "Código duplicado en el formulario");
-                marcarError(codigoInputs[j], "Código duplicado");
-                return;
-            }
-            if (nombresPoke[j].trim().toLowerCase() === name) {
-                marcarError(nameInput, "Nombre duplicado en el formulario");
-                marcarError(nombresPokeInputs[j], "Nombre duplicado");
-                return;
-            }
-        }
-
-        marcarOk(codInput);
-        marcarOk(nameInput);
+      marcarOk(codInput);
+      marcarOk(nameInput);
     }
 
     mostrarToast("✔ Datos validados. Enviando...");
 
-    // Enviar al Google Sheets
-for (let i = 0; i < codigos.length; i++) {
-    btn.textContent = `⏳ Guardando ${i + 1}/${codigos.length}`;
+    for (let i = 0; i < codigos.length; i++) {
+      btn.textContent = `⏳ Guardando ${i + 1}/${codigos.length}`;
 
-    const url = `${API}?accion=guardar` +
+      const url = `${API}?accion=guardar` +
         `&nombre=${encodeURIComponent(nombreReal)}` +
         `&pokemon=${encodeURIComponent(nombresPoke[i])}` +
         `&codigo=${encodeURIComponent(codigos[i])}` +
         `&campfire=${encodeURIComponent(campfire)}`;
 
-    await fetch(url);
-}
+      await fetch(url);
+    }
 
+    mostrarToast("✔ Gracias por registrarte,en breve seras aprobado");
 
-    mostrarToast("✔  Gracias por registrarte. En breve aparecerá en la tabla.");
-
-    // Limpiar formulario
-    document.getElementById("nombreRealModal").value = "";
-    document.getElementById("campfireModal").value = "";
-    nombresPokeInputs[0].value = "";
-    codigoInputs[0].value = "";
-    nombresPokeInputs[0].classList.remove("input-error", "input-ok");
-    codigoInputs[0].classList.remove("input-error", "input-ok");
-
-    // Eliminar campos extra
-    const extras = document.querySelectorAll("#extraAccountsContainer .extra-block");
-    extras.forEach(e => e.remove());
-
-    enviando = false;
-btn.disabled = false;
-btn.textContent = "Enviar";
-
-
-    // Cerrar modal
     document.getElementById("formModal").style.display = "none";
-restaurarScrollBody();
+    restaurarScrollBody();
 
-
-  
+  } catch (err) {
+    console.error(err);
+    mostrarToast("❌ Error al enviar");
+  } finally {
+    resetBotonEnvio(btn); // 🔥 SIEMPRE se ejecuta
+  }
 };
+
 
 // Mostrar Toast
 function mostrarToast(msg) {
