@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Pokecomas</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+
+<div id="login" class="login-box">
+  <h2>Acceso Pokecomas</h2>
+
+  <form id="loginForm">
+    <input id="user" placeholder="Usuario" required>
+    <input id="pin" type="password" placeholder="PIN" required>
+    <button type="submit" class="btn-gold">Ingresar</button>
+  </form>
+</div>
+
+
+<div id="loading" class="loading-box" style="display:none">
+  <div class="spinner"></div>
+  <p>Cargando usuarios…</p>
+</div>
+
+
+<div id="panel" class="panel-box" style="display:none">
+
+    
+  <h2>Registros pendientes</h2>
+
+  <button id="btnActualizar" onclick="actualizarDatos()">
+  🔄 Actualizar datos
+</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Pokémon</th>
+        <th>Código</th>
+        <th>Campfire</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <!-- 👇 ESTE ID ES EL QUE USA EL JS -->
+    <tbody id="tablaBody"></tbody>
+  </table>
+</div>
+
+<div id="toastBox"></div>
+
+<script src="panel.js"></script>
+
+
+</body>
+</html>
