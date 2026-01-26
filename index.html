@@ -2407,24 +2407,20 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(res => res.json())
     .then(data => {
 
-      if (!esLocal && data.country_code !== "PE") {
-        document.getElementById("countryBlock").style.display = "block";
-        return;
-      }
+  if (!esLocal && data.country_code !== "PE") {
+    document.getElementById("countryBlock").style.display = "block";
+    return;
+  }
 
-      // ✅ abrir modal si la ruta es /entrenador
-      if (location.pathname.toLowerCase() === "/entrenador") {
-        abrirModalDesdeRuta();
-      }
+  verificarRutaModal();
 
-    })
-    .catch(() => {
-      console.warn("No se pudo verificar país");
-      // igual permitir sitio
-      if (location.pathname.toLowerCase() === "/entrenador") {
-        abrirModalDesdeRuta();
-      }
-    });
+})
+
+   .catch(() => {
+  console.warn("No se pudo verificar país");
+  verificarRutaModal();
+});
+
 
 });
 
@@ -2436,6 +2432,13 @@ function abrirModalDesdeRuta() {
   modal.style.display = "flex";
 }
 
+function verificarRutaModal() {
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("modal") === "entrenador") {
+    abrirModalDesdeRuta();
+  }
+}
 
 
 /* ============================
@@ -3259,13 +3262,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 
-document.addEventListener("DOMContentLoaded", () => {
-  const path = window.location.pathname.toLowerCase();
 
-  if (path === "/entrenador") {
-    abrirModalDesdeRuta();
-  }
-});
 
 </script>
 </body>
