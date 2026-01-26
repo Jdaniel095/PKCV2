@@ -1,0 +1,386 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: 'Lato', sans-serif;
+  color: #fff;
+}
+
+/* ===== FONDO GLOBAL ===== */
+body {
+  background: radial-gradient(
+      circle at top,
+      #0f3c75 0%,
+      #0b2d5a 40%,
+      #061a33 100%
+  );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* ===== CONTENEDORES ===== */
+.panel-box {
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 32px;
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.12),
+    rgba(255,255,255,0.04)
+  );
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+}
+
+.login-box {
+  max-width: 380px;
+  margin: 140px auto;
+  padding: 36px;
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0.45),
+    rgba(0,0,0,0.65)
+  );
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+}
+
+/* ===== TITULOS ===== */
+h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 900;
+  text-align: center;
+  color: #ffe27a;
+  letter-spacing: 0.5px;
+}
+
+/* ===== INPUTS ===== */
+input {
+  width: 100%;
+  padding: 13px 14px;
+  margin-bottom: 14px;
+  border-radius: 14px;
+  border: none;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+input::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+/* ===== BOTONES ===== */
+button {
+  padding: 12px 26px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s;
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+.btn-gold {
+  background: linear-gradient(90deg,#ffe27a,#ffd048);
+  color: #3a2300;
+  box-shadow: 0 6px 18px rgba(255,208,72,0.5);
+}
+
+.btn-gold:hover {
+  box-shadow: 0 10px 30px rgba(255,208,72,0.75);
+}
+
+/* ===== BOTÓN ACTUALIZAR ===== */
+.update-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 26px;
+}
+
+#btnActualizar {
+  background: linear-gradient(90deg,#4facfe,#00f2fe);
+  color: #00324a;
+  font-size: 14px;
+  box-shadow: 0 6px 20px rgba(0,242,254,0.5);
+}
+
+#btnActualizar:hover {
+  box-shadow: 0 10px 30px rgba(0,242,254,0.75);
+}
+
+/* ===== TABLA ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+thead {
+  background: rgba(255,255,255,0.18);
+}
+
+th {
+  padding: 14px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  text-align: center;
+}
+
+tr:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* ===== ACCIONES ===== */
+.action-btn {
+  padding: 7px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin: 0 3px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.aprobar {
+  background: linear-gradient(90deg,#2ecc71,#27ae60);
+  color: #fff;
+}
+
+.rechazar {
+  background: linear-gradient(90deg,#e74c3c,#c0392b);
+  color: #fff;
+}
+
+/* ===== EFECTO VISUAL FILA ===== */
+tr.aprobado {
+  animation: aprobarFade 0.6s ease forwards;
+}
+
+tr.rechazado {
+  animation: rechazarFade 0.6s ease forwards;
+}
+
+@keyframes aprobarFade {
+  to {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+@keyframes rechazarFade {
+  to {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+}
+
+
+/* ===== LOADING ===== */
+.loading-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 18px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.35);
+  font-weight: 700;
+  color: #ffe27a;
+  animation: fadeIn .3s ease;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top: 3px solid #ffe27a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ===== TOAST ===== */
+#toastBox {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+}
+
+.toast {
+  padding: 14px 20px;
+  border-radius: 16px;
+  font-weight: 800;
+  color: white;
+  min-width: 220px;
+  animation: toastIn .4s ease, toastOut .4s ease 2.6s forwards;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+}
+
+.toast.ok {
+  background: linear-gradient(90deg,#2ecc71,#27ae60);
+}
+
+.toast.error {
+  background: linear-gradient(90deg,#e74c3c,#c0392b);
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastOut {
+  to { opacity: 0; transform: translateY(20px); }
+}
+
+html {
+  font-size: clamp(16px, 2.5vw, 18px);
+}
+
+
+/* =====================================================
+   📱 RESPONSIVE MOBILE (VERSIÓN LIMPIA)
+===================================================== */
+@media (max-width: 768px) {
+
+  html {
+    font-size: 18px;
+  }
+
+  body {
+    background-attachment: scroll;
+  }
+
+  /* TITULOS */
+  h2 {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  /* LOGIN */
+  .login-box {
+    margin: 80px 16px;
+    padding: 28px 22px;
+  }
+
+  /* INPUTS */
+  input {
+    font-size: 16px; /* evita zoom iOS */
+    padding: 14px;
+  }
+
+  /* BOTONES */
+  button {
+    width: 100%;
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  /* PANEL */
+  .panel-box {
+    margin: 18px 10px;
+    padding: 18px 14px;
+    border-radius: 18px;
+  }
+
+  #btnActualizar {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  /* LOADING */
+  .loading-box {
+    font-size: 14px;
+    padding: 14px;
+  }
+
+  /* TABLA → TARJETAS */
+  table, thead, tbody, th, tr {
+    display: block;
+    width: 100%;
+  }
+
+  thead { display: none; }
+
+  tr {
+    margin-bottom: 14px;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 6px;
+    border: none;
+    font-size: 14px;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 900;
+    color: #ffe27a;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  td.acciones {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* TOAST */
+  #toastBox {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: 20px;
+    align-items: center;
+  }
+
+  .toast {
+    width: calc(100vw - 40px);
+    text-align: center;
+  }
+}
