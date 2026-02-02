@@ -184,9 +184,11 @@ html, body {
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .4));
 }
 
-.legend.admin { background: #c0392b; }
-.legend.asiste { background: #27ae60; }
-.legend.casual { background: #2980b9; }
+.legend.owner { background: #e53935; }   /* rojo */
+.legend.admin { background: #e07800ef; }   /* Naranja */
+.legend.asiste { background: #27ae60; }  /* verde */
+.legend.casual { background: #ffffff; }  /*  */
+
 
 /* ============================ */
 /*         TABLA STYLE          */
@@ -233,37 +235,37 @@ html, body {
     transition: background 0.25s ease-in-out; /* ⭐ Fade suave */
 }
 
-/* ============================ */
-/*     COLORES DE FILA          */
-/* ============================ */
+/* ============================
+   COLORES DE FILA (NUEVO)
+============================ */
 
-/* Fondo rojo permanente (Admins) */
+/* 🔴 OWNER (arriba de todo) */
+tr.owner td {
+  background: rgba(255, 0, 0, 0.78) !important;
+}
+tr.owner:hover td {
+  background: rgba(255, 120, 120, 0.92) !important;
+}
+
+/* 🟣 ADMINISTRADOR */
 tr.administrador td {
-    background: rgba(255, 0, 0, 0.75) !important;
+  background: #e07800ef !important; /* morado */
 }
-
-/* Fondo verde permanente (Asistencias ≥ 3) */
-tr.asistencias-altas td {
-    background: rgba(0, 255, 85, 0.75) !important;
-}
-
-/* ============================ */
-/*   HOVERS ESPECIALES           */
-/* ============================ */
-
-/* 🔴 Hover Administrador */
 tr.administrador:hover td {
-    background: rgba(255, 120, 120, 0.9) !important;
+  background: #ffab4aef !important;
 }
 
-/* 🟢 Hover asistencia alta */
-tr.asistencias-altas:hover td {
-    background: rgba(120, 255, 180, 0.9) !important;
+/* 🟢 ASISTE */
+tr.asiste td {
+  background: rgba(0, 255, 85, 0.70) !important;
+}
+tr.asiste:hover td {
+  background: rgba(120, 255, 180, 0.90) !important;
 }
 
-/* ⚪ Hover para filas normales */
-#tablaRegistros tr:not(.administrador):not(.asistencias-altas):hover td {
-    background: rgba(255,255,255,0.15) !important;
+/* ⚪ CASUAL (normal) */
+tr.casual:hover td {
+  background: rgba(255,255,255,0.15) !important;
 }
 
 /* ============================ */
@@ -2326,6 +2328,7 @@ body.modal-open {
 <!--       LEYENDAS               -->
 <!-- ============================ -->
 <div class="legend-container">
+  <!-- <span class="legend owner">Owner</span> -->
   <span class="legend admin">Administradores</span>
   <!-- <span class="legend asiste">Asiste a las quedadas</span> -->
  <!-- <span class="legend casual">Casual</span> -->
@@ -2337,13 +2340,12 @@ body.modal-open {
 <div class="table-container">
   <h2 class="titulo-principal">Códigos Entrenadores</h2>
 
-  <!-- <div class="search-container">
+   <div class="search-container">
     <span class="search-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
     </span>
     <input type="text" id="buscadorInput" class="search-input" placeholder="Buscar entrenador ....">
 </div> -->
-
 
   <table id="tablaRegistros">
     <thead>
@@ -2386,7 +2388,7 @@ body.modal-open {
 </section>
 
 
-<section class="social-circle-section">
+<section class="social-circle-section" id="socialSection">
 
     
      <div class="social-header">
@@ -2465,27 +2467,59 @@ body.modal-open {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  function aplicarRestriccionesPorPais(pais, esLocal) {
+  // Si es local, no ocultes nada
+  if (esLocal) return;
+
+  const PAISES_PERMITIDOS = ["PE"];
+
+  const permitido = PAISES_PERMITIDOS.includes(pais);
+
+  // 👉 Si NO es permitido, ocultamos registro + redes
+  if (!permitido) {
+    const btnRegistro = document.getElementById("openModalBtn");
+    if (btnRegistro) btnRegistro.style.display = "none";
+
+    const social = document.getElementById("socialSection");
+    if (social) social.style.display = "none";
+  }
+}
+
+
   // 🔥 NO bloquear si es localhost
   const host = location.hostname;
   const esLocal = host === "localhost" || host === "127.0.0.1";
 
-  fetch("https://ipapi.co/json/")
-    .then(res => res.json())
-    .then(data => {
+fetch("https://ipapi.co/json/")
+  .then(res => res.json())
+  .then(data => {
 
-  if (!esLocal && data.country_code !== "PE") {
-    document.getElementById("countryBlock").style.display = "block";
-    return;
-  }
+    // 🌍 Países permitidos (ISO 2)
+    const PAISES_PERMITIDOS = [
+      "PE", // Perú
+      "MX", // Mexico
+      "CL", // Chile
+      "AR", // Argentina
+      "EC", // Ecuador
+      "CO"  // Colombia
+      
+    ];
 
-  verificarRutaModal();
+    const pais = data.country_code;
 
-})
+    if (!esLocal && !PAISES_PERMITIDOS.includes(pais)) {
+      document.getElementById("countryBlock").style.display = "block";
+      console.warn("Acceso bloqueado para país:", pais);
+      return;
+    }
 
-   .catch(() => {
-  console.warn("No se pudo verificar país");
-  verificarRutaModal();
-});
+    verificarRutaModal();
+  })
+  .catch(() => {
+    console.warn("No se pudo verificar país");
+    verificarRutaModal(); // fallback: deja pasar
+  });
+
 
 
 });
@@ -2812,6 +2846,7 @@ function pintarDesdeCacheInstantaneo() {
 
   try {
     registrosGlobal = JSON.parse(cache);
+    ordenarRegistrosPorRol(registrosGlobal);
     registrosFiltrados = [...registrosGlobal];
     prepararSets();
     mostrarPagina(1);
@@ -2854,6 +2889,57 @@ async function verificarVersion() {
   }
 }
 
+function obtenerRol(r) {
+  const rango = String(r.rango || "").toLowerCase().trim();
+
+  if (rango.includes("owner")) return "owner";
+  if (rango.includes("administrador") || rango.includes("admin")) return "administrador";
+
+  // si quieres que "Asiste" dependa del texto O de asistencias:
+  if (rango.includes("asiste") || (Number(r.asistencias || 0) >= 3)) return "asiste";
+
+  return "casual";
+}
+
+function prioridadRol(rol) {
+  const orden = { owner: 0, administrador: 1, asiste: 2, casual: 3 };
+  return orden[rol] ?? 99;
+}
+
+function ordenarRegistrosPorRol(lista) {
+  return lista.sort((a, b) => {
+    const ra = obtenerRol(a);
+    const rb = obtenerRol(b);
+
+    // 1) primero por rol (owner, admin, asiste, casual)
+    const pa = prioridadRol(ra);
+    const pb = prioridadRol(rb);
+    if (pa !== pb) return pa - pb;
+
+    // 2) si ambos son "asiste": más asistencias arriba
+    if (ra === "asiste" && rb === "asiste") {
+      const aa = Number(a.asistencias || 0);
+      const ab = Number(b.asistencias || 0);
+      if (aa !== ab) return ab - aa; // DESC
+    }
+
+    // 3) desempate: orden real de hoja
+    // primero por timestamp (si existe)
+    const ta = new Date(a.timestamp || 0).getTime();
+    const tb = new Date(b.timestamp || 0).getTime();
+    if (ta && tb && ta !== tb) return ta - tb;
+
+    // si por alguna razón no hay timestamp, usamos fila
+    const fa = Number(a.fila || 0);
+    const fb = Number(b.fila || 0);
+    if (fa !== fb) return fa - fb;
+
+    return 0;
+  });
+}
+
+
+
 /* ============================
    CARGAR REGISTROS
 ============================ */
@@ -2862,6 +2948,7 @@ async function cargarRegistros() {
 
   if (cache) {
     registrosGlobal = JSON.parse(cache);
+    ordenarRegistrosPorRol(registrosGlobal);
     registrosFiltrados = [...registrosGlobal]; // ✅ FIX
     prepararSets();
     mostrarPagina(1);
@@ -2879,6 +2966,7 @@ async function cargarRegistros() {
     });
 
     registrosGlobal = Array.from(mapa.values());
+    ordenarRegistrosPorRol(registrosGlobal);
     registrosFiltrados = [...registrosGlobal]; // ✅ FIX
 
     prepararSets();
@@ -2953,13 +3041,9 @@ function mostrarPagina(num){
     const fila = document.createElement("tr");
     const rango = (r.rango || '').toLowerCase();
 
-    if (rango.includes("administrador")) {
-      fila.classList.add("administrador");
-    } else if ((r.asistencias || 0) >= 3 || rango.includes("asiste")) {
-      fila.classList.add("asistencias-altas");
-    } else {
-      fila.classList.add("casual");
-    }
+  const rol = obtenerRol(r);
+fila.classList.add(rol);
+
 
     fila.innerHTML = `
       <td><div class="td-ellipsis">${r.nombre || ""}</div></td>
@@ -3356,37 +3440,38 @@ document.addEventListener('visibilitychange', () => {
 /* ============================
    LÓGICA DEL BUSCADOR
 ============================ */
-document.getElementById("buscadorInput").addEventListener("input", (e) => {
-  const texto = e.target.value.toLowerCase().trim();
+const buscador = document.getElementById("buscadorInput");
+if (buscador) {
+  buscador.addEventListener("input", (e) => {
+    const texto = e.target.value.toLowerCase().trim();
 
-  if (texto === "") {
-    registrosFiltrados = [...registrosGlobal];
-  } else {
-    registrosFiltrados = registrosGlobal.filter(r => {
-      const nombre   = (r.nombre || "").toLowerCase();
-      const pokemon  = (r.pokemon || "").toLowerCase();
-      const codigo   = (r.codigo || "").toString();
-      const campfire = (r.campfire || "").toLowerCase();
+    if (texto === "") {
+      registrosFiltrados = [...registrosGlobal];
+    } else {
+      registrosFiltrados = registrosGlobal.filter(r => {
+        const nombre   = (r.nombre || "").toLowerCase();
+        const pokemon  = (r.pokemon || "").toLowerCase();
+        const codigo   = (r.codigo || "").toString();
+        const campfire = (r.campfire || "").toLowerCase();
 
-      return nombre.includes(texto) ||
-             pokemon.includes(texto) ||
-             codigo.includes(texto) ||
-             campfire.includes(texto);
-    });
-  }
+        return nombre.includes(texto) ||
+               pokemon.includes(texto) ||
+               codigo.includes(texto) ||
+               campfire.includes(texto);
+      });
+    }
 
-  // 🔥 FORZAR repintado aunque sea la misma página
-  const tbody = document.querySelector("#tablaRegistros tbody");
-  if (tbody) tbody.dataset.pagina = "";
+    const tbody = document.querySelector("#tablaRegistros tbody");
+    if (tbody) tbody.dataset.pagina = "";
 
-  mostrarPagina(1);
-});
+    mostrarPagina(1);
+  });
+}
 
 
 </script>
 </body>
 </html>
-
 
 
 
