@@ -2399,7 +2399,7 @@ body.modal-open {
         </h2>
 
         <p class="social-subtitle-gradient">
-            Ven y únete a nuestra comunidad y juega Pokémon GO
+            únete a nuestra comunidad y juega Pokémon GO
             presencialmente en <strong>Comas</strong>.
         </p>
     </div>
@@ -2465,64 +2465,89 @@ body.modal-open {
 
 <script>
 
+
+
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("🚀 DOM cargado – iniciando verificación de país");
 
-  function aplicarRestriccionesPorPais(pais, esLocal) {
-  // Si es local, no ocultes nada
-  if (esLocal) return;
+  const btnRegistro = document.getElementById("openModalBtn");
+  const social = document.getElementById("socialSection");
 
-  const PAISES_PERMITIDOS = ["PE"];
-
-  const permitido = PAISES_PERMITIDOS.includes(pais);
-
-  // 👉 Si NO es permitido, ocultamos registro + redes
-  if (!permitido) {
-    const btnRegistro = document.getElementById("openModalBtn");
-    if (btnRegistro) btnRegistro.style.display = "none";
-
-    const social = document.getElementById("socialSection");
-    if (social) social.style.display = "none";
-  }
-}
-
-
-  // 🔥 NO bloquear si es localhost
-  const host = location.hostname;
-  const esLocal = host === "localhost" || host === "127.0.0.1";
-
-fetch("https://ipapi.co/json/")
-  .then(res => res.json())
-  .then(data => {
-
-    // 🌍 Países permitidos (ISO 2)
-    const PAISES_PERMITIDOS = [
-      "PE", // Perú
-      "MX", // Mexico
-      "CL", // Chile
-      "AR", // Argentina
-      "EC", // Ecuador
-      "CO"  // Colombia
-      
-    ];
-
-    const pais = data.country_code;
-
-    if (!esLocal && !PAISES_PERMITIDOS.includes(pais)) {
-      document.getElementById("countryBlock").style.display = "block";
-      console.warn("Acceso bloqueado para país:", pais);
-      return;
-    }
-
-    verificarRutaModal();
-  })
-  .catch(() => {
-    console.warn("No se pudo verificar país");
-    verificarRutaModal(); // fallback: deja pasar
+  console.log("🔍 Elementos encontrados:", {
+    btnRegistro: !!btnRegistro,
+    socialSection: !!social
   });
 
+  const host = location.hostname;
+  const esLocal =
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host.endsWith(".local");
 
+  console.log("🌐 Host:", host, "| Local:", esLocal);
 
+  const PAISES_PERMITIDOS = ["PE", "MX", "CL", "AR", "CO", "EC"];
+  console.log("✅ Países permitidos:", PAISES_PERMITIDOS);
+
+  if (esLocal) {
+    console.log("🧪 Modo local → no se aplica bloqueo");
+    return;
+  }
+
+  console.log("📡 Consultando IP…");
+
+  fetch("https://ipwho.is/?fields=success,country_code,ip")
+    .then(r => {
+      console.log("📥 Respuesta HTTP:", r.status);
+      return r.json();
+    })
+    .then(data => {
+      console.log("📦 Respuesta API:", data);
+
+      if (!data.success) {
+        throw new Error("IP API respondió success=false");
+      }
+
+      const pais = data.country_code;
+      console.log("🌍 País detectado:", pais);
+
+    if (!PAISES_PERMITIDOS.includes(pais)) {
+  console.warn("⛔ País NO permitido → mostrando solo texto informativo");
+
+  // Ocultar botón de registro
+  if (btnRegistro) btnRegistro.style.display = "none";
+
+  // Reemplazar SOLO el contenido de redes
+  if (social) {
+    social.innerHTML = `
+      <div class="social-header">
+        <div class="social-kicker">ÚNETE A LA COMUNIDAD</div>
+
+        <h2 class="social-title-gradient">
+          CONECTA CON POKECOMAS GO
+        </h2>
+
+        <p class="social-subtitle-gradient">
+          únete a nuestra comunidad y juega Pokémon GO
+          presencialmente en <strong>Comas</strong>.
+        </p>
+      </div>
+    `;
+  }
+}
+ else {
+        console.log("🟢 País permitido → todo visible");
+      }
+    })
+    .catch(err => {
+      console.error("❌ Error detectando país:", err);
+
+      console.warn("🔐 Fallback: ocultando por seguridad");
+      if (btnRegistro) btnRegistro.style.display = "none";
+      if (social) social.style.display = "none";
+    });
 });
+
 
 function abrirModalDesdeRuta() {
   const modal = document.getElementById("formModal");
@@ -3472,3 +3497,10 @@ if (buscador) {
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
