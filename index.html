@@ -2157,6 +2157,64 @@ body.modal-open {
     width: 100%;
 }
 
+/* ============================
+   ESTILO DEL BUSCADOR (OPTIMIZADO)
+============================ */
+.search-container {
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto 25px auto; /* Centrado y separado */
+    position: relative;
+    z-index: 5;
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 20px;
+    padding-left: 50px; /* Espacio para el icono */
+    border-radius: 30px;
+    
+    /* Estilo Glassmorphism mejorado */
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    background: rgba(15, 30, 60, 0.65); /* Fondo oscuro semitransparente */
+    color: white;
+    
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* IMPORTANTE: Para que el padding no rompa el ancho */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #ffe27a; /* Dorado Pokémon */
+    background: rgba(10, 20, 40, 0.9); /* Más opaco al escribir */
+    box-shadow: 
+        0 0 0 4px rgba(255, 226, 122, 0.15),
+        0 8px 25px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+}
+
+.search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffe27a;
+    pointer-events: none; /* Click atraviesa el icono */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 
 </style>
@@ -2279,6 +2337,13 @@ body.modal-open {
 <div class="table-container">
   <h2 class="titulo-principal">Códigos Entrenadores</h2>
 
+  <div class="search-container">
+    <span class="search-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </span>
+    <input type="text" id="buscadorInput" class="search-input" placeholder="Buscar entrenador, código o pokémon...">
+</div>
+
   <table id="tablaRegistros">
     <thead>
       <tr>
@@ -2350,14 +2415,14 @@ body.modal-open {
 
    
 
-        <a href="https://tiktok.com/@TU_USUARIO"
+        <!-- <a href="https://tiktok.com/@TU_USUARIO"
            target="_blank"
            class="social-circle tiktok">
             <div class="circle-icon">
                 <img src="tiktok.svg" alt="TikTok">
             </div>
             <span>TikTok</span>
-        </a>
+        </a> -->
 
 
         <a href="https://campfire.onelink.me/eBr8?af_dp=campfire://&af_force_deeplink=true&deep_link_sub1=cj1jbHVicyZjPTQ5ODg2NDc1LWRjMWEtNGZmZC05OT"
@@ -2369,23 +2434,23 @@ body.modal-open {
     <span>Campfire</span>
 </a>
 
-     <a href="https://instagram.com/TU_USUARIO"
+    <!-- <a href="https://instagram.com/TU_USUARIO"
            target="_blank"
            class="social-circle instagram">
             <div class="circle-icon">
                 <img src="instagram.svg" alt="Instagram">
             </div>
             <span>Instagram</span>
-        </a>
+        </a> -->
 
-        <a href="https://facebook.com/TU_PAGINA"
+      <!--  <a href="https://facebook.com/TU_PAGINA"
            target="_blank"
            class="social-circle facebook">
             <div class="circle-icon">
                 <img src="facebook.png" alt="Facebook">
             </div>
             <span>Facebook</span>
-        </a>
+        </a> -->
 
 
     </div>
@@ -2442,18 +2507,28 @@ function verificarRutaModal() {
 
 
 /* ============================
-   CONFIG
+   CONFIGURACIÓN Y RESETEO
 ============================ */
 const API = "https://script.google.com/macros/s/AKfycbwtYCRruaW-882HCf_Zo90gFhBXojjU6cglJsXW4C29GJ_uh7CwQt3qf7lX_aqGN0U4qw/exec";
-let enviando = false; // ⛔ bloquea envíos múltiples
 
+let enviando = false; 
+let envioToken = 0;
+let envioController = null;
 
 function resetBotonEnvio(btn) {
-  enviando = false;
-  btn.disabled = false;
-  btn.textContent = "Enviar";
-}
+  // Si hay un envío en curso (ej: usuario cerró modal mientras cargaba), lo cancelamos
+  if (envioController) {
+      try { envioController.abort(); } catch(e){}
+      envioController = null;
+  }
 
+  enviando = false;
+  
+  if(btn){
+      btn.disabled = false;
+      btn.textContent = "Registrar Cuentas"; // Asegura que el texto vuelva a la normalidad
+  }
+}
 
 function marcarError(input, mensaje) {
     input.classList.remove("input-ok");
@@ -2487,15 +2562,14 @@ function flipCard(btn){
 
 
 // ABRIR MODAL
-// ABRIR MODAL (limpia todo antes)
 document.getElementById("openModalBtn").onclick = () => {
   const modal = document.getElementById("formModal");
+  const btnRegistro = document.getElementById("sendAllBtn"); 
 
-  // limpiar valores principales
+  // Limpiar valores (Tu lógica actual de limpieza)
   document.getElementById("nombreRealModal").value = "";
   document.getElementById("campfireModal").value = "";
 
-  // limpiar primera fila de nombre/código
   const nombresPokeInputs = document.querySelectorAll(".nombrePokeInput");
   const codigoInputs      = document.querySelectorAll(".codigoInput");
 
@@ -2509,13 +2583,14 @@ document.getElementById("openModalBtn").onclick = () => {
     inp.classList.remove("input-error","input-ok");
   });
 
-  // borrar bloques extra
   const extras = document.querySelectorAll("#extraAccountsContainer .extra-block");
   extras.forEach(e => e.remove());
 
-  bloquearScrollBody();
-modal.style.display = "flex";
+  // 🔥 LA SOLUCIÓN: Forzar el reseteo del botón antes de mostrar nada
+  resetBotonEnvio(btnRegistro);
 
+  bloquearScrollBody();
+  modal.style.display = "flex";
 };
 
 
@@ -2590,10 +2665,8 @@ document
 
 
 /* ============================
-   ENVIAR TODO (MODAL NUEVO)
+   ENVIAR TODO (FIX BOTÓN TRABADO)
 ============================ */
-// Evento de Enviar Todo (validaciones)
-
 document.getElementById("sendAllBtn").onclick = async () => {
 
   if (enviando) return;
@@ -2601,86 +2674,102 @@ document.getElementById("sendAllBtn").onclick = async () => {
 
   const btn = document.getElementById("sendAllBtn");
   btn.disabled = true;
-  btn.textContent = "⏳ Guardando cuentas...";
+  btn.textContent = "⏳ Procesando...";
+
+  // Token único para evitar conflictos si se cierra y abre rápido
+  const myToken = ++envioToken;
+  envioController = new AbortController();
+  const { signal } = envioController;
 
   try {
-
     let nombreReal = document.getElementById("nombreRealModal").value.trim();
     let campfire   = document.getElementById("campfireModal").value.trim();
     let nombresPokeInputs = document.querySelectorAll(".nombrePokeInput");
     let codigoInputs      = document.querySelectorAll(".codigoInput");
+    
     let nombresPoke = Array.from(nombresPokeInputs, i => i.value.trim());
     let codigos     = Array.from(codigoInputs, i => i.value.trim());
 
+    // Limpiar estilos previos
     nombresPokeInputs.forEach(i => i.classList.remove("input-error", "input-ok"));
     codigoInputs.forEach(i => i.classList.remove("input-error", "input-ok"));
 
-    // ✅ VALIDACIONES
+    // --- TUS VALIDACIONES ORIGINALES ---
+    // Usamos 'throw new Error' para saltar al desbloqueo del botón si algo falla
+    
     if (!nombreReal) {
-      mostrarToast("⚠ El nombre real es obligatorio");
-      return;
+        mostrarToast("⚠ El nombre real es obligatorio");
+        throw new Error("ValidationFailed");
     }
 
     const nombreRealRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     if (!nombreRealRegex.test(nombreReal)) {
-      mostrarToast("⚠ El nombre real solo puede contener letras");
-      return;
+        mostrarToast("⚠ El nombre real solo puede contener letras");
+        throw new Error("ValidationFailed");
     }
 
     if (!nombresPoke.every(name => name)) {
-      mostrarToast("⚠ Todos los nombres Pokémon son obligatorios");
-      return;
+        mostrarToast("⚠ Todos los nombres Pokémon son obligatorios");
+        throw new Error("ValidationFailed");
     }
 
     if (codigos.some(codigo => codigo.length !== 12 || !/^\d{12}$/.test(codigo))) {
-      mostrarToast("⚠ Todos los códigos deben ser de 12 dígitos");
-      return;
+        mostrarToast("⚠ Todos los códigos deben ser de 12 dígitos");
+        throw new Error("ValidationFailed");
     }
 
+    // Tu lógica de duplicados original (se mantiene igual)
     for (let i = 0; i < codigos.length; i++) {
-      let cod = codigos[i];
-      let name = nombresPoke[i].trim().toLowerCase();
-      let codInput = codigoInputs[i];
-      let nameInput = nombresPokeInputs[i];
+        let cod = codigos[i];
+        let name = nombresPoke[i].trim().toLowerCase();
 
-      if (codigosExistentes.has(cod)) {
-        marcarError(codInput, "Código ya existe");
-        return;
-      }
-
-      if (nombresPokemonExistentes.has(name)) {
-        marcarError(nameInput, "Nombre Pokémon ya registrado");
-        return;
-      }
-
-      marcarOk(codInput);
-      marcarOk(nameInput);
+        if (codigosExistentes.has(cod)) {
+            marcarError(codigoInputs[i], "Código ya existe");
+            throw new Error("ValidationFailed");
+        }
+        if (nombresPokemonExistentes.has(name)) {
+            marcarError(nombresPokeInputs[i], "Nombre ya registrado");
+            throw new Error("ValidationFailed");
+        }
+        marcarOk(codigoInputs[i]);
+        marcarOk(nombresPokeInputs[i]);
     }
 
-    mostrarToast("✔ Datos validados. Enviando...");
+    mostrarToast("✔ Datos validados. Enviando... ");
 
+    // --- ENVÍO CON SEÑAL DE ABORTO ---
     for (let i = 0; i < codigos.length; i++) {
-      btn.textContent = `⏳ Guardando ${i + 1}/${codigos.length}`;
+        btn.textContent = `⏳ Guardando ${i + 1}/${codigos.length}`;
 
-      const url = `${API}?accion=guardar` +
-        `&nombre=${encodeURIComponent(nombreReal)}` +
-        `&pokemon=${encodeURIComponent(nombresPoke[i])}` +
-        `&codigo=${encodeURIComponent(codigos[i])}` +
-        `&campfire=${encodeURIComponent(campfire)}`;
+        const url = `${API}?accion=guardar` +
+            `&nombre=${encodeURIComponent(nombreReal)}` +
+            `&pokemon=${encodeURIComponent(nombresPoke[i])}` +
+            `&codigo=${encodeURIComponent(codigos[i])}` +
+            `&campfire=${encodeURIComponent(campfire)}`;
 
-      await fetch(url);
+        // 'signal' permite cancelar si cierras el modal
+        await fetch(url, { signal });
     }
 
     mostrarToast("✔ Gracias por registrarte,en breve seras aprobado");
-
     document.getElementById("formModal").style.display = "none";
     restaurarScrollBody();
 
   } catch (err) {
-    console.error(err);
-    mostrarToast("❌ Error al enviar");
+    if (err.message === "ValidationFailed") {
+        // Error de validación: ya mostramos toast, no hacemos nada más
+    } else if (err.name === "AbortError") {
+        console.log("Envío cancelado por el usuario");
+    } else {
+        console.error(err);
+        mostrarToast("❌ Error de conexión");
+    }
   } finally {
-    resetBotonEnvio(btn); // 🔥 SIEMPRE se ejecuta
+    // 🔥 ESTA PARTE ES LA QUE ARREGLA EL BOTÓN TRABADO
+    // Se ejecuta SIEMPRE: sea éxito, error o validación fallida
+    if (myToken === envioToken) {
+        resetBotonEnvio(btn);
+    }
   }
 };
 
@@ -2716,7 +2805,26 @@ const CACHE_KEY = "pokecomas_registros";
 const CACHE_VERSION_KEY = "pokecomas_version";
 const CACHE_MAX_AGE = 1000 * 60 * 30; // 30 min
 
+function pintarDesdeCacheInstantaneo() {
+  const cache = localStorage.getItem(CACHE_KEY);
+  if (!cache) return false;
+
+  try {
+    registrosGlobal = JSON.parse(cache);
+    registrosFiltrados = [...registrosGlobal];
+    prepararSets();
+    mostrarPagina(1);
+    console.log("⚡ Pintado instantáneo desde cache");
+    return true;
+  } catch (e) {
+    console.warn("Cache corrupto, se ignora");
+    return false;
+  }
+}
+
+
 let registrosGlobal = [];
+let registrosFiltrados = [];
 let paginaActual = 1;
 const porPagina = 10;
 
@@ -2753,8 +2861,9 @@ async function cargarRegistros() {
 
   if (cache) {
     registrosGlobal = JSON.parse(cache);
+    registrosFiltrados = [...registrosGlobal]; // ✅ FIX
     prepararSets();
-    mostrarPagina(paginaActual);
+    mostrarPagina(1);
     console.log("📦 Tabla desde cache");
     return;
   }
@@ -2765,22 +2874,22 @@ async function cargarRegistros() {
 
     const mapa = new Map();
     datos.forEach(r => {
-      if (r.codigo && !mapa.has(r.codigo)) {
-        mapa.set(r.codigo, r);
-      }
+      if (r.codigo && !mapa.has(r.codigo)) mapa.set(r.codigo, r);
     });
 
     registrosGlobal = Array.from(mapa.values());
-    prepararSets();
+    registrosFiltrados = [...registrosGlobal]; // ✅ FIX
 
+    prepararSets();
     localStorage.setItem(CACHE_KEY, JSON.stringify(registrosGlobal));
+
     mostrarPagina(1);
     console.log("🌐 Tabla desde servidor");
-
   } catch (err) {
     console.error("Error cargarRegistros:", err);
   }
 }
+
 
 /* ============================
    PREPARAR SETS (MODAL)
@@ -2799,6 +2908,10 @@ function prepararSets() {
    INIT SEGURO
 ============================ */
 document.addEventListener("DOMContentLoaded", async () => {
+  // 1) pinta al toque (sin esperar nada)
+  pintarDesdeCacheInstantaneo();
+
+  // 2) luego recién verificas versión y actualizas si toca
   await verificarVersion();
   await cargarRegistros();
 });
@@ -2807,62 +2920,71 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 function mostrarPagina(num){
-  paginaActual=num;
-  const inicio=(num-1)*porPagina;
-  const datos=registrosGlobal.slice(inicio, inicio+porPagina);
+  paginaActual = num;
 
-  const tbody=document.querySelector("#tablaRegistros tbody");
-  tbody.innerHTML="";
-datos.forEach(r=>{
+  const tbody = document.querySelector("#tablaRegistros tbody"); // ✅ primero
+  const inicio = (num - 1) * porPagina;
+
+  // ✅ usar filtrados
+  const datos = registrosFiltrados.slice(inicio, inicio + porPagina);
+
+  // ✅ evita repintar lo mismo (flash)
+  if (tbody.dataset.pagina === String(num) && tbody.children.length > 0) {
+    return;
+  }
+  tbody.dataset.pagina = String(num);
+
+  tbody.innerHTML = "";
+
+  // Si no hay resultados
+  if (datos.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align:center; padding: 30px; color: rgba(255,255,255,0.7);">
+          🚫 No se encontraron entrenadores
+        </td>
+      </tr>`;
+    document.getElementById("paginador").innerHTML = "";
+    return;
+  }
+
+  datos.forEach(r => {
     const fila = document.createElement("tr");
-
-    // Normaliza el texto del rango
     const rango = (r.rango || '').toLowerCase();
 
-  if (rango.includes("administrador")) {
-    fila.classList.add("administrador");
+    if (rango.includes("administrador")) {
+      fila.classList.add("administrador");
+    } else if ((r.asistencias || 0) >= 3 || rango.includes("asiste")) {
+      fila.classList.add("asistencias-altas");
+    } else {
+      fila.classList.add("casual");
+    }
 
-} else if ((r.asistencias || 0) >= 3 || rango.includes("asiste")) {
-    fila.classList.add("asistencias-altas");
-
-} else {
-    fila.classList.add("casual");
-}
-
-
-    // 🎯 3. Los demás quedan normales
-  fila.innerHTML = `
+    fila.innerHTML = `
+      <td><div class="td-ellipsis">${r.nombre || ""}</div></td>
+      <td><div class="td-ellipsis">${r.pokemon || ""}</div></td>
       <td>
-        <div class="td-ellipsis">
-          ${r.nombre}
-        </div>
-      </td>
-
-      <td>
-        <div class="td-ellipsis">
-          ${r.pokemon}
-        </div>
-      </td>
-
-      <td>
-        <span>${r.codigo}</span>
-        <button class="copy-btn" onclick="copiarTexto('${r.codigo}')">
+        <span>${r.codigo || ""}</span>
+        <button class="copy-btn" onclick="copiarTexto('${String(r.codigo || "").replace(/'/g,"\\'")}')">
           Copiar
         </button>
       </td>
-
       <td>${r.campfire || ""}</td>
     `;
 
     tbody.appendChild(fila);
-});
+  });
 
   activarTooltipsSiTruncado();
   generarPaginador();
 }
 
+
+
 function generarPaginador(){
-    const total = Math.ceil(registrosGlobal.length / porPagina);
+  
+  
+    const total = Math.ceil(registrosFiltrados.length / porPagina);
     const pag = document.getElementById("paginador");
 
     pag.innerHTML = "";
@@ -2913,7 +3035,7 @@ function activarTooltipsSiTruncado() {
     });
 }
 
-cargarRegistros();
+
 
 
 
@@ -3230,13 +3352,39 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
+/* ============================
+   LÓGICA DEL BUSCADOR
+============================ */
+document.getElementById("buscadorInput").addEventListener("input", (e) => {
+  const texto = e.target.value.toLowerCase().trim();
 
+  if (texto === "") {
+    registrosFiltrados = [...registrosGlobal];
+  } else {
+    registrosFiltrados = registrosGlobal.filter(r => {
+      const nombre   = (r.nombre || "").toLowerCase();
+      const pokemon  = (r.pokemon || "").toLowerCase();
+      const codigo   = (r.codigo || "").toString();
+      const campfire = (r.campfire || "").toLowerCase();
+
+      return nombre.includes(texto) ||
+             pokemon.includes(texto) ||
+             codigo.includes(texto) ||
+             campfire.includes(texto);
+    });
+  }
+
+  // 🔥 FORZAR repintado aunque sea la misma página
+  const tbody = document.querySelector("#tablaRegistros tbody");
+  if (tbody) tbody.dataset.pagina = "";
+
+  mostrarPagina(1);
+});
 
 
 </script>
 </body>
 </html>
-
 
 
 
