@@ -2469,85 +2469,63 @@ body.modal-open {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("🚀 DOM cargado – iniciando verificación de país");
 
-  const btnRegistro = document.getElementById("openModalBtn");
-  const social = document.getElementById("socialSection");
+  // ⚡ 1️⃣ ABRIR MODAL INMEDIATO (ANTES DE TODO)
+  verificarRutaModal();
 
-  console.log("🔍 Elementos encontrados:", {
-    btnRegistro: !!btnRegistro,
-    socialSection: !!social
-  });
+  // ⏳ 2️⃣ VERIFICACIÓN DE PAÍS EN SEGUNDO PLANO
+  setTimeout(() => {
 
-  const host = location.hostname;
-  const esLocal =
-    host === "localhost" ||
-    host === "127.0.0.1" ||
-    host.endsWith(".local");
+    console.log("🌍 Verificando país…");
 
-  console.log("🌐 Host:", host, "| Local:", esLocal);
+    const btnRegistro = document.getElementById("openModalBtn");
+    const social = document.getElementById("socialSection");
 
-  const PAISES_PERMITIDOS = ["PE", "MX", "CL", "AR", "CO", "EC"];
-  console.log("✅ Países permitidos:", PAISES_PERMITIDOS);
+    const host = location.hostname;
+    const esLocal =
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      host.endsWith(".local");
 
-  if (esLocal) {
-    console.log("🧪 Modo local → no se aplica bloqueo");
-    return;
-  }
+    const PAISES_PERMITIDOS = ["PE", "MX", "CL", "AR", "CO", "EC"];
 
-  console.log("📡 Consultando IP…");
+    if (esLocal) {
+      console.log("🧪 Localhost → sin bloqueo");
+      return;
+    }
 
-  fetch("https://ipwho.is/?fields=success,country_code,ip")
-    .then(r => {
-      console.log("📥 Respuesta HTTP:", r.status);
-      return r.json();
-    })
-    .then(data => {
-      console.log("📦 Respuesta API:", data);
+    fetch("https://ipwho.is/?fields=success,country_code")
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success) throw new Error("IP API error");
 
-      if (!data.success) {
-        throw new Error("IP API respondió success=false");
-      }
+        const pais = data.country_code;
 
-      const pais = data.country_code;
-      console.log("🌍 País detectado:", pais);
+        if (!PAISES_PERMITIDOS.includes(pais)) {
+          if (btnRegistro) btnRegistro.style.display = "none";
 
-    if (!PAISES_PERMITIDOS.includes(pais)) {
-  console.warn("⛔ País NO permitido → mostrando solo texto informativo");
+          if (social) {
+            social.innerHTML = `
+              <div class="social-header">
+                <div class="social-kicker">ÚNETE A LA COMUNIDAD</div>
+                <h2 class="social-title-gradient">CONECTA CON POKECOMAS GO</h2>
+                <p class="social-subtitle-gradient">
+                  Únete a nuestra comunidad y juega Pokémon GO presencialmente en <strong>Comas</strong>.
+                </p>
+              </div>
+            `;
+          }
+        }
+      })
+      .catch(err => {
+        console.error("❌ Error país:", err);
+        if (btnRegistro) btnRegistro.style.display = "none";
+        if (social) social.style.display = "none";
+      });
 
-  // Ocultar botón de registro
-  if (btnRegistro) btnRegistro.style.display = "none";
-
-  // Reemplazar SOLO el contenido de redes
-  if (social) {
-    social.innerHTML = `
-      <div class="social-header">
-        <div class="social-kicker">ÚNETE A LA COMUNIDAD</div>
-
-        <h2 class="social-title-gradient">
-          CONECTA CON POKECOMAS GO
-        </h2>
-
-        <p class="social-subtitle-gradient">
-          únete a nuestra comunidad y juega Pokémon GO
-          presencialmente en <strong>Comas</strong>.
-        </p>
-      </div>
-    `;
-  }
-}
- else {
-        console.log("🟢 País permitido → todo visible");
-      }
-    })
-    .catch(err => {
-      console.error("❌ Error detectando país:", err);
-
-      console.warn("🔐 Fallback: ocultando por seguridad");
-      if (btnRegistro) btnRegistro.style.display = "none";
-      if (social) social.style.display = "none";
-    });
+  }, 0); // ← no bloquea render
 });
+
 
 
 function abrirModalDesdeRuta() {
@@ -3056,8 +3034,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await verificarVersion();
   await cargarRegistros();
-
-  verificarRutaModal(); // ✅ ABRE MODAL si URL es /entrenador o ?modal=entrenador
 });
 
 
