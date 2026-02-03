@@ -2561,11 +2561,40 @@ function abrirModalDesdeRuta() {
 function verificarRutaModal() {
   const params = new URLSearchParams(window.location.search);
 
-  if (params.get("modal") === "entrenador") {
-    abrirModalDesdeRuta();
+  // ✅ 1) Soporta query: ?modal=entrenador
+  const porQuery = params.get("modal") === "entrenador";
+
+  // ✅ 2) Soporta ruta: /entrenador (con o sin / final)
+  const path = window.location.pathname.replace(/\/+$/, ""); 
+  const porRuta = (path === "/entrenador");
+
+  if (porQuery || porRuta) {
+    // Reutiliza la misma lógica limpia que tienes al abrir modal
+    const modal = document.getElementById("formModal");
+    const btnRegistro = document.getElementById("sendAllBtn");
+
+    // Limpieza igual que tu openModalBtn
+    document.getElementById("nombreRealModal").value = "";
+    document.getElementById("campfireModal").value = "";
+
+    document.querySelectorAll(".nombrePokeInput").forEach(inp => {
+      inp.value = "";
+      inp.classList.remove("input-error","input-ok");
+    });
+
+    document.querySelectorAll(".codigoInput").forEach(inp => {
+      inp.value = "";
+      inp.classList.remove("input-error","input-ok");
+    });
+
+    document.querySelectorAll("#extraAccountsContainer .extra-block").forEach(e => e.remove());
+
+    resetBotonEnvio(btnRegistro);
+
+    bloquearScrollBody();
+    modal.style.display = "flex";
   }
 }
-
 
 /* ============================
    CONFIGURACIÓN Y RESETEO
@@ -3023,14 +3052,13 @@ function prepararSets() {
    INIT SEGURO
 ============================ */
 document.addEventListener("DOMContentLoaded", async () => {
-  // 1) pinta al toque (sin esperar nada)
   pintarDesdeCacheInstantaneo();
 
-  // 2) luego recién verificas versión y actualizas si toca
   await verificarVersion();
   await cargarRegistros();
-});
 
+  verificarRutaModal(); // ✅ ABRE MODAL si URL es /entrenador o ?modal=entrenador
+});
 
 
 
