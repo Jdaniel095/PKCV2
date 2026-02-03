@@ -1086,12 +1086,13 @@ input:focus {
    RESPONSIVE MÓVIL
 ============================= */
 @media (max-width: 768px) {
-    .social-circle-container {
-        justify-content: flex-start;
-        overflow-x: auto;
-        padding: 0 20px;
-        gap: 40px;
-    }
+     .social-circle-container {
+    justify-content: center;   /* ✅ centrado */
+    overflow-x: hidden;        /* ✅ ya no se pega a la izquierda */
+    padding: 0 16px;
+    gap: 26px;
+    flex-wrap: wrap;           /* ✅ si son 2, quedan centrados */
+  }
 
     .social-circle {
         width: 110px;
@@ -3497,7 +3498,6 @@ if (buscador) {
 </script>
 </body>
 </html>
-
 
 
 
