@@ -2889,7 +2889,10 @@ function buildTournamentFromExport_(meta, exp){
     mode: meta.mode || exp?.torneo?.mode || "",
     dateTime: meta.dateTime || exp?.torneo?.dateTime || "",
 
-    bestOf: meta.bestOf || meta.boPhasesJson || exp?.torneo?.bestOf || exp?.torneo?.boPhasesJson || "",
+    bestOf: meta.bestOf || exp?.torneo?.bestOf || "3", 
+
+    boPhasesJson: meta.boPhasesJson || exp?.torneo?.boPhasesJson || "", 
+    
     suggestedSize: meta.suggestedSize ?? exp?.torneo?.suggestedSize,
 
     open: isTrue(meta.inscriptionsOpen ?? exp?.torneo?.inscriptionsOpen),
