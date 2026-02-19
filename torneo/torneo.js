@@ -3418,7 +3418,7 @@ function setTournamentHeaderUI(t){
 const fmtNice = formatNice(t?.format);
 
 // 🟣 NEW: soporta bestOf = 3  y  bestOf = {"bracket":3,"final":5}
-const planBO = parseBestOfPlan_(t?.bestOf);
+const planBO = parseBestOfPlan_(t?.boPhasesJson || t?.bestOf);
 
 const labels = [];
 if (planBO.bracket) labels.push(`BO${planBO.bracket}`);
@@ -5219,7 +5219,7 @@ function fitBracketToScreen(){
 
 // --- Función de ayuda para BO Inteligente ---
 function getSmartBoLabel_(t, m, maxRound) {
-  const plan = parseBestOfPlan_(m?.bestOf ?? m?.BestOf ?? t?.bestOf);
+  const plan = parseBestOfPlan_(m?.boPhasesJson ?? t?.boPhasesJson ?? m?.bestOf ?? t?.bestOf);
   const r = Number(m?.Round ?? m?.round ?? 1);
   
   if (r === maxRound) {
