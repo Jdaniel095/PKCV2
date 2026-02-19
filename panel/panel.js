@@ -1,4 +1,4 @@
-const API = "https://script.google.com/macros/s/AKfycbwtYCRruaW-882HCf_Zo90gFhBXojjU6cglJsXW4C29GJ_uh7CwQt3qf7lX_aqGN0U4qw/exec";
+const API = "https://script.google.com/macros/s/AKfycbzEpIAkxL3tWHsl80XUp6DfHp3n8pspK7mG_JZtI5snfM8yU5wKkBVnBTTbe1BxNZXwJQ/exec";
 let ROLE = "";
 let CURRENT_USER = "";
 
@@ -140,3 +140,4 @@ function toast(msg, tipo = "ok") {
   box.appendChild(div);
   setTimeout(() => div.remove(), 3000);
 }
+
