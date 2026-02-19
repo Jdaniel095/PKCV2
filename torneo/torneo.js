@@ -344,6 +344,10 @@ function parseGmt5StampToMs(stamp){
 
 // ✅ Fase de preparación activa
 function isPrepActive(t){
+  // 1. Si está en modo MANUAL y cerrado, sigue en espera (incluso si hay bracket generado)
+  if(t?.prepEndsAt === "MANUAL" && !t?.open) return true;
+  
+  // 2. Si no, revisa el tiempo
   const endMs = parseGmt5StampToMs(t?.prepEndsAt);
   return (!t?.open && !!endMs && Date.now() < endMs);
 }
@@ -3385,10 +3389,18 @@ function setTournamentHeaderUI(t){
       setHeaderPrepMode(true);
       if(dtRow) dtRow.style.display = "none";
       if(prepBar) prepBar.style.display = "block";
-      if(prepTimeEl) prepTimeEl.textContent = "30:00"; 
       if(dateOnlyEl) dateOnlyEl.textContent = "";
-      if(timeOnlyEl) timeOnlyEl.textContent = "30:00"; 
-      startPrepTimer(t.prepEndsAt);
+      
+      // ✅ Lógica nueva: ¿Espera manual o tiempo?
+      if(t.prepEndsAt === "MANUAL"){
+        if(prepTimeEl) prepTimeEl.textContent = "ESPERANDO";
+        if(timeOnlyEl) timeOnlyEl.textContent = "ESPERANDO";
+        stopPrepTimer(); // Detenemos cualquier timer anterior
+      } else {
+        if(prepTimeEl) prepTimeEl.textContent = "30:00"; 
+        if(timeOnlyEl) timeOnlyEl.textContent = "30:00"; 
+        startPrepTimer(t.prepEndsAt);
+      }
     }else{
       setHeaderPrepMode(false);
       if(dtRow) dtRow.style.display = "flex";
@@ -5073,23 +5085,59 @@ if(!/^\d{9}$/.test(contacto)){
   }
 };
 
+// ===============================
+// CARGA RÁPIDA (FALLBACK LOCAL)
+// ===============================
+async function loadLocalFallback_() {
+    try {
+        // Intenta cargar el archivo estático descargado
+        const res = await fetch("torneo_backup.json");
+        if (!res.ok) return false;
+        
+        const exp = await res.json();
+        
+        // Usamos exp.torneo como metadata
+        const meta = exp.torneo || {};
+        const t = buildTournamentFromExport_(meta, exp);
+        t._ver = Number(exp.version || 0) || 0;
+        
+        TORNEOS = [t];
+        SELECTED_ID = t.torneoId;
+        
+        renderTabs();
+        renderSelected();
+        console.log("Carga inicial rápida ejecutada desde torneo_backup.json");
+        return true;
+    } catch (e) {
+        console.warn("Fallo al cargar el backup local:", e);
+        return false;
+    }
+}
+
 /* Init */
 (async function init(){
   try{
-    // ✅ 1) Pinta instantáneo desde cache (si existe)
-    cacheLoadBootstrap_();
+    // 1) Pinta instantáneo desde caché local (si el usuario ya visitó la web antes)
+    const hasCache = cacheLoadBootstrap_();
 
-    // ✅ 2) Carga DBs (nombres/íconos) y luego revalida contra Sheets
-    await loadPokemonDB();
-    try { await loadMovesDB(); } catch(e){ console.warn("Moves DB fail:", e); }
+    // 2) Si NO hay caché (primera visita), carga tu JSON estático al instante
+    if (!hasCache) {
+        await loadLocalFallback_();
+    }
 
-    // ✅ 3) Revalida: solo baja export_json si cambió la versión
-    await loadAll(true);
+    // 3) Cargar bases de datos pesadas sin bloquear la pantalla (sin await)
+    loadPokemonDB().catch(e => console.warn("Pokemon DB fail:", e));
+    loadMovesDB().catch(e => console.warn("Moves DB fail:", e));
 
-    // ✅ 4) Refresco periódico liviano
-    setInterval(loadAll, 12000);
+    // 4) Pide los datos frescos a Google Apps Script en segundo plano
+    // Esto sobrescribirá la vista inicial silenciosamente cuando termine
+    loadAll(true).catch(e => console.warn("Error refrescando torneo:", e));
+
+    // 5) Refresco periódico
+    setInterval(() => loadAll(false), 12000);
   }catch(e){
-    $("torneoInfo").textContent = "Error cargando torneo";
+    const info = document.getElementById("torneoInfo");
+    if(info) info.textContent = "Error cargando torneo";
     showToast("⚠ " + (e?.message || e));
   }
 })();
