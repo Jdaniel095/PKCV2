@@ -36,7 +36,7 @@
 
           <main class="content-area" id="contenido">
             <div class="content-after-logo-spacer" aria-hidden="true"></div>
- <h1 class="titulo-principal" id="torneoTitle">Bienvenido a Pokecomas Go</h1>
+ <h1 class="titulo-principal" id="torneoTitle">Bienvenido a Pokecomas Go prueba</h1>
 
                 <!-- Metadatos del torneo (liga, formato, fecha) -->
                 <div id="torneoMeta" class="torneo-meta" style="display:none;">
@@ -117,6 +117,18 @@
                 <!-- Botón de registro (si está abierto) -->
                 <button id="openModalBtn" class="open-modal-btn" style="display:none;">Registrarme al torneo</button>
 
+                 <!-- Reglas / Prohibiciones / Excepciones -->
+                <div id="rulesCard" class="rules-card" style="display:none;"></div>
+
+              <div id="mainInscritosContainer" style="margin-top: 56px; display: none;">
+                    
+                    <div class="meta-label" style="margin-bottom: 16px; text-align: center;">
+                        JUGADORES INSCRITOS
+                        <span id="mainInscritosCount" style="display: none;"></span>
+                    </div> <div class="prep-grid" id="mainInscritosGrid"></div>
+                    
+                </div>
+
 
                 <!-- ✅ MODAL: EQUIPO DEL JUGADOR (pokes en modal) -->
 <div id="teamModal" class="modal-overlay">
@@ -139,8 +151,7 @@
                 <!-- Selector multi torneo -->
                 <div id="eventTabs" class="event-tabs" style="display:none;"></div>
 
-                <!-- Reglas / Prohibiciones / Excepciones -->
-                <div id="rulesCard" class="rules-card" style="display:none;"></div>
+               
 
                 <!-- ✅ Barra PREPARACIÓN (conteo) debajo de reglas -->
 <div id="prepCountdownBar" class="prep-countdown-bar" style="display:none;">
@@ -359,6 +370,8 @@
                         </div>
 
                         <button id="btnRegister" class="send-all-btn">Enviar registro</button>
+
+                        
                     </div>
                 </div>
 
@@ -430,7 +443,7 @@
             <div class="rule-section">
                 <h3>E. Inscripción</h3>
                 <ul>
-                    <li><strong>Fase Digital (Pre-inscripción):</strong> Formulario presentado en la página <em>pokecomas.com/torneo</em>. Límite de participantes: 32 jugadores(Sujeto a cambios).</li> 
+                    <li><strong>Fase Digital (Pre-inscripción):</strong> Formulario presentado en la página <em>pokecomas.com/torneo</em>. Límite de participantes: 64 jugadores.</li> 
                     <li><strong>Fase de Confirmación (Check-in presencial):</strong> El día del evento: Si un jugador no hace el Check-in 30 minutos antes de empezar, su cupo se entrega a alguien de la "Lista de Espera" que esté presente.</li>
                 </ul>
             </div>
