@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Participantes del Torneo</title>
+  <style>
+    /* Reset y fondo */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Lato', 'Arial', sans-serif;
+      background: linear-gradient(180deg, #0b2d5a 0%, #00509a 35%, #004f9a 75%, #005199 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      padding: 20px 10px;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 2rem;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      color: #ffdcb5;
+    }
+
+    /* Buscador */
+    .search-container {
+      max-width: 600px;
+      margin: 0 auto 30px auto;
+      display: flex;
+      justify-content: center;
+    }
+    #searchInput {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 16px;
+      border-radius: 30px;
+      border: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      outline: none;
+    }
+
+    /* Grid */
+    .grid-participantes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Tarjeta de participante */
+    .prep-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      color: #2b2b2b;
+    }
+    
+    /* Cabecera de la tarjeta (Nombres y Códigos) */
+    .prep-header {
+      text-align: center;
+      margin-bottom: 15px;
+      border-bottom: 2px solid rgba(0,0,0,0.1);
+      padding-bottom: 10px;
+    }
+    .prep-nick {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #0b2d5a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prep-fullname {
+      font-size: 0.75rem;
+      color: #555;
+      margin-top: 4px;
+      text-transform: capitalize;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prep-code {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #00509a;
+      background: rgba(0, 80, 154, 0.1);
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
+    }
+    .badge-numero {
+      background: #00509a;
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    /* Equipo Pokémon */
+    .prep-team {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .poke-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 75px;
+      position: relative; 
+    }
+    .poke-icon-wrap {
+      position: relative;
+      width: 55px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .poke-icon-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 2; 
+      position: relative;
+    }
+
+    /* Nombre del Pokémon SIEMPRE visible debajo de la cara */
+    .poke-label {
+      font-size: 13px; /* AUMENTADO: de 11px a 13px */
+      line-height: 1.2;
+      text-align: center;
+      margin-top: 5px;
+      font-weight: 700;
+      color: #111;
+      height: 32px; /* AUMENTADO: de 26px a 32px para acomodar texto más grande de 2 líneas */
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      width: 100%;
+      position: relative;
+      z-index: 5; 
+    }
+
+    /* Lógica CSS: Efecto Flama Morada para imágenes oscuras faltantes */
+    .shadow-flame-bg::before {
+      content: "";
+      position: absolute;
+      top: -5%;    
+      left: -5%;   
+      width: 110%; 
+      height: 110%;
+      background-image: url('purple-flame.svg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0; 
+      pointer-events: none;
+      filter: drop-shadow(0 0 5px rgba(128, 0, 128, 0.7)); 
+    }
+
+    /* Ajustes móviles extra */
+    @media (max-width: 480px) {
+      .grid-participantes { grid-template-columns: 1fr; }
+      .poke-slot { width: 70px; }
+      .poke-icon-wrap { width: 50px; height: 50px; }
+      .poke-label { font-size: 11.5px; } /* AUMENTADO también para celulares (antes 10px) */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Participantes del Torneo</h1>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Buscar por nick, nombre, código o número...">
+  </div>
+
+  <div class="grid-participantes" id="gridParticipantes"></div>
+
+  <script>
+    let participantes = [];
+    let diccionarioPokemon = new Map();
+
+    async function init() {
+      try {
+        const [resPokemon, resTorneo] = await Promise.all([
+          fetch('pokemon.json'),
+          fetch('participantes.json')
+        ]);
+
+        const dataPokemon = await resPokemon.json();
+        const dataTorneo = await resTorneo.json();
+
+        dataPokemon.forEach(p => {
+          const dex = p.dex;
+          const nombre = p.name.es_ES || p.name.es_419 || p.name.en || `Poké ${dex}`;
+          diccionarioPokemon.set(dex.toString(), nombre);
+        });
+
+        participantes = dataTorneo.players || [];
+        renderGrid(participantes);
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+          const termino = e.target.value.toLowerCase().trim();
+          const filtrados = participantes.filter(p => {
+            const nombre = (p.nombre || p.Nombre || "").toLowerCase();
+            const nick = (p.nick || p.Nick || p.NombrePokemonGO || "").toLowerCase();
+            const numero = (p.numero || p.Numero || "").toString();
+            const codigo = (p.codigo || p.Codigo || p.codigoEntrenador || "").toString().toLowerCase();
+            return nombre.includes(termino) || nick.includes(termino) || numero.includes(termino) || codigo.includes(termino);
+          });
+          renderGrid(filtrados);
+        });
+
+      } catch (error) {
+        console.error("Error al cargar los JSON:", error);
+        document.getElementById("gridParticipantes").innerHTML = 
+          `<p style="text-align:center; width:100%;">Error leyendo los JSON. Asegúrate de abrirlos en un servidor local.</p>`;
+      }
+    }
+
+    function parsePokemonId(rawId) {
+      const match = String(rawId).trim().match(/^(\d+)(?:_([a-z0-9]+))?/i);
+      if (!match) return { baseDex: "", isShadow: false, isPurified: false, isShiny: false, isMega: false };
+      
+      const baseDex = match[1];
+      const suffix = (match[2] || "").toLowerCase();
+      
+      return {
+        baseDex: baseDex,
+        isShadow: suffix === "a1",
+        isPurified: suffix === "a2",
+        isShiny: suffix === "s",
+        isMega: suffix.startsWith("e") || suffix.startsWith("m")
+      };
+    }
+
+    function getPokemonDisplayName(rawId) {
+      const info = parsePokemonId(rawId);
+      let name = diccionarioPokemon.get(info.baseDex) || "Desc.";
+      
+      if (info.isMega) name = "Mega " + name;
+      if (info.isShadow) name += " oscuro";
+      else if (info.isPurified) name += " purificado";
+      if (info.isShiny) name += " shiny";
+      
+      return name;
+    }
+
+    function renderGrid(players) {
+      const container = document.getElementById("gridParticipantes");
+      container.innerHTML = "";
+
+      if (players.length === 0) {
+        container.innerHTML = "<p style='text-align:center; width:100%;'>No hay resultados para la búsqueda.</p>";
+        return;
+      }
+
+      players.forEach(p => {
+        const nick = p.nick || p.Nick || p.NombrePokemonGO || "Jugador";
+        const fullName = p.nombre || p.Nombre || "";
+        const codigo = p.codigo || p.Codigo || p.codigoEntrenador || p.CodigoEntrenador || p.codigo_entrenador || "";
+        const badge = p.numero || p.Numero ? `<span class="badge-numero">#${p.numero || p.Numero}</span>` : "";
+        const team = p.team || [p.P1, p.P2, p.P3, p.P4, p.P5, p.P6].filter(Boolean);
+
+        const teamHtml = team.map(pokeId => {
+          const rawId = String(pokeId || "").trim();
+          if (!rawId) return "";
+
+          const info = parsePokemonId(rawId);
+          const displayName = getPokemonDisplayName(rawId);
+          const imgUrl = `https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/pokemon/${rawId}.png`;
+          
+          return `
+            <div class="poke-slot">
+              <div class="poke-icon-wrap">
+                <img src="${imgUrl}" 
+                     alt="${displayName}" 
+                     title="${displayName}"
+                     onerror="handleIconError(this, '${info.baseDex}', ${info.isShadow})">
+              </div>
+              <div class="poke-label" title="${displayName}">${displayName}</div>
+            </div>
+          `;
+        }).join("");
+
+        let headerHtml = `<div class="prep-nick" title="${nick}">${badge} ${nick}</div>`;
+        if (fullName) {
+          headerHtml += `<div class="prep-fullname" title="${fullName}">${fullName}</div>`;
+        }
+        if (codigo) {
+          headerHtml += `<div class="prep-code">Código Entrenador: ${codigo}</div>`;
+        }
+
+        const card = document.createElement("div");
+        card.className = "prep-card";
+        card.innerHTML = `
+          <div class="prep-header">${headerHtml}</div>
+          <div class="prep-team">${teamHtml}</div>
+        `;
+        
+        container.appendChild(card);
+      });
+    }
+
+    function handleIconError(imgElement, baseDex, isShadow) {
+      if (imgElement.dataset.failed === "1") return;
+      imgElement.dataset.failed = "1";
+      
+      imgElement.src = `https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/pokemon/${baseDex}.png`;
+      
+      if (isShadow) {
+        imgElement.parentElement.classList.add("shadow-flame-bg");
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
