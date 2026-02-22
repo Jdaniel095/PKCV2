@@ -1,743 +1,894 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Panel Pokecomas</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="stylesheet" href="panel.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Participantes del Torneo</title>
+  <style>
+    /* Reset y fondo */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Lato', 'Arial', sans-serif;
+      background: linear-gradient(180deg, #0b2d5a 0%, #00509a 35%, #004f9a 75%, #005199 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      padding: 20px 10px;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 2rem;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      color: #ffdcb5;
+    }
+
+    /* =========================================
+       ZONA DE JUECES (ENFRENTAMIENTO EN VIVO)
+       ========================================= */
+    #matchupSection {
+      display: none; 
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 15px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto 30px auto;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .matchup-title {
+      text-align: center;
+      color: #ffcc00;
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+    .matchup-controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .btn-judge {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: transform 0.2s, filter 0.2s;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+    .btn-judge:active { transform: scale(0.95); }
+    .btn-reset-result { background: #17a2b8; color: #fff; }
+    .btn-reset-result:hover { background: #138496; }
+    .btn-reset-match { background: #dc3545; color: #fff; }
+    .btn-reset-match:hover { background: #c82333; }
+    
+    .save-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .phase-selector {
+      padding: 12px 15px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      border: 2px solid #ffcc00;
+      background: #fff;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+      outline: none;
+    }
+    .btn-save-match { 
+      background: #ffcc00; 
+      color: #111; 
+      font-size: 1.1rem; 
+      padding: 12px 25px; 
+    }
+    .btn-save-match:hover { background: #e6b800; }
+
+    .matchup-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    /* === MARCADOR === */
+    .scoreboard-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px 30px;
+      border-radius: 15px;
+      margin: 20px auto;
+      max-width: 600px;
+      border: 2px solid #ffcc00;
+      box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+    }
+    .score-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+    .score-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 10px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+    }
+    .score-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .score-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: #00509a;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .score-btn:hover { background: #007bff; }
+    .score-val {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #28a745;
+      text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+      min-width: 40px;
+      text-align: center;
+    }
+    .score-vs {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #ffcc00;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    /* Pokémon seleccionables en la zona de jueces */
+    .matchup-poke {
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      padding: 5px;
+      border: 2px solid transparent;
+    }
+    .matchup-poke:hover { background: rgba(0, 0, 0, 0.1); }
+    .matchup-poke.picked {
+      background: rgba(40, 167, 69, 0.2);
+      box-shadow: 0 0 10px rgba(40, 167, 69, 0.6);
+      border: 2px solid #28a745;
+    }
+
+    /* =========================================
+       BOTÓN FLOTANTE Y MODAL DE HISTORIAL
+       ========================================= */
+    .btn-floating-history {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 65px;
+      height: 65px;
+      background: #ffcc00;
+      color: #111;
+      border: 3px solid #00509a;
+      border-radius: 50%;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+      z-index: 1000;
+      transition: transform 0.2s;
+    }
+    .btn-floating-history:hover { transform: scale(1.1); }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+    .modal-content {
+      background: #f8f9fa;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      color: #111;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .modal-header {
+      padding: 20px;
+      background: #00509a;
+      color: #fff;
+      border-radius: 15px 15px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h2 { margin: 0; font-size: 1.4rem; color: #ffcc00; }
+    .btn-close-modal {
+      background: none; border: none;
+      color: #fff; font-size: 2rem; cursor: pointer;
+      line-height: 1; margin-top: -5px;
+    }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .history-item {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      border-left: 6px solid #ffcc00;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      gap: 10px;
+    }
+    .h-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 70px;
+      border-right: 1px solid #ddd;
+      padding-right: 10px;
+    }
+    .h-phase { font-size: 0.75rem; font-weight: bold; color: #00509a; text-transform: uppercase; text-align: center; line-height: 1; margin-bottom: 4px; }
+    .h-time { font-size: 0.8rem; color: #777; }
+    
+    .h-match {
+      display: flex;
+      flex: 1;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .h-player { font-weight: 800; flex: 1; text-align: center; font-size: 1.1rem; }
+    .h-num { color: #00509a; font-size: 0.85rem; font-weight: bold; background: rgba(0,80,154,0.1); padding: 2px 5px; border-radius: 4px; margin-right: 4px;}
+    .h-score { font-size: 1.4rem; font-weight: 900; background: #0b2d5a; color: #ffcc00; padding: 4px 15px; border-radius: 20px; margin: 0 10px; }
+    .winner { color: #28a745; }
+
+    .modal-footer {
+      padding: 15px;
+      border-top: 1px solid #ddd;
+      text-align: right;
+    }
+
+    /* =========================================
+       Buscador y Grid Principal
+       ========================================= */
+    .search-container {
+      max-width: 600px;
+      margin: 0 auto 30px auto;
+      display: flex;
+      justify-content: center;
+    }
+    #searchInput {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 16px;
+      border-radius: 30px;
+      border: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      outline: none;
+    }
+
+    .grid-participantes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto 80px auto; 
+    }
+
+    .grid-participantes .prep-card {
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .grid-participantes .prep-card:hover {
+      transform: translateY(-3px);
+      border-color: #ffcc00;
+      box-shadow: 0 6px 15px rgba(255, 204, 0, 0.3);
+    }
+    .grid-participantes .prep-card.is-selected {
+      opacity: 0.5;
+      pointer-events: none;
+      border-color: #28a745;
+    }
+
+    .prep-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      color: #2b2b2b;
+    }
+    
+    .prep-header {
+      text-align: center;
+      margin-bottom: 15px;
+      border-bottom: 2px solid rgba(0,0,0,0.1);
+      padding-bottom: 10px;
+    }
+    .prep-nick {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #0b2d5a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prep-fullname {
+      font-size: 0.75rem;
+      color: #555;
+      margin-top: 4px;
+      text-transform: capitalize;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prep-code {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #00509a;
+      background: rgba(0, 80, 154, 0.1);
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
+    }
+    .badge-numero {
+      background: #00509a;
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .prep-team {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .poke-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 75px;
+      position: relative; 
+    }
+    .poke-icon-wrap {
+      position: relative;
+      width: 55px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .poke-icon-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 2; 
+      position: relative;
+    }
+    .poke-label {
+      font-size: 13px;
+      line-height: 1.2;
+      text-align: center;
+      margin-top: 5px;
+      font-weight: 700;
+      color: #111;
+      height: 32px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      width: 100%;
+      position: relative;
+      z-index: 5; 
+    }
+    .shadow-flame-bg::before {
+      content: "";
+      position: absolute;
+      top: -5%;    
+      left: -5%;   
+      width: 110%; 
+      height: 110%;
+      background-image: url('purple-flame.svg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 0; 
+      pointer-events: none;
+      filter: drop-shadow(0 0 5px rgba(128, 0, 128, 0.7)); 
+    }
+
+    /* Scrollbar del modal */
+    .modal-body::-webkit-scrollbar { width: 6px; }
+    .modal-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .modal-body::-webkit-scrollbar-thumb { background: #00509a; border-radius: 10px; }
+
+    @media (max-width: 600px) {
+      .grid-participantes { grid-template-columns: 1fr; }
+      .poke-slot { width: 70px; }
+      .poke-icon-wrap { width: 50px; height: 50px; }
+      .poke-label { font-size: 11.5px; }
+      .scoreboard-container { flex-direction: column; gap: 10px; padding: 15px; }
+      .score-vs { display: none; }
+      .save-container { flex-direction: column; width: 100%; }
+      .phase-selector, .btn-save-match { width: 100%; }
+      .history-item { flex-direction: column; text-align: center; }
+      .h-info { border-right: none; border-bottom: 1px solid #ddd; width: 100%; padding-bottom: 5px; margin-bottom: 5px; flex-direction: row; justify-content: center; gap: 10px; }
+      .h-match { width: 100%; }
+      .h-player { font-size: 0.95rem; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ===== LOGIN ===== -->
-  <div id="login" class="login-box">
-    <h2>Acceso Pokecomas</h2>
+  <h1>Participantes del Torneo</h1>
 
-    <form id="loginForm">
-      <input id="user" placeholder="Usuario" required />
-      <input id="pin" type="password" placeholder="PIN" required />
-      <button type="submit" class="btn-gold">Ingresar</button>
-    </form>
-  </div>
-
-  <!-- ===== LOADING ===== -->
-  <div id="loading" class="loading-box" style="display:none">
-    <div class="spinner"></div>
-    <p>Cargando usuarios…</p>
-  </div>
-
-  <!-- ===== PANEL ===== -->
-  <div id="panel" class="panel-box" style="display:none">
-
-    <!-- Tabs -->
-<div class="tabs" style="display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <button class="tab-btn active" data-tab="tabRegistros">Códigos entrenador</button>
-        <button class="tab-btn" data-tab="tabTorneos">Torneos</button>
-      </div>
-      <button id="btnLogout" class="btn-danger btn-mini" style="margin-left: auto;">Cerrar Sesión</button>
+  <div id="matchupSection">
+    <div class="matchup-title">⚔️ Zona de Batalla ⚔️</div>
+    
+    <div class="matchup-controls">
+      <button class="btn-judge btn-reset-result" onclick="resetPicks()">🧹 Limpiar Picks</button>
+      <button class="btn-judge btn-reset-match" onclick="resetMatchup()">❌ Cambiar Jugadores</button>
     </div>
-    <!-- =====================================================
-         TAB: TORNEOS
-    ====================================================== -->
-    <div id="tabTorneos" class="tab-content" style="display:none;">
-      <hr style="opacity:.25; margin:30px 0;">
-      <h2>Torneos</h2>
 
-      <!-- ✅ BOTÓN CREAR CENTRADO ARRIBA -->
-      <div class="card" style="text-align:center; margin-bottom:16px;">
-        <button class="btn-gold" id="btnOpenCreateModal" type="button" style="min-width:220px;">
-          ➕ Crear torneo
-        </button>
-        
-      </div>
+    <div class="matchup-cards" id="matchupCards"></div>
 
-      <!-- ===== LISTA / SELECCIÓN ===== -->
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-          <h3 style="margin:0;">Torneos creados</h3>
-
-          <!-- ✅ BOTONES HORIZONTALES (debajo del título visualmente, pero aquí van a la derecha en desktop) -->
-          <div class="row-actions" style="justify-content:flex-end;">
-            <button class="btn-gold" id="btnTorneoParticipantes" type="button" style="margin-top:10px;">
-  👥 Participantes
-</button>
-
-            <button class="btn-gold" id="btnOpenEditModal" type="button">✏️ Editar</button>
-            <button class="btn-gold" id="btnTorneoRefrescarLista" type="button">📋 Recargar lista</button>
-          <button class="btn-gold" id="btnTorneoAsignarNumeros" type="button" style="background:#8b5cf6;">
-  🔢 Numerar Participantes
-</button>
-            <button class="btn-gold" id="btnTorneoToggleInscripciones" type="button">Cargando</button>
-           
-<button id="btnDownloadBracket" class="btn-mini" style="margin-top:10px; background: #2e7d32;">
-  🏆 Descargar VS y Bracket
-</button>
-<button id="btnExportJson">⬇ Descargar JSON</button>
-<button class="btn-gold" id="btnImportJson" type="button" style="background:#d97706;">
-  ⬆ Importar JSON
-</button>
-<input type="file" id="fileImportJson" accept=".json" style="display:none;" />
-            <button id="btnCerrarManual" class="btn-gold" style="background:#2563eb; border-color:#1d4ed8;">Fase de preparacion</button>
-      <button id="btnIniciar30m" class="btn-gold" style="display:none;">Iniciar 30 Minutos</button>
-      <button id="btnForceStart" class="btn-red" style="display:none;">Terminar Prep Ya</button>
-
-<button class="btn-gold" id="btnTorneoSeed40" type="button">🧪 Poblar 40</button>
-
-            <button class="btn-gold" id="btnTorneoGenerarSingle" type="button">🏆 Generar</button>
-            <button class="btn-gold" id="btnTorneoExportarExcel" type="button" style="background:#27ae60;">
-  📊 Descargar Excel
-</button>
-            <button class="btn-danger" id="btnTorneoEliminar" type="button">🗑️ Borrar</button>
+    <div id="scoreboardWrapper" style="display: none;">
+      <div class="scoreboard-container">
+        <div class="score-team">
+          <div id="scoreName0" class="score-name">Jugador 1</div>
+          <div class="score-controls">
+            <button class="score-btn" onclick="updateScore(0, -1)">-</button>
+            <div id="scoreVal0" class="score-val">0</div>
+            <button class="score-btn" onclick="updateScore(0, 1)">+</button>
           </div>
         </div>
-
-        <div class="row two" style="margin-top:12px;">
-          <div>
-            <label>Seleccionar torneo</label>
-            <select id="tSelect">
-              <option value="">Cargando…</option>
-            </select>
-          </div>
-
-          <!-- (opcional) espacio para cosas futuras / indicadores -->
-          <div style="display:flex; align-items:end; justify-content:flex-end; gap:10px; flex-wrap:wrap;">
-            <!-- Dejo estos ids por si tu JS todavía los busca (no afecta si no los usas) -->
-            <button class="btn-gold" id="btnTorneoActualizar" type="button" style="display:none;">🔄 Actualizar torneo</button>
-            <button class="btn-gold" id="btnTorneoGuardarReglas" type="button" style="display:none;">💾 Guardar reglas</button>
+        <div class="score-vs">VS</div>
+        <div class="score-team">
+          <div id="scoreName1" class="score-name">Jugador 2</div>
+          <div class="score-controls">
+            <button class="score-btn" onclick="updateScore(1, -1)">-</button>
+            <div id="scoreVal1" class="score-val">0</div>
+            <button class="score-btn" onclick="updateScore(1, 1)">+</button>
           </div>
         </div>
-
-        <!-- ✅ STATUS -->
-        <div id="torneoStatusBox" class="t-status" style="margin-top:14px;">
-          <div class="t-status-top">
-            <div class="t-title" id="tStatusTitle">—</div>
-            <div class="t-id" id="tStatusId">—</div>
-          </div>
-
-          <div class="t-badges" id="tStatusBadges"></div>
-          <div class="t-meta" id="tStatusMeta"></div>
-          <div class="t-rules" id="tStatusRules"></div>
-          <div class="t-inscritos" id="torneoInscritosInfo"></div>
-        </div>
       </div>
-
-      <!-- ===== MATCHES ===== -->
-      <div class="card">
-        <h3 style="margin:0 0 8px;">Matches</h3>
-
-        <table>
-          <thead>
-  <tr>
-    <th>Match</th>
-    <th>Ronda</th>
-    <th>Partida</th>
-    <th>Editar</th>
-  </tr>
-</thead>
-
-          <tbody id="torneoMatchesBody"></tbody>
-        </table>
-      </div>
-
-    </div>
-
-    <!-- =====================================================
-         TAB: REGISTROS
-    ====================================================== -->
-    <div id="tabRegistros" class="tab-content">
-      <h2>Registros pendientes</h2>
-
-      <button id="btnActualizar" onclick="actualizarDatos()">
-        🔄 Actualizar datos
-      </button>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Pokémon</th>
-            <th>Código</th>
-            <th>Campfire</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="tablaBody"></tbody>
-      </table>
-    </div>
-
-  </div>
-
-  <!-- ===== TOAST ===== -->
-  <div id="toastBox"></div>
-
-  <!-- =====================================================
-       MODAL TORNEO (CREAR / EDITAR)
-       ✅ MISMO FORM, MISMOS IDS QUE TU JS USA
-  ====================================================== -->
-  <div id="torneoModal" class="modal" style="display:none;">
-    <div class="modal-backdrop" data-close="1"></div>
-
-    <div class="modal-card">
-      <div class="modal-head">
-        <div>
-          <div class="modal-title" id="torneoModalTitle">Crear torneo</div>
-          <div class="modal-sub" id="torneoModalSub">Completa los datos</div>
-        </div>
-        <button class="modal-x" type="button" data-close="1">✕</button>
-      </div>
-
-      <div class="modal-body">
-
-  <!-- TÍTULO / FECHA -->
-  <div class="row two">
-    <div>
-      <label>Título del torneo</label>
-      <input id="tTitle" placeholder="Ej: Torneo Pokecomas - Febrero" />
-    </div>
-    <div>
-      <label>Fecha y hora</label>
-      <input id="tDateTime" type="datetime-local" />
-    </div>
-  </div>
-
-  <!-- FORMATO / MODALIDAD -->
-  <div class="row two">
-    <div>
-      <label>Formato</label>
-      <select id="tFormat">
-        <option value="single">Eliminación directa</option>
-        <option value="double">Doble eliminación</option>
-        <option value="groups">Grupos + Playoffs</option>
-        <option value="swiss">Suizo</option>
-      </select>
-    </div>
-
-    <div>
-      <label>Modalidad</label>
-      <select id="tMode">
-        <option value="presencial">Presencial</option>
-        <option value="virtual">Virtual</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- ✅ OPCIONES PRESENCIALES (AVANZADO) -->
-  <div id="tVenueCard" class="card" style="margin-top:14px; display:none;">
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-      <h3 style="margin:0;">Presencial: mesas y escenario</h3>
-      <small class="poke-muted">Solo aparece si Modalidad = Presencial</small>
-    </div>
-
-    <div class="row two" style="margin-top:10px;">
-      <div>
-        <label>Mesas disponibles (partidas simultáneas)</label>
-        <input id="tTablesCount" type="number" min="1" max="64" placeholder="Ej: 8" />
-        <small class="poke-muted">El sistema asigna Mesa 1..N automáticamente por match.</small>
-      </div>
-
-      <div>
-        <label>Escenario principal</label>
-        <label class="bo-toggle" style="margin-top:6px;">
-          <input type="checkbox" id="tHasMainStage" />
-          <span>Activar</span>
-        </label>
-        <small class="poke-muted">Si está activado, la Final va siempre al escenario principal.</small>
-      </div>
-    </div>
-
-    <div id="tMainStageAdv" style="margin-top:10px; display:none;">
-      <div class="row two">
-        <div>
-          <label>Desde qué fase va al escenario</label>
-          <select id="tMainStageFrom">
-            <option value="final">Solo final</option>
-            <option value="semis" selected>Semifinales + final</option>
-            <option value="quarters">Cuartos + semis + final</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Antes de esa fase: % aleatorio en escenario</label>
-          <input id="tMainStageRandomPct" type="number" min="0" max="100" placeholder="Ej: 10" />
-<small class="poke-muted">0 = ningún turno usa escenario. 100 = 1 match en escenario en cada turno.</small>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- BEST OF / SUGERIDO -->
-  <div class="row two">
-    <div>
-      <label>Best Of</label>
-      <select id="tBestOf">
-        <option value="3">BO3</option>
-        <option value="5">BO5</option>
-      </select>
-    </div>
-
-    <div>
-      <label>Sugerido (participantes)</label>
-      <input id="tSuggested" placeholder="Ej: 16 (vacío = auto)" />
-    </div>
-  </div>
-
-      <!-- ✅ BO POR FASE (DEFAULT: ON) -->
-      <div class="card" style="margin-top:14px;">
-        <div class="bo-head">
-          <div class="bo-head-left">
-            <h3 style="margin:0;">BO por fase</h3>
-
-            <label class="bo-toggle" title="Si desactivas, se usa el Best Of global">
-              <input type="checkbox" id="tBoPerPhase" checked />
-              <span>Activado</span>
-            </label>
-          </div>
-
-          <button type="button" class="icon-btn" id="btnBoAdvOpen" title="Configuración avanzada">
-            ⚙
-          </button>
-        </div>
-
-        <div class="bo-summary" id="tBoPhaseSummary">
-          Grupos: BO1 · Llaves: BO3 · Final: BO5
-        </div>
-
-        <!-- hidden values (se guardan en Sheets) -->
-        <input type="hidden" id="tBoGroups" value="1" />
-        <input type="hidden" id="tBoPlayoffs" value="3" />
-        <input type="hidden" id="tBoFinal" value="5" />
-
-        <small class="poke-muted">
-          Si desactivas BO por fase, se usará el “Best Of” global de arriba.
-        </small>
-      </div>
-
-      <div id="matchesToolbar" style="display:flex;flex-direction:column;gap:8px;margin:10px 0 12px;">
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-    <span style="opacity:.85;font-size:12px;">Match actual</span>
-    <select id="currentMatchSelect" style="min-width:260px;flex:1;"></select>
-    <button id="btnSetCurrentMatch" class="btn btn-sm btn-report">Poner actual</button>
-    <button id="btnClearCurrentMatch" class="btn btn-sm btn-edit">Limpiar</button>
-  </div>
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-    <span id="battlePausedBadge" class="chip" style="padding:4px 10px;border-radius:999px;font-size:12px;">EN VIVO</span>
-    <button id="btnToggleBattlePause" class="btn btn-sm">Pausar</button>
-  </div>
-
-  <div id="currentMatchHint" style="opacity:.8;font-size:12px;"></div>
-</div>
-
-
-  <!-- LIGA (DEBAJO de BestOf/Sugerido) -->
-  <div class="row one">
-    <div>
-      <label>Liga</label>
-
-      <div class="league-inline">
-        <div>
-          <div class="league-sub">Ligas principales</div>
-          <div id="tLeagueMainChips" class="mini-chips league-chips"></div>
-          <small class="poke-muted">Puedes elegir 1 a 4 ligas.</small>
-        </div>
-
-        <div>
-          <div class="league-sub">Desempate</div>
-          <div id="tLeagueTiebreakChips" class="mini-chips league-chips"></div>
-          <small class="poke-muted">Opcional: incluso con 1 liga (ej: 2 de 1500 y desempate 500).</small>
-        </div>
-      </div>
-
-      <input type="hidden" id="tLeaguePlan" value="super1500" />
-      <small class="poke-muted" id="tLeaguePlanPreview"></small>
-    </div>
-  </div>
-
-    <!-- PREMIOS + ESTADO -->
-  <div class="card" style="margin-top:14px;">
-    <h3 style="margin:0 0 8px;">Premios y estado</h3>
-
-    <!-- Estado del torneo -->
-    <div class="row two">
-      <div>
-        <label>Estado</label>
-        <select id="tStatus">
-          <option value="active">Activo</option>
-          <option value="finished">Finalizado</option>
+      
+      <div class="save-container">
+        <select id="matchPhase" class="phase-selector">
+          <option value="Ronda Regular">Ronda Regular</option>
+          <option value="Octavos">Octavos de Final</option>
+          <option value="Cuartos">Cuartos de Final</option>
+          <option value="Semifinal">Semifinal</option>
+          <option value="3er Puesto">Tercer Puesto</option>
+          <option value="Final">🏆 Final</option>
         </select>
-        <small class="poke-muted">Se usa para ordenar la lista (activos arriba). También puede setearse automático al terminar la final.</small>
-      </div>
-
-      <div>
-        <label>Premios (nombre + URL de ícono)</label>
-        <button type="button" class="btn-ghost" id="btnAddPrize">➕ Añadir premio</button>
-        <small class="poke-muted">Puedes subir imágenes a tu dominio y pegar aquí la URL.</small>
+        <button class="btn-judge btn-save-match" onclick="guardarEnHistorial()">💾 Guardar Resultado</button>
       </div>
     </div>
-
-    <!-- lista dinámica -->
-    <div id="tPrizesList" class="prize-list"></div>
-
-    <!-- hidden: se guarda como JSON -->
-    <input type="hidden" id="tPrizesJson" value="[]">
   </div>
 
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Buscar por nick, código o # de participante y toca para seleccionar...">
+  </div>
 
-  <!-- REGLAS -->
-  <div class="card" style="margin-top:14px;">
-    <h3 style="margin:0 0 8px;">Reglas del torneo</h3>
-    <!-- ✅ MULTI-LIGA: editor por liga (se activa cuando eliges 2+ ligas) -->
-<div id="leagueRulesBar" class="league-rules-bar" style="display:none;">
-  <div class="row two">
-    <div>
-      <label>Editar reglas de liga</label>
-      <select id="lrLeagueSelect"></select>
-      <div class="tiny muted" id="lrModeNote">
-        En modo multi-liga, estas reglas se guardan en <b>leagueRulesJson</b> (ya no existe “regla global”).
+  <div class="grid-participantes" id="gridParticipantes"></div>
+
+  <button class="btn-floating-history" onclick="toggleHistory(true)" title="Ver Historial">
+    📜
+  </button>
+
+  <div id="historyModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📜 Historial de Batallas</h2>
+        <button class="btn-close-modal" onclick="toggleHistory(false)">&times;</button>
       </div>
-    </div>
-
-    <div>
-      <label>Copiar reglas</label>
-      <div class="row" style="grid-template-columns:1fr auto; gap:10px;">
-        <select id="lrCopyFromSelect"></select>
-        <button type="button" class="btn" id="lrCopyBtn">Copiar →</button>
-      </div>
-      <div class="tiny muted">Copia las reglas desde otra liga hacia la liga seleccionada.</div>
-    </div>
-  </div>
-
-  <input type="hidden" id="tLeagueRulesJson" value="">
-</div>
-
-<div class="rules-grid">
-  <!-- FAST -->
-  <div>
-    <label>Ataques básicos prohibidos (busca y selecciona)</label>
-    <div class="poke-wrap">
-      <input id="tBanFastSearch" placeholder="Escribe: Contraataque / Counter / a bocajarro..." autocomplete="new-password"/>
-      <div id="tBanFastDrop" class="poke-dropdown"></div>
-    </div>
-    <div id="tBanFastChips" class="poke-chips"></div>
-    <input type="hidden" id="tBanFast" value="" />
-    <small class="poke-muted">Se guardará como IDs separados por coma</small>
-  </div>
-
-  <!-- CHARGED -->
-  <div>
-    <label>Ataques cargados prohibidos (busca y selecciona)</label>
-    <div class="poke-wrap">
-      <input id="tBanChargedSearch" placeholder="Escribe: Hidrocañón / Hydro Cannon / ..." autocomplete="new-password" />
-      <div id="tBanChargedDrop" class="poke-dropdown"></div>
-    </div>
-    <div id="tBanChargedChips" class="poke-chips"></div>
-    <input type="hidden" id="tBanCharged" value="" />
-    <small class="poke-muted">Se guardará como IDs separados por coma</small>
-  </div>
-
-  <!-- POKÉMON: PROHIBIDO + PERMITIDO (MISMA FILA) -->
-  <div>
-    <label>Pokémon prohibidos (busca y selecciona)</label>
-    <div class="poke-wrap">
-      <input id="tBanPokemonSearch" placeholder="Escribe: pika, char, regi..." autocomplete="new-password" />
-      <div id="tBanPokemonDrop" class="poke-dropdown"></div>
-    </div>
-    <div id="tBanPokemonChips" class="poke-chips"></div>
-    <input type="hidden" id="tBanPokemon" value="" />
-    <small class="poke-muted">Se guardará como IDs separados por coma (ej: 25, 25_s, 25_b1)</small>
-  </div>
-
-  <div>
-    <label>Pokémon permitidos (excepciones) (busca y selecciona)</label>
-    <div class="poke-wrap">
-      <input id="tAllowedPokemonSearch" placeholder="Ej: registeel, sableye…" autocomplete="new-password" />
-      <div id="tAllowedPokemonDrop" class="poke-dropdown"></div>
-    </div>
-    <div id="tAllowedPokemonChips" class="poke-chips"></div>
-    <input type="hidden" id="tAllowedPokemon" value="" />
-    <small class="poke-muted">Se guardará como IDs separados por coma</small>
-  </div>
-
-  <!-- TIPOS: PROHIBIDOS + PERMITIDOS -->
-  <div>
-    <label>Tipos prohibidos (elige)</label>
-    <div id="tBanTypesChips" class="mini-chips mini-chips-ban"></div>
-    <input type="hidden" id="tBanTypes" value="" />
-    <small class="poke-muted">Ej: fire, water, fairy…</small>
-  </div>
-
-  <div>
-    <label>Tipos permitidos (elige)</label>
-    <div id="tAllowTypesChips" class="mini-chips mini-chips-allow"></div>
-    <input type="hidden" id="tAllowTypes" value="" />
-    <small class="poke-muted">Opcional</small>
-  </div>
-
-  <!-- CATEGORÍAS: PERMITIDAS + PROHIBIDAS -->
-  <div>
-    <label>Categorías permitidas (elige)</label>
-    <div id="tAllowCategoriesChips" class="mini-chips mini-chips-allow"></div>
-    <input type="hidden" id="tAllowCategories" value="" />
-    <small class="poke-muted">Ej: shiny, mega, purified…</small>
-  </div>
-
-<div>
-        <label>Categorías prohibidas (elige)</label>
-        <div id="tBanCategoriesChips" class="mini-chips mini-chips-ban"></div>
-        <input type="hidden" id="tBanCategories" value="" />
-        <small class="poke-muted">Ej: legendary, mythical, baby…</small>
-      </div>
-    </div> </div> </div> <div class="modal-foot">
-        <button class="btn-danger" id="btnModalCancel" type="button" data-close="1">Cancelar</button>
-        <button class="btn-gold" id="btnTorneoCrear" type="button">➕ Crear torneo</button>
-        <button class="btn-gold" id="btnTorneoGuardarCambios" type="button" style="display:none;">💾 Guardar cambios</button>
-      </div>
-    </div> </div> 
-
-   
-  <!-- =====================================================
-       SUBMODAL: BO CONFIGURACIÓN AVANZADA
-  ====================================================== -->
-  <div id="boAdvModal" class="submodal" style="display:none;">
-    <div class="submodal-backdrop" data-boadv-close="1"></div>
-
-    <div class="submodal-card">
-      <div class="submodal-head">
-        <div>
-          <div class="submodal-title">BO - Configuración avanzada</div>
-          <div class="modal-sub">Define BO por fase (Grupos / Llaves / Final)</div>
-        </div>
-        <button class="modal-x" type="button" data-boadv-close="1">✕</button>
-      </div>
-
-      <div class="submodal-body">
-
-        <div class="row three">
-          <div>
-            <label>Grupos</label>
-            <select id="boAdvGroups">
-              <option value="1">BO1</option>
-              <option value="3">BO3</option>
-              <option value="5">BO5</option>
-            </select>
+      <div class="modal-body">
+        <div id="historyList" class="history-list">
           </div>
-
-          <div>
-            <label>Llaves / Playoffs</label>
-            <select id="boAdvPlayoffs">
-              <option value="1">BO1</option>
-              <option value="3">BO3</option>
-              <option value="5">BO5</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Final</label>
-            <select id="boAdvFinal">
-              <option value="1">BO1</option>
-              <option value="3">BO3</option>
-              <option value="5">BO5</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="bo-preview">
-          <div class="tiny muted">Vista previa</div>
-          <div id="boAdvPreview" class="bo-summary">
-            Grupos: BO1 · Llaves: BO3 · Final: BO5
-          </div>
-        </div>
-
       </div>
-
-      <div class="submodal-foot">
-        <button class="btn-danger" type="button" data-boadv-close="1">Cancelar</button>
-        <button class="btn-gold" type="button" id="btnBoAdvApply">Aplicar</button>
+      <div class="modal-footer">
+        <button class="btn-judge btn-reset-match" onclick="limpiarHistorial()">🗑️ Borrar Historial</button>
       </div>
     </div>
   </div>
 
+  <script>
+    let participantes = [];
+    let diccionarioPokemon = new Map();
+    let selectedFighters = []; 
+    
+    let puntajes = [0, 0];
+    let historialBatallas = JSON.parse(localStorage.getItem('pokecomasHistorial')) || [];
 
-  <!-- =====================================================
-     MODAL: PARTICIPANTES INSCRITOS (ADMIN)
-====================================================== -->
-<div id="participantsModal" class="modal" style="display:none;">
-  <div class="modal-backdrop" data-pclose="1"></div>
+    async function init() {
+      try {
+        const [resPokemon, resTorneo] = await Promise.all([
+          fetch('pokemon.json'),
+          fetch('participantes.json')
+        ]);
 
-  <div class="modal-card modal-card--wide">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title">Participantes inscritos</div>
-        <div class="modal-sub" id="pModalSub">—</div>
-      </div>
-      <button class="modal-x" type="button" data-pclose="1">✕</button>
-    </div>
+        const dataPokemon = await resPokemon.json();
+        const dataTorneo = await resTorneo.json();
 
-    <div class="modal-body">
-      <div class="row two" style="align-items:end;">
-        <div>
-          <label>Buscar</label>
-          <input id="pSearch" placeholder="Nombre / Nick / Código / PlayerId" />
-        </div>
+        dataPokemon.forEach(p => {
+          const dex = p.dex;
+          const nombre = p.name.es_ES || p.name.es_419 || p.name.en || `Poké ${dex}`;
+          diccionarioPokemon.set(dex.toString(), nombre);
+        });
 
-        <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
-          <div style="min-width:180px;">
-            <label>Filtro</label>
-            <select id="pFilter">
-              <option value="activos">Activos</option>
-              <option value="todos">Todos</option>
-              <option value="baja">Solo BAJA</option>
-            </select>
-          </div>
+        participantes = dataTorneo.players || [];
+        renderGrid(participantes);
+        renderHistorial(); 
 
-          <div class="p-stats">
-            <div class="p-stat">
-              <div class="tiny muted">Total</div>
-              <div id="pCountTotal" class="p-stat-v">0</div>
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+          filtrarGrid();
+        });
+
+        document.getElementById('matchupCards').addEventListener('click', (e) => {
+          const pokeSlot = e.target.closest('.matchup-poke');
+          if (pokeSlot) {
+            pokeSlot.classList.toggle('picked');
+          }
+        });
+
+      } catch (error) {
+        console.error("Error al cargar los JSON:", error);
+        document.getElementById("gridParticipantes").innerHTML = 
+          `<p style="text-align:center; width:100%;">Error leyendo los JSON. Asegúrate de abrirlos en un servidor local.</p>`;
+      }
+    }
+
+    function parsePokemonId(rawId) {
+      const match = String(rawId).trim().match(/^(\d+)(?:_([a-z0-9]+))?/i);
+      if (!match) return { baseDex: "", isShadow: false, isPurified: false, isShiny: false, isMega: false };
+      
+      const baseDex = match[1];
+      const suffix = (match[2] || "").toLowerCase();
+      
+      return {
+        baseDex: baseDex,
+        isShadow: suffix === "a1",
+        isPurified: suffix === "a2",
+        isShiny: suffix === "s",
+        isMega: suffix.startsWith("e") || suffix.startsWith("m")
+      };
+    }
+
+    function getPokemonDisplayName(rawId) {
+      const info = parsePokemonId(rawId);
+      let name = diccionarioPokemon.get(info.baseDex) || "Desc.";
+      if (info.isMega) name = "Mega " + name;
+      if (info.isShadow) name += " oscuro";
+      else if (info.isPurified) name += " purificado";
+      if (info.isShiny) name += " shiny";
+      return name;
+    }
+
+    function filtrarGrid() {
+      const termino = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      if (termino === "") {
+        renderGrid(participantes);
+        return;
+      }
+      
+      const numeroLimpio = termino.replace(/^#/, '');
+
+      let filtrados = participantes.filter(p => {
+        const nombre = (p.nombre || p.Nombre || "").toLowerCase();
+        const nick = (p.nick || p.Nick || p.NombrePokemonGO || "").toLowerCase();
+        const numero = (p.numero || p.Numero || "").toString();
+        const codigo = (p.codigo || p.Codigo || p.codigoEntrenador || "").toString().toLowerCase();
+        
+        const matchNumeroExacto = (numero === numeroLimpio);
+        const matchTexto = nombre.includes(termino) || nick.includes(termino);
+        const matchCodigo = (termino.length > 3) && codigo.includes(termino);
+        
+        return matchNumeroExacto || matchTexto || matchCodigo;
+      });
+
+      filtrados.sort((a, b) => {
+        const numA = (a.numero || a.Numero || "").toString();
+        const numB = (b.numero || b.Numero || "").toString();
+        if (numA === numeroLimpio && numB !== numeroLimpio) return -1;
+        if (numB === numeroLimpio && numA !== numeroLimpio) return 1;
+        return 0;
+      });
+
+      renderGrid(filtrados);
+    }
+
+    function renderGrid(players) {
+      const container = document.getElementById("gridParticipantes");
+      container.innerHTML = "";
+
+      if (players.length === 0) {
+        container.innerHTML = "<p style='text-align:center; width:100%;'>No hay resultados para la búsqueda.</p>";
+        return;
+      }
+
+      players.forEach(p => {
+        const nick = p.nick || p.Nick || p.NombrePokemonGO || "Jugador";
+        const fullName = p.nombre || p.Nombre || "";
+        const codigo = p.codigo || p.Codigo || p.codigoEntrenador || p.CodigoEntrenador || p.codigo_entrenador || "";
+        const badge = p.numero || p.Numero ? `<span class="badge-numero">#${p.numero || p.Numero}</span>` : "";
+        const team = p.team || [p.P1, p.P2, p.P3, p.P4, p.P5, p.P6].filter(Boolean);
+
+        const teamHtml = team.map(pokeId => {
+          const rawId = String(pokeId || "").trim();
+          if (!rawId) return "";
+          const info = parsePokemonId(rawId);
+          const displayName = getPokemonDisplayName(rawId);
+          const imgUrl = `https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/pokemon/${rawId}.png`;
+          return `
+            <div class="poke-slot">
+              <div class="poke-icon-wrap">
+                <img src="${imgUrl}" alt="${displayName}" title="${displayName}"
+                     onerror="handleIconError(this, '${info.baseDex}', ${info.isShadow})">
+              </div>
+              <div class="poke-label" title="${displayName}">${displayName}</div>
+            </div>`;
+        }).join("");
+
+        let headerHtml = `<div class="prep-nick" title="${nick}">${badge} ${nick}</div>`;
+        if (fullName) headerHtml += `<div class="prep-fullname" title="${fullName}">${fullName}</div>`;
+        if (codigo) headerHtml += `<div class="prep-code">Código Entrenador: ${codigo}</div>`;
+
+        const card = document.createElement("div");
+        card.className = "prep-card";
+        card.title = "Haz clic para mandar a la Zona de Batalla";
+        card.innerHTML = `
+          <div class="prep-header">${headerHtml}</div>
+          <div class="prep-team">${teamHtml}</div>
+        `;
+
+        if (selectedFighters.includes(p)) {
+          card.classList.add('is-selected');
+        }
+
+        card.addEventListener('click', () => {
+          if (selectedFighters.includes(p)) return;
+          if (selectedFighters.length >= 2) {
+            alert("Ya seleccionaste a 2 participantes. Termina la batalla actual o usa 'Cambiar Jugadores'.");
+            return;
+          }
+          selectedFighters.push(p);
+          updateMatchupArea();
+          card.classList.add('is-selected'); 
+        });
+        
+        container.appendChild(card);
+      });
+    }
+
+    function updateMatchupArea() {
+      const section = document.getElementById("matchupSection");
+      const container = document.getElementById("matchupCards");
+      const scoreboard = document.getElementById("scoreboardWrapper");
+      
+      if (selectedFighters.length === 0) {
+        section.style.display = "none";
+        scoreboard.style.display = "none";
+        container.innerHTML = "";
+        return;
+      }
+      
+      section.style.display = "block";
+      container.innerHTML = "";
+
+      selectedFighters.forEach((p, index) => {
+        const nick = p.nick || p.Nick || p.NombrePokemonGO || "Jugador";
+        const fullName = p.nombre || p.Nombre || "";
+        const badge = p.numero || p.Numero ? `<span class="badge-numero">#${p.numero || p.Numero}</span>` : "";
+        const team = p.team || [p.P1, p.P2, p.P3, p.P4, p.P5, p.P6].filter(Boolean);
+
+        const teamHtml = team.map(pokeId => {
+          const rawId = String(pokeId || "").trim();
+          if (!rawId) return "";
+          const info = parsePokemonId(rawId);
+          const displayName = getPokemonDisplayName(rawId);
+          const imgUrl = `https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/pokemon/${rawId}.png`;
+          return `
+            <div class="poke-slot matchup-poke" title="Haz clic para seleccionar este Pokémon">
+              <div class="poke-icon-wrap">
+                <img src="${imgUrl}" alt="${displayName}" title="${displayName}"
+                     onerror="handleIconError(this, '${info.baseDex}', ${info.isShadow})">
+              </div>
+              <div class="poke-label">${displayName}</div>
+            </div>`;
+        }).join("");
+
+        let headerHtml = `<div class="prep-nick">${badge} ${nick}</div>`;
+        if (fullName) headerHtml += `<div class="prep-fullname">${fullName}</div>`;
+
+        const card = document.createElement("div");
+        card.className = "prep-card";
+        card.style.cursor = "default"; 
+        card.innerHTML = `
+          <div class="prep-header">${headerHtml}</div>
+          <div class="prep-team">${teamHtml}</div>
+        `;
+        container.appendChild(card);
+        
+        if (selectedFighters.length === 2) {
+          scoreboard.style.display = "block";
+          
+          // Agregamos el número al marcador
+          const n0 = selectedFighters[0].numero || selectedFighters[0].Numero ? `#${selectedFighters[0].numero || selectedFighters[0].Numero} ` : "";
+          const n1 = selectedFighters[1].numero || selectedFighters[1].Numero ? `#${selectedFighters[1].numero || selectedFighters[1].Numero} ` : "";
+          
+          document.getElementById('scoreName0').innerText = n0 + (selectedFighters[0].nick || selectedFighters[0].Nick || "Jugador 1");
+          document.getElementById('scoreName1').innerText = n1 + (selectedFighters[1].nick || selectedFighters[1].Nick || "Jugador 2");
+        }
+      });
+    }
+
+    function updateScore(playerIndex, change) {
+      puntajes[playerIndex] += change;
+      if (puntajes[playerIndex] < 0) puntajes[playerIndex] = 0;
+      document.getElementById('scoreVal' + playerIndex).innerText = puntajes[playerIndex];
+    }
+
+    function resetPicks() {
+      document.querySelectorAll('.matchup-poke.picked').forEach(el => {
+        el.classList.remove('picked');
+      });
+    }
+
+    function resetMatchup() {
+      selectedFighters = [];
+      puntajes = [0, 0];
+      document.getElementById('scoreVal0').innerText = "0";
+      document.getElementById('scoreVal1').innerText = "0";
+      document.getElementById("scoreboardWrapper").style.display = "none";
+      updateMatchupArea();
+      filtrarGrid(); 
+    }
+
+    // ==========================================
+    // LOGICA DEL HISTORIAL Y MODAL
+    // ==========================================
+
+    function toggleHistory(show) {
+      const modal = document.getElementById('historyModal');
+      modal.style.display = show ? 'flex' : 'none';
+    }
+
+    function guardarEnHistorial() {
+      if (selectedFighters.length !== 2) return;
+
+      const ahora = new Date();
+      const horaStr = ahora.getHours().toString().padStart(2, '0') + ':' + ahora.getMinutes().toString().padStart(2, '0');
+      const faseSeleccionada = document.getElementById('matchPhase').value; 
+
+      // Obtenemos los números de cada jugador
+      const n1 = selectedFighters[0].numero || selectedFighters[0].Numero || "";
+      const n2 = selectedFighters[1].numero || selectedFighters[1].Numero || "";
+
+      const registro = {
+        fase: faseSeleccionada,
+        num1: n1,
+        p1: selectedFighters[0].nick || selectedFighters[0].Nick || "Jugador 1",
+        num2: n2,
+        p2: selectedFighters[1].nick || selectedFighters[1].Nick || "Jugador 2",
+        s1: puntajes[0],
+        s2: puntajes[1],
+        hora: horaStr
+      };
+
+      historialBatallas.unshift(registro);
+      localStorage.setItem('pokecomasHistorial', JSON.stringify(historialBatallas));
+
+      renderHistorial();
+      resetMatchup(); 
+      toggleHistory(true);
+    }
+
+    function renderHistorial() {
+      const lista = document.getElementById("historyList");
+
+      if (historialBatallas.length === 0) {
+        lista.innerHTML = "<p style='text-align:center; padding: 20px;'>No hay batallas guardadas aún.</p>";
+        return;
+      }
+
+      lista.innerHTML = historialBatallas.map(h => {
+        const win1 = h.s1 > h.s2 ? 'winner' : '';
+        const win2 = h.s2 > h.s1 ? 'winner' : '';
+        
+        // Bloque HTML del número solo si existe
+        const num1HTML = h.num1 ? `<span class="h-num">#${h.num1}</span>` : "";
+        const num2HTML = h.num2 ? `<span class="h-num">#${h.num2}</span>` : "";
+
+        return `
+          <div class="history-item">
+            <div class="h-info">
+              <span class="h-phase">${h.fase || 'Batalla'}</span>
+              <span class="h-time">${h.hora}</span>
             </div>
-            <div class="p-stat">
-              <div class="tiny muted">Activos</div>
-              <div id="pCountActivos" class="p-stat-v">0</div>
-            </div>
-            <div class="p-stat">
-              <div class="tiny muted">BAJA</div>
-              <div id="pCountBaja" class="p-stat-v">0</div>
+            <div class="h-match">
+              <span class="h-player ${win1}" style="text-align: left;">${num1HTML}${h.p1}</span>
+              <span class="h-score">${h.s1} - ${h.s2}</span>
+              <span class="h-player ${win2}" style="text-align: right;">${num2HTML}${h.p2}</span>
             </div>
           </div>
-<button class="btn-gold" id="btnPAdd" style="margin-left: auto;">➕ Agregar Participante</button>
-          <button class="btn-gold" id="pBtnRefresh" type="button" style="height:42px;">🔄</button>
-        </div>
-      </div>
+        `;
+      }).join("");
+    }
 
-      <div class="p-help" id="pHelpBox" style="margin-top:10px;"></div>
+    function limpiarHistorial() {
+      if (confirm("¿Estás seguro de que quieres borrar todo el historial? Esto no se puede deshacer.")) {
+        historialBatallas = [];
+        localStorage.removeItem('pokecomasHistorial');
+        renderHistorial();
+        toggleHistory(false); 
+      }
+    }
 
-      <div class="p-table-wrap" style="margin-top:12px;">
-        <table>
-          <thead>
-            <tr>
-              <th>Asis.</th>
-              <th>PlayerId</th>
-              <th>Nombre</th>
-              <th>Nick</th>
-              <th>Código</th>
-              <th>Campfire</th>
-              <th>Pokémon (6)</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="pTbody"></tbody>
-        </table>
-      </div>
-    </div>
+    function handleIconError(imgElement, baseDex, isShadow) {
+      if (imgElement.dataset.failed === "1") return;
+      imgElement.dataset.failed = "1";
+      imgElement.src = `https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/pokemon/${baseDex}.png`;
+      if (isShadow) {
+        imgElement.parentElement.classList.add("shadow-flame-bg");
+      }
+    }
 
-    <div class="modal-foot">
-      <button class="btn-danger" type="button" data-pclose="1">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- =====================================================
-     MODAL: EDITAR / REEMPLAZAR PARTICIPANTE
-====================================================== -->
-<div id="participantEditModal" class="modal" style="display:none;">
-  <div class="modal-backdrop" data-peclose="1"></div>
-
-  <div class="modal-card">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title" id="peTitle">Editar participante</div>
-        <div class="modal-sub" id="peSub">—</div>
-      </div>
-      <button class="modal-x" type="button" data-peclose="1">✕</button>
-    </div>
-
-    <div class="modal-body">
-      <div class="row two">
-        <div>
-          <label>Nombre</label>
-          <input id="peNombre" />
-        </div>
-        <div>
-          <label>Nick</label>
-          <input id="peNick" />
-        </div>
-      </div>
-
-      <div class="row two">
-        <div>
-          <label>Código entrenador</label>
-          <input id="peCodigo" />
-        </div>
-        <div>
-          <label>Campfire / Celular</label>
-          <input id="peCampfire" />
-        </div>
-      </div>
-
-      <div class="row two" style="margin-top:10px;">
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <label style="margin:0; display:flex; gap:8px; align-items:center;">
-            <input type="checkbox" id="peResetAsistencia" />
-            Resetear asistencia
-          </label>
-          <div class="tiny muted" id="pePlayerIdInfo">—</div>
-        </div>
-
-        <div style="display:flex; justify-content:flex-end; align-items:center;">
-          <div class="tiny muted">Selecciona Pokémon (Normal/Oscuro/etc.)</div>
-        </div>
-      </div>
-
-      <div class="row three">
-        <div class="poke-wrap">
-          <label>P1</label>
-          <input id="peP1" placeholder="Buscar..." />
-          <div id="peP1Drop" class="poke-dropdown" style="display:none;"></div>
-        </div>
-        <div class="poke-wrap">
-          <label>P2</label>
-          <input id="peP2" placeholder="Buscar..." />
-          <div id="peP2Drop" class="poke-dropdown" style="display:none;"></div>
-        </div>
-        <div class="poke-wrap">
-          <label>P3</label>
-          <input id="peP3" placeholder="Buscar..." />
-          <div id="peP3Drop" class="poke-dropdown" style="display:none;"></div>
-        </div>
-      </div>
-
-      <div class="row three">
-        <div class="poke-wrap">
-          <label>P4</label>
-          <input id="peP4" placeholder="Buscar..." />
-          <div id="peP4Drop" class="poke-dropdown" style="display:none;"></div>
-        </div>
-        <div class="poke-wrap">
-          <label>P5</label>
-          <input id="peP5" placeholder="Buscar..." />
-          <div id="peP5Drop" class="poke-dropdown" style="display:none;"></div>
-        </div>
-        <div class="poke-wrap">
-          <label>P6</label>
-          <input id="peP6" placeholder="Buscar..." />
-          <div id="peP6Drop" class="poke-dropdown" style="display:none;"></div>
-        </div>
-      </div>
-
-      <div class="p-edit-warn" id="peWarn" style="margin-top:10px;"></div>
-    </div>
-
-    <div class="modal-foot">
-      <button class="btn-danger" type="button" data-peclose="1">Cancelar</button>
-      <button class="btn-gold" id="btnPeSave" type="button">💾 Guardar</button>
-    </div>
-  </div>
-</div>
-
- 
-
-  <script src="panel.js"></script>
+    window.addEventListener("DOMContentLoaded", init);
+  </script>
 </body>
 </html>
