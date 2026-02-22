@@ -24,7 +24,279 @@
       color: #ffdcb5;
     }
 
-    /* Buscador */
+    /* =========================================
+       ZONA DE JUECES (ENFRENTAMIENTO EN VIVO)
+       ========================================= */
+    #matchupSection {
+      display: none; 
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 15px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto 30px auto;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .matchup-title {
+      text-align: center;
+      color: #ffcc00;
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+    .matchup-controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .btn-judge {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: transform 0.2s, filter 0.2s;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+    .btn-judge:active { transform: scale(0.95); }
+    .btn-reset-result { background: #17a2b8; color: #fff; }
+    .btn-reset-result:hover { background: #138496; }
+    .btn-reset-match { background: #dc3545; color: #fff; }
+    .btn-reset-match:hover { background: #c82333; }
+    
+    .save-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .phase-selector {
+      padding: 12px 15px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      border: 2px solid #ffcc00;
+      background: #fff;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+      outline: none;
+    }
+    .btn-save-match { 
+      background: #ffcc00; 
+      color: #111; 
+      font-size: 1.1rem; 
+      padding: 12px 25px; 
+    }
+    .btn-save-match:hover { background: #e6b800; }
+
+    .matchup-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    /* === MARCADOR === */
+    .scoreboard-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px 30px;
+      border-radius: 15px;
+      margin: 20px auto;
+      max-width: 600px;
+      border: 2px solid #ffcc00;
+      box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+    }
+    .score-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+    .score-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 10px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+    }
+    .score-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .score-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: #00509a;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .score-btn:hover { background: #007bff; }
+    .score-val {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #28a745;
+      text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+      min-width: 40px;
+      text-align: center;
+    }
+    .score-vs {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #ffcc00;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    /* Pokémon seleccionables en la zona de jueces */
+    .matchup-poke {
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      padding: 5px;
+      border: 2px solid transparent;
+    }
+    .matchup-poke:hover { background: rgba(0, 0, 0, 0.1); }
+    .matchup-poke.picked {
+      background: rgba(40, 167, 69, 0.2);
+      box-shadow: 0 0 10px rgba(40, 167, 69, 0.6);
+      border: 2px solid #28a745;
+    }
+
+    /* =========================================
+       BOTÓN FLOTANTE Y MODAL DE HISTORIAL
+       ========================================= */
+    .btn-floating-history {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 65px;
+      height: 65px;
+      background: #ffcc00;
+      color: #111;
+      border: 3px solid #00509a;
+      border-radius: 50%;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+      z-index: 1000;
+      transition: transform 0.2s;
+    }
+    .btn-floating-history:hover { transform: scale(1.1); }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+    .modal-content {
+      background: #f8f9fa;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      color: #111;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .modal-header {
+      padding: 20px;
+      background: #00509a;
+      color: #fff;
+      border-radius: 15px 15px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h2 { margin: 0; font-size: 1.4rem; color: #ffcc00; }
+    .btn-close-modal {
+      background: none; border: none;
+      color: #fff; font-size: 2rem; cursor: pointer;
+      line-height: 1; margin-top: -5px;
+    }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .history-item {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      border-left: 6px solid #ffcc00;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      gap: 10px;
+    }
+    .h-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 70px;
+      border-right: 1px solid #ddd;
+      padding-right: 10px;
+    }
+    .h-phase { font-size: 0.75rem; font-weight: bold; color: #00509a; text-transform: uppercase; text-align: center; line-height: 1; margin-bottom: 4px; }
+    .h-time { font-size: 0.8rem; color: #777; }
+    
+    .h-match {
+      display: flex;
+      flex: 1;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .h-player { font-weight: 800; flex: 1; text-align: center; font-size: 1.1rem; }
+    .h-num { color: #00509a; font-size: 0.85rem; font-weight: bold; background: rgba(0,80,154,0.1); padding: 2px 5px; border-radius: 4px; margin-right: 4px;}
+    .h-score { font-size: 1.4rem; font-weight: 900; background: #0b2d5a; color: #ffcc00; padding: 4px 15px; border-radius: 20px; margin: 0 10px; }
+    .winner { color: #28a745; }
+
+    .modal-footer {
+      padding: 15px;
+      border-top: 1px solid #ddd;
+      text-align: right;
+    }
+
+    /* =========================================
+       Buscador y Grid Principal
+       ========================================= */
     .search-container {
       max-width: 600px;
       margin: 0 auto 30px auto;
@@ -41,16 +313,30 @@
       outline: none;
     }
 
-    /* Grid */
     .grid-participantes {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
       gap: 20px;
       max-width: 1200px;
-      margin: 0 auto;
+      margin: 0 auto 80px auto; 
     }
 
-    /* Tarjeta de participante */
+    .grid-participantes .prep-card {
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .grid-participantes .prep-card:hover {
+      transform: translateY(-3px);
+      border-color: #ffcc00;
+      box-shadow: 0 6px 15px rgba(255, 204, 0, 0.3);
+    }
+    .grid-participantes .prep-card.is-selected {
+      opacity: 0.5;
+      pointer-events: none;
+      border-color: #28a745;
+    }
+
     .prep-card {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 15px;
@@ -59,7 +345,6 @@
       color: #2b2b2b;
     }
     
-    /* Cabecera de la tarjeta (Nombres y Códigos) */
     .prep-header {
       text-align: center;
       margin-bottom: 15px;
@@ -104,7 +389,6 @@
       vertical-align: middle;
     }
 
-    /* Equipo Pokémon */
     .prep-team {
       display: flex;
       flex-wrap: wrap;
@@ -134,16 +418,14 @@
       z-index: 2; 
       position: relative;
     }
-
-    /* Nombre del Pokémon SIEMPRE visible debajo de la cara */
     .poke-label {
-      font-size: 13px; /* AUMENTADO: de 11px a 13px */
+      font-size: 13px;
       line-height: 1.2;
       text-align: center;
       margin-top: 5px;
       font-weight: 700;
       color: #111;
-      height: 32px; /* AUMENTADO: de 26px a 32px para acomodar texto más grande de 2 líneas */
+      height: 32px;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -152,8 +434,6 @@
       position: relative;
       z-index: 5; 
     }
-
-    /* Lógica CSS: Efecto Flama Morada para imágenes oscuras faltantes */
     .shadow-flame-bg::before {
       content: "";
       position: absolute;
@@ -170,12 +450,24 @@
       filter: drop-shadow(0 0 5px rgba(128, 0, 128, 0.7)); 
     }
 
-    /* Ajustes móviles extra */
-    @media (max-width: 480px) {
+    /* Scrollbar del modal */
+    .modal-body::-webkit-scrollbar { width: 6px; }
+    .modal-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .modal-body::-webkit-scrollbar-thumb { background: #00509a; border-radius: 10px; }
+
+    @media (max-width: 600px) {
       .grid-participantes { grid-template-columns: 1fr; }
       .poke-slot { width: 70px; }
       .poke-icon-wrap { width: 50px; height: 50px; }
-      .poke-label { font-size: 11.5px; } /* AUMENTADO también para celulares (antes 10px) */
+      .poke-label { font-size: 11.5px; }
+      .scoreboard-container { flex-direction: column; gap: 10px; padding: 15px; }
+      .score-vs { display: none; }
+      .save-container { flex-direction: column; width: 100%; }
+      .phase-selector, .btn-save-match { width: 100%; }
+      .history-item { flex-direction: column; text-align: center; }
+      .h-info { border-right: none; border-bottom: 1px solid #ddd; width: 100%; padding-bottom: 5px; margin-bottom: 5px; flex-direction: row; justify-content: center; gap: 10px; }
+      .h-match { width: 100%; }
+      .h-player { font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -183,15 +475,84 @@
 
   <h1>Participantes del Torneo</h1>
 
+  <div id="matchupSection">
+    <div class="matchup-title">⚔️ Zona de Batalla ⚔️</div>
+    
+    <div class="matchup-controls">
+      <button class="btn-judge btn-reset-result" onclick="resetPicks()">🧹 Limpiar Picks</button>
+      <button class="btn-judge btn-reset-match" onclick="resetMatchup()">❌ Cambiar Jugadores</button>
+    </div>
+
+    <div class="matchup-cards" id="matchupCards"></div>
+
+    <div id="scoreboardWrapper" style="display: none;">
+      <div class="scoreboard-container">
+        <div class="score-team">
+          <div id="scoreName0" class="score-name">Jugador 1</div>
+          <div class="score-controls">
+            <button class="score-btn" onclick="updateScore(0, -1)">-</button>
+            <div id="scoreVal0" class="score-val">0</div>
+            <button class="score-btn" onclick="updateScore(0, 1)">+</button>
+          </div>
+        </div>
+        <div class="score-vs">VS</div>
+        <div class="score-team">
+          <div id="scoreName1" class="score-name">Jugador 2</div>
+          <div class="score-controls">
+            <button class="score-btn" onclick="updateScore(1, -1)">-</button>
+            <div id="scoreVal1" class="score-val">0</div>
+            <button class="score-btn" onclick="updateScore(1, 1)">+</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="save-container">
+        <select id="matchPhase" class="phase-selector">
+          <option value="Ronda Regular">Ronda Regular</option>
+          <option value="Octavos">Octavos de Final</option>
+          <option value="Cuartos">Cuartos de Final</option>
+          <option value="Semifinal">Semifinal</option>
+          <option value="3er Puesto">Tercer Puesto</option>
+          <option value="Final">🏆 Final</option>
+        </select>
+        <button class="btn-judge btn-save-match" onclick="guardarEnHistorial()">💾 Guardar Resultado</button>
+      </div>
+    </div>
+  </div>
+
   <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Buscar por nick, nombre, código o número...">
+    <input type="text" id="searchInput" placeholder="Buscar por nick, código o # de participante y toca para seleccionar...">
   </div>
 
   <div class="grid-participantes" id="gridParticipantes"></div>
 
+  <button class="btn-floating-history" onclick="toggleHistory(true)" title="Ver Historial">
+    📜
+  </button>
+
+  <div id="historyModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📜 Historial de Batallas</h2>
+        <button class="btn-close-modal" onclick="toggleHistory(false)">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="historyList" class="history-list">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-judge btn-reset-match" onclick="limpiarHistorial()">🗑️ Borrar Historial</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     let participantes = [];
     let diccionarioPokemon = new Map();
+    let selectedFighters = []; 
+    
+    let puntajes = [0, 0];
+    let historialBatallas = JSON.parse(localStorage.getItem('pokecomasHistorial')) || [];
 
     async function init() {
       try {
@@ -211,17 +572,17 @@
 
         participantes = dataTorneo.players || [];
         renderGrid(participantes);
+        renderHistorial(); 
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
-          const termino = e.target.value.toLowerCase().trim();
-          const filtrados = participantes.filter(p => {
-            const nombre = (p.nombre || p.Nombre || "").toLowerCase();
-            const nick = (p.nick || p.Nick || p.NombrePokemonGO || "").toLowerCase();
-            const numero = (p.numero || p.Numero || "").toString();
-            const codigo = (p.codigo || p.Codigo || p.codigoEntrenador || "").toString().toLowerCase();
-            return nombre.includes(termino) || nick.includes(termino) || numero.includes(termino) || codigo.includes(termino);
-          });
-          renderGrid(filtrados);
+          filtrarGrid();
+        });
+
+        document.getElementById('matchupCards').addEventListener('click', (e) => {
+          const pokeSlot = e.target.closest('.matchup-poke');
+          if (pokeSlot) {
+            pokeSlot.classList.toggle('picked');
+          }
         });
 
       } catch (error) {
@@ -250,13 +611,45 @@
     function getPokemonDisplayName(rawId) {
       const info = parsePokemonId(rawId);
       let name = diccionarioPokemon.get(info.baseDex) || "Desc.";
-      
       if (info.isMega) name = "Mega " + name;
       if (info.isShadow) name += " oscuro";
       else if (info.isPurified) name += " purificado";
       if (info.isShiny) name += " shiny";
-      
       return name;
+    }
+
+    function filtrarGrid() {
+      const termino = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      if (termino === "") {
+        renderGrid(participantes);
+        return;
+      }
+      
+      const numeroLimpio = termino.replace(/^#/, '');
+
+      let filtrados = participantes.filter(p => {
+        const nombre = (p.nombre || p.Nombre || "").toLowerCase();
+        const nick = (p.nick || p.Nick || p.NombrePokemonGO || "").toLowerCase();
+        const numero = (p.numero || p.Numero || "").toString();
+        const codigo = (p.codigo || p.Codigo || p.codigoEntrenador || "").toString().toLowerCase();
+        
+        const matchNumeroExacto = (numero === numeroLimpio);
+        const matchTexto = nombre.includes(termino) || nick.includes(termino);
+        const matchCodigo = (termino.length > 3) && codigo.includes(termino);
+        
+        return matchNumeroExacto || matchTexto || matchCodigo;
+      });
+
+      filtrados.sort((a, b) => {
+        const numA = (a.numero || a.Numero || "").toString();
+        const numB = (b.numero || b.Numero || "").toString();
+        if (numA === numeroLimpio && numB !== numeroLimpio) return -1;
+        if (numB === numeroLimpio && numA !== numeroLimpio) return 1;
+        return 0;
+      });
+
+      renderGrid(filtrados);
     }
 
     function renderGrid(players) {
@@ -278,49 +671,218 @@
         const teamHtml = team.map(pokeId => {
           const rawId = String(pokeId || "").trim();
           if (!rawId) return "";
-
           const info = parsePokemonId(rawId);
           const displayName = getPokemonDisplayName(rawId);
           const imgUrl = `https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/pokemon/${rawId}.png`;
-          
           return `
             <div class="poke-slot">
               <div class="poke-icon-wrap">
-                <img src="${imgUrl}" 
-                     alt="${displayName}" 
-                     title="${displayName}"
+                <img src="${imgUrl}" alt="${displayName}" title="${displayName}"
                      onerror="handleIconError(this, '${info.baseDex}', ${info.isShadow})">
               </div>
               <div class="poke-label" title="${displayName}">${displayName}</div>
-            </div>
-          `;
+            </div>`;
         }).join("");
 
         let headerHtml = `<div class="prep-nick" title="${nick}">${badge} ${nick}</div>`;
-        if (fullName) {
-          headerHtml += `<div class="prep-fullname" title="${fullName}">${fullName}</div>`;
-        }
-        if (codigo) {
-          headerHtml += `<div class="prep-code">Código Entrenador: ${codigo}</div>`;
-        }
+        if (fullName) headerHtml += `<div class="prep-fullname" title="${fullName}">${fullName}</div>`;
+        if (codigo) headerHtml += `<div class="prep-code">Código Entrenador: ${codigo}</div>`;
 
         const card = document.createElement("div");
         card.className = "prep-card";
+        card.title = "Haz clic para mandar a la Zona de Batalla";
         card.innerHTML = `
           <div class="prep-header">${headerHtml}</div>
           <div class="prep-team">${teamHtml}</div>
         `;
+
+        if (selectedFighters.includes(p)) {
+          card.classList.add('is-selected');
+        }
+
+        card.addEventListener('click', () => {
+          if (selectedFighters.includes(p)) return;
+          if (selectedFighters.length >= 2) {
+            alert("Ya seleccionaste a 2 participantes. Termina la batalla actual o usa 'Cambiar Jugadores'.");
+            return;
+          }
+          selectedFighters.push(p);
+          updateMatchupArea();
+          card.classList.add('is-selected'); 
+        });
         
         container.appendChild(card);
       });
     }
 
+    function updateMatchupArea() {
+      const section = document.getElementById("matchupSection");
+      const container = document.getElementById("matchupCards");
+      const scoreboard = document.getElementById("scoreboardWrapper");
+      
+      if (selectedFighters.length === 0) {
+        section.style.display = "none";
+        scoreboard.style.display = "none";
+        container.innerHTML = "";
+        return;
+      }
+      
+      section.style.display = "block";
+      container.innerHTML = "";
+
+      selectedFighters.forEach((p, index) => {
+        const nick = p.nick || p.Nick || p.NombrePokemonGO || "Jugador";
+        const fullName = p.nombre || p.Nombre || "";
+        const badge = p.numero || p.Numero ? `<span class="badge-numero">#${p.numero || p.Numero}</span>` : "";
+        const team = p.team || [p.P1, p.P2, p.P3, p.P4, p.P5, p.P6].filter(Boolean);
+
+        const teamHtml = team.map(pokeId => {
+          const rawId = String(pokeId || "").trim();
+          if (!rawId) return "";
+          const info = parsePokemonId(rawId);
+          const displayName = getPokemonDisplayName(rawId);
+          const imgUrl = `https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/pokemon/${rawId}.png`;
+          return `
+            <div class="poke-slot matchup-poke" title="Haz clic para seleccionar este Pokémon">
+              <div class="poke-icon-wrap">
+                <img src="${imgUrl}" alt="${displayName}" title="${displayName}"
+                     onerror="handleIconError(this, '${info.baseDex}', ${info.isShadow})">
+              </div>
+              <div class="poke-label">${displayName}</div>
+            </div>`;
+        }).join("");
+
+        let headerHtml = `<div class="prep-nick">${badge} ${nick}</div>`;
+        if (fullName) headerHtml += `<div class="prep-fullname">${fullName}</div>`;
+
+        const card = document.createElement("div");
+        card.className = "prep-card";
+        card.style.cursor = "default"; 
+        card.innerHTML = `
+          <div class="prep-header">${headerHtml}</div>
+          <div class="prep-team">${teamHtml}</div>
+        `;
+        container.appendChild(card);
+        
+        if (selectedFighters.length === 2) {
+          scoreboard.style.display = "block";
+          
+          // Agregamos el número al marcador
+          const n0 = selectedFighters[0].numero || selectedFighters[0].Numero ? `#${selectedFighters[0].numero || selectedFighters[0].Numero} ` : "";
+          const n1 = selectedFighters[1].numero || selectedFighters[1].Numero ? `#${selectedFighters[1].numero || selectedFighters[1].Numero} ` : "";
+          
+          document.getElementById('scoreName0').innerText = n0 + (selectedFighters[0].nick || selectedFighters[0].Nick || "Jugador 1");
+          document.getElementById('scoreName1').innerText = n1 + (selectedFighters[1].nick || selectedFighters[1].Nick || "Jugador 2");
+        }
+      });
+    }
+
+    function updateScore(playerIndex, change) {
+      puntajes[playerIndex] += change;
+      if (puntajes[playerIndex] < 0) puntajes[playerIndex] = 0;
+      document.getElementById('scoreVal' + playerIndex).innerText = puntajes[playerIndex];
+    }
+
+    function resetPicks() {
+      document.querySelectorAll('.matchup-poke.picked').forEach(el => {
+        el.classList.remove('picked');
+      });
+    }
+
+    function resetMatchup() {
+      selectedFighters = [];
+      puntajes = [0, 0];
+      document.getElementById('scoreVal0').innerText = "0";
+      document.getElementById('scoreVal1').innerText = "0";
+      document.getElementById("scoreboardWrapper").style.display = "none";
+      updateMatchupArea();
+      filtrarGrid(); 
+    }
+
+    // ==========================================
+    // LOGICA DEL HISTORIAL Y MODAL
+    // ==========================================
+
+    function toggleHistory(show) {
+      const modal = document.getElementById('historyModal');
+      modal.style.display = show ? 'flex' : 'none';
+    }
+
+    function guardarEnHistorial() {
+      if (selectedFighters.length !== 2) return;
+
+      const ahora = new Date();
+      const horaStr = ahora.getHours().toString().padStart(2, '0') + ':' + ahora.getMinutes().toString().padStart(2, '0');
+      const faseSeleccionada = document.getElementById('matchPhase').value; 
+
+      // Obtenemos los números de cada jugador
+      const n1 = selectedFighters[0].numero || selectedFighters[0].Numero || "";
+      const n2 = selectedFighters[1].numero || selectedFighters[1].Numero || "";
+
+      const registro = {
+        fase: faseSeleccionada,
+        num1: n1,
+        p1: selectedFighters[0].nick || selectedFighters[0].Nick || "Jugador 1",
+        num2: n2,
+        p2: selectedFighters[1].nick || selectedFighters[1].Nick || "Jugador 2",
+        s1: puntajes[0],
+        s2: puntajes[1],
+        hora: horaStr
+      };
+
+      historialBatallas.unshift(registro);
+      localStorage.setItem('pokecomasHistorial', JSON.stringify(historialBatallas));
+
+      renderHistorial();
+      resetMatchup(); 
+      toggleHistory(true);
+    }
+
+    function renderHistorial() {
+      const lista = document.getElementById("historyList");
+
+      if (historialBatallas.length === 0) {
+        lista.innerHTML = "<p style='text-align:center; padding: 20px;'>No hay batallas guardadas aún.</p>";
+        return;
+      }
+
+      lista.innerHTML = historialBatallas.map(h => {
+        const win1 = h.s1 > h.s2 ? 'winner' : '';
+        const win2 = h.s2 > h.s1 ? 'winner' : '';
+        
+        // Bloque HTML del número solo si existe
+        const num1HTML = h.num1 ? `<span class="h-num">#${h.num1}</span>` : "";
+        const num2HTML = h.num2 ? `<span class="h-num">#${h.num2}</span>` : "";
+
+        return `
+          <div class="history-item">
+            <div class="h-info">
+              <span class="h-phase">${h.fase || 'Batalla'}</span>
+              <span class="h-time">${h.hora}</span>
+            </div>
+            <div class="h-match">
+              <span class="h-player ${win1}" style="text-align: left;">${num1HTML}${h.p1}</span>
+              <span class="h-score">${h.s1} - ${h.s2}</span>
+              <span class="h-player ${win2}" style="text-align: right;">${num2HTML}${h.p2}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function limpiarHistorial() {
+      if (confirm("¿Estás seguro de que quieres borrar todo el historial? Esto no se puede deshacer.")) {
+        historialBatallas = [];
+        localStorage.removeItem('pokecomasHistorial');
+        renderHistorial();
+        toggleHistory(false); 
+      }
+    }
+
     function handleIconError(imgElement, baseDex, isShadow) {
       if (imgElement.dataset.failed === "1") return;
       imgElement.dataset.failed = "1";
-      
       imgElement.src = `https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/pokemon/${baseDex}.png`;
-      
       if (isShadow) {
         imgElement.parentElement.classList.add("shadow-flame-bg");
       }
