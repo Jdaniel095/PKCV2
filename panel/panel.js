@@ -120,12 +120,7 @@ async function refrescarSoloMatches(torneoId, matchIds = []) {
   const byId = new Map(all.map(m => [String(m.MatchId), m]));
 
   const inscritos = window.PARTICIPANTES_CACHE || [];
-  const nameMap = {};
-  inscritos.forEach(p => {
-    nameMap[p.PlayerId] = p.Nick || p.NombrePokemonGO || p.Nombre || p.PlayerId;
-  });
-
-  // ✅ CORRECCIÓN: Re-calcular los feeders con los datos frescos del servidor
+const nameMap = {};
   const feeders = {};
   all.forEach(m => {
     const next = String(m.NextMatchId || "").trim();
@@ -162,10 +157,10 @@ async function refrescarSoloMatches(torneoId, matchIds = []) {
 
     // ✅ Re-calculamos los nombres o las ayudas visuales grises
     const f = feeders[m.MatchId] || [];
-    const aNameHtml = aId ? escapeHtml(nameMap[aId] || aId) : buildWaitHtml(f[0]);
-    const bNameHtml = bId ? escapeHtml(nameMap[bId] || bId) : buildWaitHtml(f[1]);
+ const aNameHtml = aId ? (escapeHtml(nameMap[aId] || aId) + (numMap[aId] ? `<span class="m-participant-num">P${escapeHtml(String(numMap[aId]))}</span>` : "")) : buildWaitHtml(f[0]);
+const bNameHtml = bId ? (escapeHtml(nameMap[bId] || bId) + (numMap[bId] ? `<span class="m-participant-num">P${escapeHtml(String(numMap[bId]))}</span>` : "")) : buildWaitHtml(f[1]);
 
-    const nameEls = tr.querySelectorAll(".m-name");
+const nameEls = tr.querySelectorAll(".m-name");
     if(nameEls.length >= 2){
       nameEls[0].innerHTML = aNameHtml;
       nameEls[1].innerHTML = bNameHtml;
@@ -1496,13 +1491,16 @@ function dexListToNames(raw){
     }
   }
 
- const nameMap = {};
-  inscritos.forEach(p => {
-    // Le damos prioridad al Nick
-    nameMap[p.PlayerId] = p.Nick || p.NombrePokemonGO || p.Nombre || p.PlayerId;
-  });
+const nameMap = {};
+const numMap = {};
+inscritos.forEach(p => {
+  // Le damos prioridad al Nick
+  nameMap[p.PlayerId] = p.Nick || p.NombrePokemonGO || p.Nombre || p.PlayerId;
+  const num = p.Participante || p.participante || p.Numero || p.numero || p.N || "";
+  if (num) numMap[p.PlayerId] = num;
+});
 // REEMPLAZA POR ESTO:
-// matches (Cargados desde el dashboard en 1 sola llamada)
+// matches (Cargados desde el dashboard
   const matches = (dashboard.matches || []);
 
   if(!body) return;
@@ -1564,10 +1562,10 @@ function dexListToNames(raw){
          return `<span style="color:rgba(255,255,255,0.45); font-style:italic; font-size:0.82em;">G. de ${escapeHtml(nA)} vs ${escapeHtml(nB)}</span>`;
       }
 
-      const aNameHtml = aId ? escapeHtml(nameMap[aId] || aId) : buildWaitHtml(feederA);
-      const bNameHtml = bId ? escapeHtml(nameMap[bId] || bId) : buildWaitHtml(feederB);
+   const aNameHtml = aId ? (escapeHtml(nameMap[aId] || aId) + (numMap[aId] ? `<span class="m-participant-num">P${escapeHtml(String(numMap[aId]))}</span>` : "")) : buildWaitHtml(feederA);
+const bNameHtml = bId ? (escapeHtml(nameMap[bId] || bId) + (numMap[bId] ? `<span class="m-participant-num">P${escapeHtml(String(numMap[bId]))}</span>` : "")) : buildWaitHtml(feederB);
 
-      const boThisMatch = boForMatch_(m);
+const boThisMatch = boForMatch_(m);
 // ✅ Operación (status/ubicación) para UI
 const opStatus = normMatchStatus(m); // scheduled/running/paused/finished/cancelled
 const location = String(m.Location ?? m.location ?? "");
@@ -4553,7 +4551,7 @@ function _renderParticipants_(rows, counts) {
 
   tbody.innerHTML = "";
 
-  rows.forEach(row => {
+rows.forEach(row => {
     const playerId = String(row.PlayerId || "").trim();
     const nombre   = String(row.NombrePokemonGO || row.Nombre || "").trim();
     const nick     = String(row.Nick || "").trim();
@@ -4561,6 +4559,19 @@ function _renderParticipants_(rows, counts) {
     const campfire = String(row.Campfire || "").trim();
     const estado   = String(row.Estado || "").trim();
 
+// ✅ BÚSQUEDA DINÁMICA E INFALIBLE DEL NÚMERO
+    let num = "";
+    for (let key in row) {
+      const k = key.toLowerCase().trim();
+      // Detecta la columna aunque tenga espacios invisibles o símbolos raros
+      if (k.includes("participante") || k === "numero" || k.includes("n°")) {
+        if (row[key] && String(row[key]).trim() !== "") {
+          num = String(row[key]).trim();
+          break;
+        }
+      }
+    }
+    const badgeNum = num ? `<span style="background: rgba(255, 204, 0, 0.2); color: #ffcc00; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; vertical-align: middle; font-weight: bold;">#${num}</span>` : "";
     const party = _partyFromRow_(row);
   const partyHtml = `
       <div class="p-party">
@@ -4585,9 +4596,9 @@ function _renderParticipants_(rows, counts) {
                data-pid="${escapeHtml(playerId)}"
                ${asis ? "checked" : ""}/>
       </td>
-      <td><span class="tiny">${escapeHtml(playerId)}</span></td>
+  <td><span class="tiny">${escapeHtml(playerId)}</span></td>
       <td>${escapeHtml(nombre)}</td>
-      <td>${escapeHtml(nick)}</td>
+      <td>${badgeNum}${escapeHtml(nick)}</td>
       <td>${escapeHtml(codigo)}</td>
       <td>${escapeHtml(campfire)}</td>
       <td>${partyHtml}</td>
@@ -4619,15 +4630,26 @@ function _applyParticipantsFilter_(){
     rows = rows.filter(r => _isBaja_(r));
   }
 
-  if(q){
+if(q){
+    // ✅ NUEVO: Limpiamos el "#" por si el admin busca literal "#5"
+ const qClean = q.replace(/^#/, '');
+    
     rows = rows.filter(r => {
+      // Extrae el número dinámicamente para el buscador
+      let numVal = "";
+      for (let key in r) {
+        const k = key.toLowerCase().trim();
+        if (k.includes("participante") || k === "numero" || k.includes("n°")) {
+          if (r[key]) { numVal = String(r[key]).trim(); break; }
+        }
+      }
+      
       const s = _pNorm_(
-        `${r.PlayerId||""} ${r.NombrePokemonGO||r.Nombre||""} ${r.Nick||""} ${r.Codigo||""} ${r.Campfire||""} ${r.Estado||""}`
+        `${numVal} ${r.PlayerId||""} ${r.NombrePokemonGO||r.Nombre||""} ${r.Nick||""} ${r.Codigo||""} ${r.Campfire||""} ${r.Estado||""}`
       );
-      return s.includes(q);
+      return s.includes(qClean) || s.includes(q);
     });
   }
-
   _renderParticipants_(rows, {
     total: P_ROWS.length,
     active: P_ROWS.filter(r => !_isBaja_(r)).length,
