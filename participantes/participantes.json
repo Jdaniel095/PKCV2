@@ -1,0 +1,1131 @@
+{
+  "ok": true,
+  "exportVersion": 2,
+  "version": 31,
+  "generatedAt": "2026-02-22T01:40:20.985Z",
+  "torneo": {
+    "torneoId": "T20260218-234613",
+    "title": "Torneo Pokecomas Go - Mall de Comas",
+    "format": "single",
+    "leaguePlan": "super1500",
+    "mode": "presencial",
+    "dateTime": "Sun Feb 22 2026 17:00:00 GMT-0500 (hora estándar de Perú)",
+    "bestOf": "3",
+    "boPhasesJson": "{\"version\":1,\"groups\":1,\"bracket\":3,\"final\":5}",
+    "suggestedSize": 32,
+    "rules": {
+      "bannedTypes": "",
+      "bannedCategories": "mega, gigamax, dynamax, shiny",
+      "bannedPokemon": "",
+      "allowedPokemon": "",
+      "bannedFastMoves": "",
+      "bannedChargedMoves": "",
+      "allowedTypes": "normal, fire, water, electric, grass, flying, dragon, ghost, ground, poison, rock, fairy, steel, bug, fighting, ice, psychic, dark",
+      "allowedCategories": "legendary, mythical, baby, normal, shadow, purified",
+      "leagueRulesJson": ""
+    },
+    "inscriptionsOpen": true,
+    "generated": false,
+    "championId": "",
+    "runnerUpId": "",
+    "champion": null,
+    "runnerUp": null,
+    "league": "super1500",
+    "prepEndsAt": ""
+  },
+  "players": [
+    {
+      "numero": 1,
+      "playerId": "P-3b688e0c",
+      "nombre": "José Daniel Cordova ataucusi",
+      "nick": "Filoniel27",
+      "codigo": "706818828330",
+      "campfire": "",
+      "team": [
+        "105_a1",
+        "57_a1",
+        "823",
+        "452_a1",
+        "160_a1",
+        "752"
+      ]
+    },
+    {
+      "numero": 2,
+      "playerId": "P-5e7d7d4f",
+      "nombre": "Elvis pareja flores",
+      "nick": "1souleater",
+      "codigo": "493570244918",
+      "campfire": "",
+      "team": [
+        "733",
+        "162",
+        "423",
+        "687",
+        "346",
+        "737"
+      ]
+    },
+    {
+      "numero": 3,
+      "playerId": "P-085af687",
+      "nombre": "Estiven leaño",
+      "nick": "StevanLA",
+      "codigo": "56259510871",
+      "campfire": "",
+      "team": [
+        "894",
+        "36",
+        "9",
+        "184",
+        "663",
+        "702"
+      ]
+    },
+    {
+      "numero": 4,
+      "playerId": "P-ee8e81af",
+      "nombre": "Christian Ramón",
+      "nick": "SwordsmanIcarus",
+      "codigo": "272553425920",
+      "campfire": "",
+      "team": [
+        "212_a1",
+        "618",
+        "131",
+        "671",
+        "799",
+        "711"
+      ]
+    },
+    {
+      "numero": 5,
+      "playerId": "P-b20a064f",
+      "nombre": "Adrián Puga",
+      "nick": "Russkayak",
+      "codigo": "236889357699",
+      "campfire": "",
+      "team": [
+        "340",
+        "9",
+        "426",
+        "346",
+        "241",
+        "680"
+      ]
+    },
+    {
+      "numero": 6,
+      "playerId": "P-a67875aa",
+      "nombre": "Percy Rodrigo Fajardo Astete",
+      "nick": "Perciqui",
+      "codigo": "607962064612",
+      "campfire": "",
+      "team": [
+        "727",
+        "184",
+        "706",
+        "376",
+        "197",
+        "227"
+      ]
+    },
+    {
+      "numero": 7,
+      "playerId": "P-283c0c53",
+      "nombre": "Jair Hernán Heighes Dávila",
+      "nick": "Tobijair",
+      "codigo": "172086926525",
+      "campfire": "",
+      "team": [
+        "671",
+        "411",
+        "57",
+        "395",
+        "823",
+        "711"
+      ]
+    },
+    {
+      "numero": 8,
+      "playerId": "P-c78db557",
+      "nombre": "Brayan Ramos",
+      "nick": "BRAYANRF16",
+      "codigo": "495652857427",
+      "campfire": "",
+      "team": [
+        "105",
+        "157",
+        "40",
+        "949",
+        "160",
+        "9"
+      ]
+    },
+    {
+      "numero": 9,
+      "playerId": "P-e7025fe5",
+      "nombre": "Acharia franco asencios",
+      "nick": "4charia",
+      "codigo": "810428374423",
+      "campfire": "",
+      "team": [
+        "593",
+        "346_a2",
+        "105_a1",
+        "87",
+        "737",
+        "162"
+      ]
+    },
+    {
+      "numero": 10,
+      "playerId": "P-39f82fc1",
+      "nombre": "Kennett Monteza",
+      "nick": "kmonteza",
+      "codigo": "253576130672",
+      "campfire": "",
+      "team": [
+        "105",
+        "184",
+        "477",
+        "185",
+        "82",
+        "157"
+      ]
+    },
+    {
+      "numero": 11,
+      "playerId": "P-07421857",
+      "nombre": "Jorge Gutierrez",
+      "nick": "ACM1PTJRxD",
+      "codigo": "630197028943",
+      "campfire": "",
+      "team": [
+        "911",
+        "660",
+        "206",
+        "222_f2340",
+        "189",
+        "658"
+      ]
+    },
+    {
+      "numero": 12,
+      "playerId": "P-b0748b91",
+      "nombre": "Gabriel collavino flores",
+      "nick": "GaboSingular",
+      "codigo": "991728503458",
+      "campfire": "",
+      "team": [
+        "618",
+        "334",
+        "260",
+        "38_f58",
+        "454",
+        "423"
+      ]
+    },
+    {
+      "numero": 13,
+      "playerId": "P-761948c7",
+      "nombre": "Nelson Bendezu",
+      "nick": "Nelzutrum",
+      "codigo": "278394292208",
+      "campfire": "",
+      "team": [
+        "466",
+        "254",
+        "38",
+        "210",
+        "593",
+        "454"
+      ]
+    },
+    {
+      "numero": 14,
+      "playerId": "P-c8e06c73",
+      "nombre": "Juan Miguel Becerra Aliaga",
+      "nick": "KurosakiJM95",
+      "codigo": "523286021425",
+      "campfire": "",
+      "team": [
+        "395",
+        "40",
+        "146_f2799",
+        "346",
+        "618",
+        "593"
+      ]
+    },
+    {
+      "numero": 15,
+      "playerId": "P-327a60e9",
+      "nombre": "Leonidas Galvez Caman",
+      "nick": "Leokgc",
+      "codigo": "489463272479",
+      "campfire": "",
+      "team": [
+        "219",
+        "97",
+        "195",
+        "38_f58_a1",
+        "6",
+        "9"
+      ]
+    },
+    {
+      "numero": 16,
+      "playerId": "P-3f0c2cbd",
+      "nombre": "Dennis Cristobal",
+      "nick": "PentaLovers",
+      "codigo": "189035390883",
+      "campfire": "",
+      "team": [
+        "593",
+        "468_s",
+        "87",
+        "36",
+        "375_s",
+        "618"
+      ]
+    },
+    {
+      "numero": 17,
+      "playerId": "P-1f8be88a",
+      "nombre": "Jesús benjamin limaco becerra",
+      "nick": "Bnux18",
+      "codigo": "490061848280",
+      "campfire": "",
+      "team": [
+        "754",
+        "241",
+        "105",
+        "691",
+        "206",
+        "346"
+      ]
+    },
+    {
+      "numero": 18,
+      "playerId": "P-6bfeb83b",
+      "nombre": "Jesus Francisco Silva Castro",
+      "nick": "MUGIWARACHUZ",
+      "codigo": "807177961473",
+      "campfire": "",
+      "team": [
+        "22",
+        "184",
+        "105",
+        "346",
+        "823",
+        "334"
+      ]
+    },
+    {
+      "numero": 19,
+      "playerId": "P-545b14fc",
+      "nombre": "José Ramos Pazos",
+      "nick": "GashetaOreo7w7",
+      "codigo": "226740410681",
+      "campfire": "",
+      "team": [
+        "463",
+        "671",
+        "346",
+        "452_a1",
+        "423",
+        "823"
+      ]
+    },
+    {
+      "numero": 20,
+      "playerId": "P-f618c932",
+      "nombre": "Andrés Dongo",
+      "nick": "lAndlaxl",
+      "codigo": "164833228445",
+      "campfire": "",
+      "team": [
+        "395",
+        "40",
+        "222_f2340",
+        "823",
+        "334",
+        "423"
+      ]
+    },
+    {
+      "numero": 21,
+      "playerId": "P-cbf65211",
+      "nombre": "Kimverly Cristobal",
+      "nick": "Ppopy12",
+      "codigo": "539776946751",
+      "campfire": "",
+      "team": [
+        "823",
+        "500_a1",
+        "230",
+        "463",
+        "197",
+        "687"
+      ]
+    },
+    {
+      "numero": 22,
+      "playerId": "P-550f3564",
+      "nombre": "Cesar Valverde",
+      "nick": "Cesarrr07VF",
+      "codigo": "664806833919",
+      "campfire": "",
+      "team": [
+        "395",
+        "463",
+        "979_a1",
+        "671",
+        "823",
+        "754"
+      ]
+    },
+    {
+      "numero": 23,
+      "playerId": "P-00768358",
+      "nombre": "JORGE SHUAN",
+      "nick": "b4tl3m4st3r",
+      "codigo": "674254167861",
+      "campfire": "",
+      "team": [
+        "395",
+        "618",
+        "334",
+        "979",
+        "162",
+        "593"
+      ]
+    },
+    {
+      "numero": 24,
+      "playerId": "P-182bb150",
+      "nombre": "FERNANDO CARDENAS HERNANDEZ",
+      "nick": "JULUPITERONE",
+      "codigo": "264322335242",
+      "campfire": "",
+      "team": [
+        "57_a1",
+        "206",
+        "40",
+        "146_f2799",
+        "423",
+        "160_a1"
+      ]
+    },
+    {
+      "numero": 25,
+      "playerId": "P-20a5acf7",
+      "nombre": "Hensi Villafueete",
+      "nick": "Hensi25",
+      "codigo": "719149593209",
+      "campfire": "",
+      "team": [
+        "206",
+        "184",
+        "160_a1",
+        "40",
+        "205",
+        "823"
+      ]
+    },
+    {
+      "numero": 26,
+      "playerId": "P-edcababe",
+      "nombre": "Yoshua Aguilar",
+      "nick": "YoshuaZero",
+      "codigo": "775444882912",
+      "campfire": "",
+      "team": [
+        "184",
+        "162",
+        "979",
+        "423",
+        "593",
+        "395_a1"
+      ]
+    },
+    {
+      "numero": 27,
+      "playerId": "P-5a3ac8c2",
+      "nombre": "Roger Alexander Zavala Segovia",
+      "nick": "llRoyZSll",
+      "codigo": "179014556234",
+      "campfire": "",
+      "team": [
+        "334",
+        "671",
+        "395",
+        "477_a1",
+        "463",
+        "105_a1"
+      ]
+    },
+    {
+      "numero": 28,
+      "playerId": "P-ca0fe7c5",
+      "nombre": "Francis Nieto",
+      "nick": "xXFran1912Xx",
+      "codigo": "540194550982",
+      "campfire": "",
+      "team": [
+        "423",
+        "346",
+        "663",
+        "162",
+        "593",
+        "206"
+      ]
+    },
+    {
+      "numero": 29,
+      "playerId": "P-bb1e1de8",
+      "nombre": "Henry oscar",
+      "nick": "HonterX23",
+      "codigo": "90466454799",
+      "campfire": "",
+      "team": [
+        "68",
+        "105",
+        "157",
+        "160",
+        "346",
+        "828"
+      ]
+    },
+    {
+      "numero": 30,
+      "playerId": "P-5a52bca9",
+      "nombre": "Sandro jordano",
+      "nick": "Sanmon001",
+      "codigo": "618753165531",
+      "campfire": "",
+      "team": [
+        "663",
+        "326",
+        "671",
+        "877",
+        "411",
+        "31_a1"
+      ]
+    },
+    {
+      "numero": 31,
+      "playerId": "P-53ea41ff",
+      "nombre": "Italo Avila",
+      "nick": "Holachar123",
+      "codigo": "451810531058",
+      "campfire": "",
+      "team": [
+        "346",
+        "823",
+        "260",
+        "809",
+        "630",
+        "184"
+      ]
+    },
+    {
+      "numero": 32,
+      "playerId": "P-b7341421",
+      "nombre": "Uzias durand Vasquez",
+      "nick": "UziasPRIDE",
+      "codigo": "464268614961",
+      "campfire": "",
+      "team": [
+        "658",
+        "184",
+        "241",
+        "630",
+        "89",
+        "162"
+      ]
+    }
+  ],
+  "matches": [],
+  "groups": [],
+  "playoffs": [],
+  "standings": [
+    {
+      "rank": 0,
+      "playerId": "P-3b688e0c",
+      "name": "Filoniel27",
+      "team": [
+        "105_a1",
+        "57_a1",
+        "823",
+        "452_a1",
+        "160_a1",
+        "752"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-5e7d7d4f",
+      "name": "1souleater",
+      "team": [
+        "733",
+        "162",
+        "423",
+        "687",
+        "346",
+        "737"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-085af687",
+      "name": "StevanLA",
+      "team": [
+        "894",
+        "36",
+        "9",
+        "184",
+        "663",
+        "702"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-ee8e81af",
+      "name": "SwordsmanIcarus",
+      "team": [
+        "212_a1",
+        "618",
+        "131",
+        "671",
+        "799",
+        "711"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-b20a064f",
+      "name": "Russkayak",
+      "team": [
+        "340",
+        "9",
+        "426",
+        "346",
+        "241",
+        "680"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-a67875aa",
+      "name": "Perciqui",
+      "team": [
+        "727",
+        "184",
+        "706",
+        "376",
+        "197",
+        "227"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-283c0c53",
+      "name": "Tobijair",
+      "team": [
+        "671",
+        "411",
+        "57",
+        "395",
+        "823",
+        "711"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-c78db557",
+      "name": "BRAYANRF16",
+      "team": [
+        "105",
+        "157",
+        "40",
+        "949",
+        "160",
+        "9"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-e7025fe5",
+      "name": "4charia",
+      "team": [
+        "593",
+        "346_a2",
+        "105_a1",
+        "87",
+        "737",
+        "162"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-39f82fc1",
+      "name": "kmonteza",
+      "team": [
+        "105",
+        "184",
+        "477",
+        "185",
+        "82",
+        "157"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-07421857",
+      "name": "ACM1PTJRxD",
+      "team": [
+        "911",
+        "660",
+        "206",
+        "222_f2340",
+        "189",
+        "658"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-b0748b91",
+      "name": "GaboSingular",
+      "team": [
+        "618",
+        "334",
+        "260",
+        "38_f58",
+        "454",
+        "423"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-761948c7",
+      "name": "Nelzutrum",
+      "team": [
+        "466",
+        "254",
+        "38",
+        "210",
+        "593",
+        "454"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-c8e06c73",
+      "name": "KurosakiJM95",
+      "team": [
+        "395",
+        "40",
+        "146_f2799",
+        "346",
+        "618",
+        "593"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-327a60e9",
+      "name": "Leokgc",
+      "team": [
+        "219",
+        "97",
+        "195",
+        "38_f58_a1",
+        "6",
+        "9"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-3f0c2cbd",
+      "name": "PentaLovers",
+      "team": [
+        "593",
+        "468_s",
+        "87",
+        "36",
+        "375_s",
+        "618"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-1f8be88a",
+      "name": "Bnux18",
+      "team": [
+        "754",
+        "241",
+        "105",
+        "691",
+        "206",
+        "346"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-6bfeb83b",
+      "name": "MUGIWARACHUZ",
+      "team": [
+        "22",
+        "184",
+        "105",
+        "346",
+        "823",
+        "334"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-545b14fc",
+      "name": "GashetaOreo7w7",
+      "team": [
+        "463",
+        "671",
+        "346",
+        "452_a1",
+        "423",
+        "823"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-f618c932",
+      "name": "lAndlaxl",
+      "team": [
+        "395",
+        "40",
+        "222_f2340",
+        "823",
+        "334",
+        "423"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-cbf65211",
+      "name": "Ppopy12",
+      "team": [
+        "823",
+        "500_a1",
+        "230",
+        "463",
+        "197",
+        "687"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-550f3564",
+      "name": "Cesarrr07VF",
+      "team": [
+        "395",
+        "463",
+        "979_a1",
+        "671",
+        "823",
+        "754"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-00768358",
+      "name": "b4tl3m4st3r",
+      "team": [
+        "395",
+        "618",
+        "334",
+        "979",
+        "162",
+        "593"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-182bb150",
+      "name": "JULUPITERONE",
+      "team": [
+        "57_a1",
+        "206",
+        "40",
+        "146_f2799",
+        "423",
+        "160_a1"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-20a5acf7",
+      "name": "Hensi25",
+      "team": [
+        "206",
+        "184",
+        "160_a1",
+        "40",
+        "205",
+        "823"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-edcababe",
+      "name": "YoshuaZero",
+      "team": [
+        "184",
+        "162",
+        "979",
+        "423",
+        "593",
+        "395_a1"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-5a3ac8c2",
+      "name": "llRoyZSll",
+      "team": [
+        "334",
+        "671",
+        "395",
+        "477_a1",
+        "463",
+        "105_a1"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-ca0fe7c5",
+      "name": "xXFran1912Xx",
+      "team": [
+        "423",
+        "346",
+        "663",
+        "162",
+        "593",
+        "206"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-bb1e1de8",
+      "name": "HonterX23",
+      "team": [
+        "68",
+        "105",
+        "157",
+        "160",
+        "346",
+        "828"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-5a52bca9",
+      "name": "Sanmon001",
+      "team": [
+        "663",
+        "326",
+        "671",
+        "877",
+        "411",
+        "31_a1"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-53ea41ff",
+      "name": "Holachar123",
+      "team": [
+        "346",
+        "823",
+        "260",
+        "809",
+        "630",
+        "184"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    },
+    {
+      "rank": 0,
+      "playerId": "P-b7341421",
+      "name": "UziasPRIDE",
+      "team": [
+        "658",
+        "184",
+        "241",
+        "630",
+        "89",
+        "162"
+      ],
+      "points": 0,
+      "wins": 0,
+      "losses": 0,
+      "ties": 0,
+      "buchholz": 0
+    }
+  ]
+}
