@@ -2,19 +2,17 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/png" href="favicon.png">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="PokeComas GO - Comunidad de Pokémon GO">
-  <meta property="og:description" content="¡Juega y participa en el gran torneo de la comunidad PokeComas!">
+  <meta property="og:description" content="¡Conoce a los ganadores del gran torneo de la comunidad PokeComas!">
   <meta property="og:image" content="https://pokecomas.com/pokecomasv2.jpg">
   <meta property="og:url" content="https://pokecomas.com">
   <meta property="og:site_name" content="PokeComas GO">
-
   <meta name="twitter:card" content="summary_large_image">
 
-  <title>Torneo Poke-Comas GO</title>
-
+  <title>Resultados del Torneo - PokeComas GO</title>
 
   <link rel="stylesheet" href="torneo.css">
   <link rel="stylesheet" href="responsive.css">
@@ -36,203 +34,48 @@
 
           <main class="content-area" id="contenido">
             <div class="content-after-logo-spacer" aria-hidden="true"></div>
- <h1 class="titulo-principal" id="torneoTitle">Bienvenido a Pokecomas Go prueba</h1>
+            
+            <h1 class="titulo-principal" id="torneoTitle">Resultados Del Torneo Pokecomas Go - Mall de Comas</h1>
 
-                <!-- Metadatos del torneo (liga, formato, fecha) -->
-                <div id="torneoMeta" class="torneo-meta" style="display:none;">
-                    
-                    <div id="metaDateTimeRow" class="meta-row meta-row--datetime">
-                        <span class="meta-value meta-value--datetime">
-                            <span id="metaDateLabel" class="meta-label">FECHA:</span>
-                            <span id="torneoDateOnly" class="date-only">-</span>
-                            <span id="metaTimeLabel" class="meta-label">HORA:</span>
-                            <span id="torneoTimeOnly" class="time-only">-</span>
-                        </span>
-                    </div>
+            <p class="sub2" id="torneoInfo" data-state="loading">Cargando resultados del torneo…</p>
 
-                    <div id="metaLeagueRow" class="meta-row meta-row--league">
-                        <span class="meta-label">LIGA:</span>
-                        <span class="meta-value">
-                            <span class="league-badges">
-                                <span id="torneoLeagueBadge" class="league-chip league-chip--main">
-                                    <img id="leagueLogoImg" class="league-logo-img" alt="Liga" style="display:none;">
-                                    <span id="torneoLeagueText">-</span>
-                                </span>
-
-                                <span id="torneoTiebreakBadge" class="league-chip league-chip--tiebreak" style="display:none;">
-                                    <img id="tiebreakLogoImg" class="league-logo-img" alt="Desempate" style="display:none;">
-                                    <span class="tiebreak-label">DESEMPATE:</span>
-                                    <span id="torneoTiebreakText">-</span>
-                                </span>
-                            </span>
-                        </span>
-                    </div>
-
-                    <div class="meta-row meta-row--format">
-                        <span class="meta-label">FORMATO:</span>
-                        <span class="meta-value meta-value--format">
-                            <span id="torneoFormatText" class="format-text">-</span>
-                            <span class="format-sep" aria-hidden="true">—</span>
-                            <span id="torneoBoText" class="bo-text">-</span>
-                            <span id="boHelpWrap" class="bo-help" style="display:none;">
-                                <button id="boHelpBtn" class="info-btn" type="button" aria-label="Ayuda BO">i</button>
-                                <span id="boTooltip" class="tooltip" role="tooltip"></span>
-                            </span>
-                        </span>
-                    </div>
-
-                    <div id="metaModeRow" class="meta-row meta-row--mode" style="display:none;">
-  <span class="meta-label">MODALIDAD:</span>
-  <span class="meta-value meta-value--mode">
-    <span id="torneoModeText" class="mode-text">-</span>
-
-    <span id="modeHelpWrap" class="bo-help" style="display:none;">
-      <button id="modeHelpBtn" class="info-btn" type="button" aria-label="Ayuda modalidad">i</button>
-      <span id="modeTooltip" class="tooltip" role="tooltip"></span>
-    </span>
-  </span>
-</div>
-
-<div id="metaPrizesRow" class="meta-row meta-row--prizes" style="display:none;">
-  <span class="meta-label">PREMIOS:</span>
-  <span class="meta-value meta-value--prizes">
-    <span id="torneoPrizes" class="prize-list"></span>
-  </span>
-</div>
-
-
-                </div>
-
-
-<div id="extraButtonsRow" class="hero-buttons-row" style="display: none;">
-    <button id="btnBases" class="btn-mini btn-orange">
-        📜 Ver Bases
-    </button>
-
-    <a href="https://chat.whatsapp.com/DbmJcQzCoSG7emzIvRN32W" target="_blank" class="btn-mini btn-whatsapp">
-        <i class="fab fa-whatsapp"></i> Comunidad
-    </a>
-</div>
-
-                <!-- Botón de registro (si está abierto) -->
-                <button id="openModalBtn" class="open-modal-btn" style="display:none;">Registrarme al torneo</button>
-
-                 <!-- Reglas / Prohibiciones / Excepciones -->
-                <div id="rulesCard" class="rules-card" style="display:none;"></div>
-
-              <div id="mainInscritosContainer" style="margin-top: 56px; display: none;">
-                    
-                    <div class="meta-label" style="margin-bottom: 16px; text-align: center;">
-                        JUGADORES INSCRITOS
-                        <span id="mainInscritosCount" style="display: none;"></span>
-                    </div> <div class="prep-grid" id="mainInscritosGrid"></div>
+            <div id="resultPhase" class="result-phase" style="display:none;">
+                
+                <div style="text-align: center; margin-bottom: 30px; padding-top: 20px;">
+                    <h2 class="titulo-principal" style="font-size: 36px; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(251, 191, 36, 0.5); color: #fbbf24; letter-spacing: 1px;">
+                        🏆 Podio de Leyendas
+                    </h2>
                     
                 </div>
+                
+                <div id="podio-container" class="podio-premium"></div>
+                
+             <div id="cuarto-puesto-container" style="margin-top: 25px; display: flex; justify-content: center;"></div>
 
+            <div class="agradecimiento-box">
+                    <span>🏆 <strong>Premios hasta el 3er Puesto:</strong> Auspiciado por el Mall de Comas.</span>
+                    <span class="agradecimiento-sep"> | </span>
+                    <span>🌟 <strong>Agradecimiento Especial:</strong> A Nuestro compañero de la comunidad pokecomas <span class="highlight-matsubara">Matsubara</span> por donar el premio del 4to Puesto y algunos detalles para el torneo.</span>
+                </div>
+                <div class="section-card history-match" style="margin-top: 40px; text-align: center; background: rgba(15, 23, 42, 0.8); border: 1px solid #fbbf24;">
 
-                <!-- ✅ MODAL: EQUIPO DEL JUGADOR (pokes en modal) -->
-<div id="teamModal" class="modal-overlay">
-  <div class="modal-box team-modal-box">
-    <span class="close-modal" id="closeTeamModalBtn">&times;</span>
-
-    <h2 id="teamModalTitle" class="team-modal-title">Equipo</h2>
-
-    <div id="teamModalMeta" class="team-modal-meta"></div>
-
-    <div id="teamModalGrid" class="team-poke-grid"></div>
-  </div>
-</div>
-
-
-                <!-- Información del torneo -->
-               <p class="sub2" id="torneoInfo" data-state="loading">Cargando torneo…</p>
-
-
-                <!-- Selector multi torneo -->
-                <div id="eventTabs" class="event-tabs" style="display:none;"></div>
-
-               
-
-                <!-- ✅ Barra PREPARACIÓN (conteo) debajo de reglas -->
-<div id="prepCountdownBar" class="prep-countdown-bar" style="display:none;">
-  <div class="prep-countdown-inner">
-    <span class="prep-phase">FASE DE PREPARACIÓN</span>
-    <span class="prep-sep">—</span>
-    <span class="prep-label">TERMINA EN:</span>
-    <span id="prepCountdown" class="prep-time">30:00</span>
-  </div>
-</div>
-
-
-                <!-- FASE DE ENFRENTAMIENTOS (bracket en curso) -->
-           <div id="battlePhase" class="battle-phase" style="display:none;">
-    <div class="battle-triangle">
-        <div id="matchNow"></div>
-        <div class="battle-next-row">
-            <div id="matchNext1"></div>
-            <div id="matchNext2"></div>
-        </div>
-    </div>
-
-    <!-- ✅ PRESENCIAL: mesas simultáneas + cola de próximos -->
-    <div id="liveTablesWrap" class="liveTablesWrap" style="display:none;">
-        <div class="liveTablesTitle">MESAS EN JUEGO</div>
-        <div id="liveTablesGrid" class="liveTablesGrid"></div>
-    </div>
-
-    <div id="nextQueueWrap" class="nextQueueWrap" style="display:none;">
-        <div class="nextQueueTitle">PRÓXIMOS ENFRENTAMIENTOS</div>
-        <div id="nextQueueList" class="nextQueueList"></div>
-    </div>
-</div>
-
-
-                                <!-- ✅ GRUPOS (reemplaza el bracket en fase de enfrentamientos) -->
-                <div id="groupsSection" class="groups-section" style="margin-top:26px; display:none;">
-                  <div class="groups-kicker">GRUPOS</div>
-                  <div id="groupsGrid" class="groups-grid"></div>
+                <div class="section-card history-match" style="margin-top: 40px; text-align: center; background: rgba(15, 23, 42, 0.8); border: 1px solid #fbbf24;">
+                    <h2 class="titulo-principal" id="titulo-equipo-campeon" style="font-size: 26px; margin-bottom: 20px; color: #fbbf24;">
+                        🛡️ Equipo del Campeón
+                    </h2>
+                    <div id="campeon-equipo-container" class="history-team" style="justify-content: center; gap: 15px;"></div>
                 </div>
 
+                <div style="margin-top: 30px;">
+                    <h2 class="titulo-principal" id="campeon-titulo" style="text-align: center; font-size: 24px; margin-bottom: 25px; color: #e2e8f0;">
+                        👑 Camino a la Victoria
+                    </h2>
+                    <div id="historial-container"></div>
+                </div>
 
-<!-- ✅ FASE FINAL: RESULTADOS (post-final) -->
-<div id="resultPhase" class="result-phase" style="display:none;">
-  <!-- meta del torneo -->
-  <div id="resultMeta" class="result-meta"></div>
-
-  <!-- campeón -->
-  <div id="resultChampion" class="result-champion"></div>
-
-  <!-- camino del campeón (sus VS) -->
-  <div id="resultRoad" class="result-road"></div>
-
-  <!-- descarga -->
-  <div class="result-download">
-    <button id="btnDownloadJson" class="send-all-btn">Descargar JSON</button>
-  </div>
-</div>
-
-
-                <!-- Resumen + tarjetas -->
-                <div id="eventSummary" class="event-summary"></div>
-
-                <!-- Bracket -->
-                <div id="bracketSection" class="bracket-section" style="margin-top:32px; display:none;">
-  <div class="bracket-head-row">
-    <h2 class="titulo-principal" style="margin:0;">BRACKET</h2>
-
-    <button id="openBracketBtn" class="bracket-open-btn" type="button">
-      Ver Bracket
-    </button>
-  </div>
-
-  <div class="bracket-hint">
-    Se actualiza automáticamente mientras avanza el torneo.
-  </div>
-</div>
-
-
+                </div>
             </div>
-          </main>
+            </main>
         </div>
       </div>
     </div>
@@ -241,243 +84,11 @@
       <img src="contenedor-bottom.webp" alt="Bottom" class="contenedor-bottom">
       
       <div class="footer-overlay">
-       <!--- <div class="social-icons">
-          <a href="#" class="social-link" aria-label="Facebook">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-          </a>
-          <a href="#" class="social-link" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-          </a>
-          <a href="#" class="social-link" aria-label="Web">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-          </a>
-        </div>
-
-        <div class="footer-links">
-          <a href="#">Reglas</a>
-          <span class="separator">•</span>
-          <a href="#">Privacidad</a>
-          <span class="separator">•</span>
-          <a href="#">Contacto</a>
-        </div> -->
-
         <p class="copyright">Pokecomas.com</p>
       </div>  
     </footer>
   </div>
 
-   <!-- Modal de registro -->
-                <div id="formModal" class="modal-overlay">
-                    <div class="modal-box">
-                        <span class="close-modal" id="closeModalBtn">&times;</span>
-                        <h2 class="modal-title">Registro Torneo</h2>
-
-                        <div class="modal-form-row">
-                            <div class="form-column">
-                                <label>Nombre y Apellido:</label>
-                                <input id="nombre" placeholder="Nombre y Apellido" required>
-                            </div>
-                            <div class="form-column">
-                                <label>Nombre en Pokémon GO:</label>
-                                <input id="nick" placeholder="Nombre en Pokémon" required>
-                            </div>
-                        </div>
-
-                        <div class="modal-form-row">
-                            <div class="form-column">
-                                <label>Código Entrenador (12 dígitos):</label>
-                                <input id="codigo" maxlength="12" inputmode="numeric" pattern="\d{12}" placeholder="Ej: 123456789012">
-                            </div>
-                            <div class="form-column">
-                                <label>ID Campfire (opcional):</label>
-                                <input id="campfire" placeholder="Ej: MiCampfire">
-                            </div>
-                        </div>
-
-                        <h3 class="sub1" style="margin-top:10px;">Registra Tus Pokémon</h3>
-
-                        <!-- ✅ MULTI-LIGA: selector de liga (solo aparece si leagueRulesJson tiene 2+ ligas) -->
-<div id="modalLeagueSwitch" class="modal-league-switch" style="display:none;">
-  <div id="modalLeagueBtns" class="modal-league-switch__buttons"></div>
-  <div id="modalLeagueHint" class="modal-league-switch__hint"></div>
-</div>
-
-
-                        <!-- datalist una sola vez -->
-                        <datalist id="pokemonList"></datalist>
-
-                        <div class="modal-form-row">
-                            <div class="form-column">
-                                <label>Pokémon 1</label>
-                                <div class="pokePick">
-                                    <img id="p1img" class="pokeFace" src="" alt="">
-                                    <input id="p1" placeholder="25 - Pikachu" required autocomplete="off" data-drop="p1drop">
-<div id="p1drop" class="poke-dropdown"></div>
-
-                                </div>
-                            </div>
-                            <div class="form-column">
-                                <label>Pokémon 2</label>
-                                <div class="pokePick">
-                                    <img id="p2img" class="pokeFace" src="" alt="">
-                                    <input id="p2" placeholder="1 - Bulbasaur" required autocomplete="off" data-drop="p2drop">
-<div id="p2drop" class="poke-dropdown"></div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-form-row">
-                            <div class="form-column">
-                                <label>Pokémon 3</label>
-                                <div class="pokePick">
-                                    <img id="p3img" class="pokeFace" src="" alt="">
-                                    <input id="p3" placeholder="4 - Charmander" required autocomplete="off" data-drop="p3drop">
-<div id="p3drop" class="poke-dropdown"></div>
-
-                                </div>
-                            </div>
-                            <div class="form-column">
-                                <label>Pokémon 4</label>
-                                <div class="pokePick">
-                                    <img id="p4img" class="pokeFace" src="" alt="">
-                                    <input id="p4" placeholder="7 - Squirtle" required autocomplete="off" data-drop="p4drop">
-<div id="p4drop" class="poke-dropdown"></div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-form-row">
-                            <div class="form-column">
-                                <label>Pokémon 5</label>
-                                <div class="pokePick">
-                                    <img id="p5img" class="pokeFace" src="" alt="">
-                                    <input id="p5" placeholder="25 - Pikachu" required autocomplete="off" data-drop="p5drop">
-<div id="p5drop" class="poke-dropdown"></div>
-
-                                </div>
-                            </div>
-                            <div class="form-column">
-                                <label>Pokémon 6</label>
-                                <div class="pokePick">
-                                    <img id="p6img" class="pokeFace" src="" alt="">
-                                    <input id="p6" placeholder="6 - Charizard" required autocomplete="off" data-drop="p6drop">
-<div id="p6drop" class="poke-dropdown"></div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <button id="btnRegister" class="send-all-btn">Enviar registro</button>
-
-                        
-                    </div>
-                </div>
-
-                <!-- Modal Bracket (pantalla completa) -->
-<div id="bracketModal" class="modal-overlay bracket-modal-overlay" style="display:none;">
-  <div class="bracket-modal" role="dialog" aria-modal="true" aria-labelledby="bracketModalTitle">
-    <div class="bracket-modal-header">
-      <div id="bracketModalTitle" class="bracket-modal-title">BRACKET</div>
-
-      <button id="closeBracketBtn" class="close-modal close-bracket-btn" type="button" aria-label="Cerrar">
-        &times;
-      </button>
-    </div>
-
-    <div class="bracket-modal-body">
-      <!-- AQUÍ vive el bracket real -->
-      <div id="bracket" class="bracket-wrap"></div>
-    </div>
-  </div>
-</div>
-
-<div id="modalBases" class="modal-backdrop">
-    <div class="modal-window">
-        <span class="modal-close">&times;</span>
-        
-        <div class="modal-header">
-            <h2>📜 Bases Torneo Pokecomas Go</h2>
-        </div>
-
-        <div class="modal-scroll-content">
-            <div class="rule-section">
-                <h3>A. Formato de Batalla</h3>
-                <ul>
-                    <li><strong>Liga:</strong> Super Ball (Máximo 1,500 PC por Pokémon).</li>
-                    <li><strong>Estilo:</strong> 6 traídos, 3 elegidos. Cada jugador registra 6 Pokémon en su ficha de inscripción. Antes de cada batalla, los jugadores se muestran sus equipos de 6 y eligen solo 3 para combatir.</li>
-                    <li><strong>Estructura:</strong> Eliminación directa hasta llegar a octavos de final. A partir de octavos hasta semifinal al mejor de 3 combates (BO3). La gran final y el duelo para elegir al tercer puesto será al mejor de 5 (BO5).</li>
-                </ul>
-            </div>
-
-            <div class="rule-section">
-                <h3>B. Restricciones de Equipo</h3>
-                <ul>
-                    <li><strong>Especies únicas:</strong> No se puede repetir el mismo número de Pokédex en el equipo de 6 (ejemplo: no puedes llevar dos Stunfisk, aunque uno sea de Galar y el otro no).</li>
-                    <li><strong>Pokémon prohibidos:</strong> Los Pokémon de tipo "Mega".</li>
-                    <li>🛑 <strong>Fidelidad del Registro:</strong> El equipo es inmutable. Si registraste un Pokémon en versión <em>Shadow (Oscuro)</em>, debes usarlo en esa versión. Si te presentas con la versión Normal o Purificada (o viceversa), <strong>ese Pokémon quedará anulado</strong> y deberás afrontar el resto del torneo eligiendo tu equipo de 3 solo entre tus 5 Pokémon restantes.</li>
-                </ul>
-            </div>
-
-            <div class="rule-section">
-                <h3>C. Protocolo de Combate</h3>
-                <ul>
-                    <li><strong>Código de Amistad:</strong> Los jugadores deben agregarse mediante código QR antes de iniciar para poder desafiarse.</li>
-                    <li><strong>Inicio de la batalla:</strong> Se debe verificar que ambos jugadores están listos antes de dar la señal de "GO".</li>
-                    <li><strong>Pausa por error de red:</strong> Si un jugador sufre una caída de internet evidente al inicio (primeros 10 segundos o antes de usar un ataque cargado), se repite el combate con los mismos leads (Pokémon iniciales). Si es después, el juez decidirá según el estado de la partida.</li>
-                </ul>
-            </div>
-
-            <div class="rule-section">
-                <h3>D. Conducta</h3>
-                <ul>
-                    <li>🛑 Está prohibido ver la pantalla del oponente durante el combate.</li>
-                    <li>🛑 El uso de "autoclickers" o software externo conlleva la descalificación inmediata.</li>
-                    <li>🛑 <strong>Respeto Mutuo:</strong> Se exige buen comportamiento durante todo el torneo. Cualquier falta de respeto, insulto o discusión agresiva será motivo de descalificación inmediata.</li>
-                    <li>🛑 <strong>Juego Limpio:</strong> Cualquier jugador que muestre señales evidentes de dejarse perder o no jugar con seriedad competitiva será descalificado.</li>
-                    <li>🛑 <strong>Una cuenta por persona:</strong> Cada participante solo puede registrarse y jugar con una única cuenta. El uso de multicuentas está prohibido.</li>
-                </ul>
-            </div>
-
-            <div class="rule-section">
-                <h3>E. Inscripción</h3>
-                <ul>
-                    <li><strong>Fase Digital (Pre-inscripción):</strong> Formulario presentado en la página <em>pokecomas.com/torneo</em>. Límite de participantes: 64 jugadores.</li> 
-                    <li><strong>Fase de Confirmación (Check-in presencial):</strong> El día del evento: Si un jugador no hace el Check-in 30 minutos antes de empezar, su cupo se entrega a alguien de la "Lista de Espera" que esté presente.</li>
-                </ul>
-            </div>
-
-            <div class="rule-section premios-section">
-                <h3>F. Premios (Monedas) 🏆</h3>
-                <div class="premios-grid">
-                    <div class="premio-card gold">
-                        <span class="puesto">1er Puesto</span>
-                        <span class="monto">31,000</span>
-                        <span class="moneda">Monedas</span>
-                    </div>
-                    <div class="premio-card silver">
-                        <span class="puesto">2do Puesto</span>
-                        <span class="monto">21,100</span>
-                        <span class="moneda">Monedas</span>
-                    </div>
-                    <div class="premio-card bronze">
-                        <span class="puesto">3er Puesto</span>
-                        <span class="monto">15,500</span>
-                        <span class="moneda">Monedas</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button id="btnEntendido" class="btn-confirm">Entendido, estoy listo</button>
-        </div>
-    </div>
-</div>
-
-                 <!-- Toast de notificaciones -->
-                <div id="toast" class="toast"></div>
   <script src="torneo.js"></script>
 </body>
 </html>
