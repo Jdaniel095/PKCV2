@@ -1,5397 +1,3142 @@
-// torneo.js - Funcionalidades JavaScript para la página del torneo
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-// Esperar a que el DOM esté completamente cargado
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Página de torneo cargada correctamente');
-    
-    // Inicializar funciones
-    initResponsiveChecks();
-    initImageLoading();
-    initInteractiveElements();
-    setupNumeroContactoField_();
-
-});
-
-/**
- * Verificar el tipo de dispositivo y ajustar comportamiento
- */
-function initResponsiveChecks() {
-    // Detectar ancho de pantalla
-    const screenWidth = window.innerWidth;
-    
-    // Detectar si es dispositivo táctil
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
-    // Agregar clase al body según el tipo de dispositivo
-    if (screenWidth < 768) {
-        document.body.classList.add('mobile-device');
-    } else if (screenWidth < 1024) {
-        document.body.classList.add('tablet-device');
-    } else {
-        document.body.classList.add('desktop-device');
-    }
-    
-    if (isTouchDevice) {
-        document.body.classList.add('touch-device');
-    }
-    
-    console.log(`Dispositivo detectado: ${screenWidth}px, Táctil: ${isTouchDevice}`);
-    
-    // Actualizar al cambiar el tamaño de la ventana
-    window.addEventListener('resize', debounce(function() {
-        updateDeviceClass();
-    }, 250));
+body{
+  font-family: 'Lato','Arial','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  overflow-x: hidden;
+  background: linear-gradient(180deg,#0b2d5a 0%,#00509a 35%,#004f9a 75%,#005199 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
-/**
- * Actualizar clase del dispositivo al redimensionar
- */
-function updateDeviceClass() {
-    const screenWidth = window.innerWidth;
-    
-    // Remover clases previas
-    document.body.classList.remove('mobile-device', 'tablet-device', 'desktop-device');
-    
-    // Agregar clase correspondiente
-    if (screenWidth < 768) {
-        document.body.classList.add('mobile-device');
-    } else if (screenWidth < 1024) {
-        document.body.classList.add('tablet-device');
-    } else {
-        document.body.classList.add('desktop-device');
-    }
-    
-    console.log(`Tamaño actualizado: ${screenWidth}px`);
+/* Layout principal */
+.main-container{
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/**
- * Manejar carga de imágenes
- */
-function initImageLoading() {
-    const images = document.querySelectorAll('img');
-    
-    images.forEach(img => {
-        // Mostrar mensaje mientras carga
-        img.addEventListener('load', function() {
-            console.log(`Imagen cargada: ${img.alt}`);
-            img.classList.add('loaded');
-        });
-        
-        // Manejar errores de carga
-        img.addEventListener('error', function() {
-            console.error(`Error al cargar imagen: ${img.src}`);
-        });
-    });
+/* Fondo superior */
+.fondo-superior{
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
 }
 
-/**
- * Agregar interactividad a elementos
- */
-function initInteractiveElements() {
-    const cards = document.querySelectorAll('.card');
-    
-    cards.forEach(card => {
-        // Efecto de click en móviles
-        card.addEventListener('click', function() {
-            console.log('Card clickeada');
-        });
-        
-        // Efecto hover mejorado
-        card.addEventListener('mouseenter', function() {
-            this.style.transition = 'all 0.3s ease';
-        });
-    });
+/* Wrapper logo + top */
+.content-wrapper{
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: -160px auto 0; /* base desktop */
+  z-index: 2;
 }
 
-/**
- * Función debounce para optimizar eventos de resize
- */
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+/* Logo */
+.logo-container{
+  position: relative;
+  text-align: center;
+  margin-bottom: -90px;
+  z-index: 6; /* encima del contenido */
+}
+.logo{
+  /* Tamaño base para PC */
+  width: 300px;
+  height: auto;
+  max-width: 90%;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
-/**
- * Smooth scroll para navegación interna (si agregas enlaces)
- */
-function smoothScroll(target) {
-    const element = document.querySelector(target);
-    if (element) {
-        element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }
+/* Stack */
+.contenedor-imagen{ position: relative; width: 100%; z-index: 3; }
+.contenedor-bg{ display: none; }
+.contenedor-stack{ position: relative; width: 100%; }
+
+.contenedor-top{
+  width: 100%;
+  display: block;
+  position: relative;
+  z-index: 3;
 }
 
-/**
- * Detectar orientación del dispositivo
- */
-window.addEventListener('orientationchange', function() {
-    const orientation = window.orientation;
-    console.log(`Orientación cambiada: ${orientation === 0 ? 'Vertical' : 'Horizontal'}`);
-    
-    // Agregar lógica específica para cambios de orientación
-    setTimeout(updateDeviceClass, 100);
-});
-
-/**
- * Función para crear notificaciones o mensajes
- */
-function showNotification(message, type = 'info') {
-    console.log(`Notificación [${type}]: ${message}`);
+/* Footer */
+.page-footer{
+  margin-top: auto;     /* ✅ empuja el footer al final del viewport */
+  width: 100%;
+  position: relative;
+  z-index: 1;           /* ✅ queda por debajo del contenido */
+  line-height: 0;
+  flex-shrink: 0;
 }
 
-/**
- * Verificar conexión a internet
- */
-window.addEventListener('online', function() {
-    showNotification('Conexión restaurada', 'success');
-});
-
-window.addEventListener('offline', function() {
-    showNotification('Sin conexión a internet', 'warning');
-});
-
-/**
- * Prevenir zoom accidental en iOS al hacer doble tap
- */
-let lastTouchEnd = 0;
-document.addEventListener('touchend', function(event) {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-    }
-    lastTouchEnd = now;
-}, false);
-
-/**
- * Función de utilidad para obtener información del dispositivo
- */
-function getDeviceInfo() {
-    return {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-        isTablet: /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768,
-        isDesktop: window.innerWidth >= 1024
-    };
+.contenedor-bottom{
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+  margin-top: 0;
 }
 
-// Exportar funciones útiles (opcional)
-window.TorneoApp = {
-    smoothScroll,
-    showNotification,
-    getDeviceInfo,
-    updateDeviceClass
-};
-
-// Log de información inicial
-console.log('Información del dispositivo:', getDeviceInfo());
-
-const API = "https://script.google.com/macros/s/AKfycbzEpIAkxL3tWHsl80XUp6DfHp3n8pspK7mG_JZtI5snfM8yU5wKkBVnBTTbe1BxNZXwJQ/exec";
-const $ = (id) => document.getElementById(id);
-
-let TORNEOS = [];
-let SELECTED_ID = "";
-let LOADALL_PROMISE = null;
-let LAST_LOADALL_TS = 0;
-const LOADALL_MIN_MS = 4000; // throttle para que no recargue a cada rato
-let CURRENT_ALLOWED_DEX_SET = null;
-let CURRENT_ALLOWED_OPTION_SET = new Set(); // strings exactos "6 - Charizard"
-let CURRENT_ALLOWED_ID_SET = new Set();     // ids exactos: "6", "6_s", "302_b1", etc
-let POKE_OPTION_LABEL_BY_ID = new Map();    // id(lower) -> label exacto del datalist
-let POKE_OPT_BY_LABEL = new Map();          // label exacto -> {id,dex,label,variantKey}
-let DEFAULT_LABEL_BY_DEX = new Map();       // dex -> label normal permitido (para cuando escriben a mano)
-let CURRENT_ALLOWED_OPTIONS_ALL = [];       // ✅ opciones completas (ordenadas) para filtrar el datalist por slot
-let CURRENT_ALLOWED_OPTIONS_SORTED = [];    // ✅ para el dropdown custom del modal
-
-// ===============================
-// ✅ MODO PÚBLICO: mostrar solo torneo activo (si no quieres, luego activas ?all=1)
-// ===============================
-const URL_PARAMS = new URLSearchParams(window.location.search);
-const SHOW_ALL_TOURNEOS = ["1","true","si","sí"].includes(String(URL_PARAMS.get("all") || "").toLowerCase());
-
-// ===============================
-// ✅ UI: reset completo cuando NO hay torneo
-// ===============================
-function renderNoTournamentState_(msg){
-  // limpia estado en memoria
-  TORNEOS = [];
-  SELECTED_ID = "";
-
-  // título grande
-  const titleEl = $("torneoTitle");
-  if(titleEl) titleEl.textContent = "NO HAY TORNEO";
-
-  // oculta meta y botón registro
-  const meta = $("torneoMeta");
-  if(meta) meta.style.display = "none";
-
-  const btn = $("openModalBtn");
-  if(btn) btn.style.display = "none";
-
-  // info
-  const info = $("torneoInfo");
-  if(info){
-    info.textContent = msg || "No hay torneos disponibles.";
-    info.style.display = "block";
-  }
-
-  // helpers
-  const hide = (id) => { const el = $(id); if(el) el.style.display = "none"; };
-  const clear = (id) => { const el = $(id); if(el) el.innerHTML = ""; };
-
-  // oculta secciones
-  hide("eventTabs");
-  hide("rulesCard");
-  hide("prepCountdownBar");
-  hide("battlePhase");
-  hide("groupsSection");
-  hide("resultPhase");
-  hide("bracketSection");
-  hide("liveTablesWrap");
-  hide("nextQueueWrap");
-
-  // limpia contenido dinámico
-  clear("eventSummary");
-  clear("bracket");
-  clear("matchNow");
-  clear("matchNext1");
-  clear("matchNext2");
-  clear("groupsGrid");
-  clear("liveTablesGrid");
-  clear("nextQueueList");
-
-  // si el modal quedó abierto, lo cerramos
-  const modal = $("formModal");
-  if(modal && modal.style.display !== "none"){
-    modal.style.display = "none";
-    if(typeof restaurarScrollBody === "function") restaurarScrollBody();
-  }
+/* =========================================================
+   ✅ NUEVO: ESTILOS PARA EL CONTENIDO DEL FOOTER
+   ========================================================= */
+.footer-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   
+  /* Flexbox para centrar contenido */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centrado vertical sobre la imagen */
+  align-items: center;
   
+  z-index: 10;
+  color: #fff;
+  text-align: center;
+  padding: 20px 10px; 
 }
 
-function setupNumeroContactoField_(){
-  const input = document.getElementById("campfire");
-  if(!input) return;
-
-  // Evita duplicar listeners si se llama varias veces
-  if(input.dataset.contactSetup === "1") return;
-  input.dataset.contactSetup = "1";
-
-  // Cambia el label sin tocar HTML
-  const col = input.closest(".form-column");
-  const lbl = col ? col.querySelector("label") : null;
-  if(lbl) lbl.textContent = "Número de contacto (9 dígitos):";
-
-  // Forzar: obligatorio + teclado numérico + 9 dígitos
-  input.required = true;
-  input.type = "tel";
-  input.placeholder = "Ej: 999888777";
-  input.setAttribute("maxlength", "9");
-  input.setAttribute("inputmode", "numeric");
-  input.setAttribute("pattern", "\\d{9}");
-  input.setAttribute("autocomplete", "tel");
-
-  const normalize = () => {
-    const cleaned = String(input.value || "").replace(/\D/g, "").slice(0, 9);
-    if (input.value !== cleaned) input.value = cleaned;
-  };
-
-  input.addEventListener("input", normalize);
-  input.addEventListener("blur", normalize);
+.social-icons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 8px;
 }
 
-
-// ===============================
-// ✅ PREP TIMER (fase de preparación)
-// ===============================
-let PREP_TIMER = null;
-let PREP_TARGET_END_MS = 0;
-
-function parseGmt5StampToMs(stamp){
-  const s = String(stamp || "").trim();
-  if(!s) return 0;
-
-  // Si ya viene como ISO con timezone (ej. 2026-02-06T15:30:00-05:00)
-  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
-    const ms = Date.parse(s);
-    return Number.isFinite(ms) ? ms : 0;
-  }
-
-  // Formato GAS: "yyyy-MM-dd HH:mm:ss"  -> lo tratamos como -05:00 fijo
-  const m = s.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})$/);
-  if(m){
-    const iso = `${m[1]}T${m[2]}-05:00`;
-    const ms = Date.parse(iso);
-    return Number.isFinite(ms) ? ms : 0;
-  }
-
-  const ms = Date.parse(s);
-  return Number.isFinite(ms) ? ms : 0;
+.social-link {
+  color: #fff;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-// ✅ Fase de preparación activa
-function isPrepActive(t){
-  // 1. Si está en modo MANUAL y cerrado, sigue en espera (incluso si hay bracket generado)
-  if(t?.prepEndsAt === "MANUAL" && !t?.open) return true;
+.social-link:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.footer-links {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  opacity: 0.95;
+}
+
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+.separator {
+  margin: 0 5px;
+  opacity: 0.6;
+}
+
+.copyright {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  line-height: 1.4;
+  margin-top: 2px;
+  padding: 0 10px;
+}
+
+/* =========================================================
+   ✅ CONTENIDO "SUELTO"
+   ========================================================= */
+.content-area{
+  position: relative;
+  z-index: 5;
+
+  width: 84%;
+  max-width: 980px;
+  margin: 0 auto;
+
+  /* ✅ Valor base overrideado en responsive.css */
+  margin-top: -420px;
+
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+
+  padding: 18px 16px 5px;
   
-  // 2. Si no, revisa el tiempo
-  const endMs = parseGmt5StampToMs(t?.prepEndsAt);
-  return (!t?.open && !!endMs && Date.now() < endMs);
+  color: #fff;
 }
 
-function isGroupFormat_(t){
-  const fmt = String(t?.format ?? t?.Formato ?? t?.mode ?? t?.Mode ?? "").trim().toLowerCase();
-  if(fmt.includes("grupo") || fmt.includes("groups") || fmt.includes("group")) return true;
-
-  const matches = Array.isArray(t?.matches) ? t.matches : [];
-  return matches.some(m => {
-    const gid = String(m?.GroupId ?? m?.groupId ?? "").trim();
-    const st  = String(m?.Stage ?? m?.stage ?? "").trim().toLowerCase();
-    return !!gid || st.includes("group") || st.includes("grupo");
-  });
+/* 🔥 REGLA MATA-ESPACIOS */
+.content-area > :last-child {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
 }
 
-// ===============================
-// ✅ FASE DE ENFRENTAMIENTOS (bracket en curso)
-// ===============================
-function isBattlePhase(t){
-  const raw = (t?.status ?? t?.estado ?? t?.state ?? t?.phase ?? t?.fase ?? "");
-  const st = String(raw || "").trim().toLowerCase();
+/* Espacio mínimo debajo del logo */
+.content-after-logo-spacer{
+  height: 1rem; 
+}
 
-  if(st){
-    if(st.includes("enfrent") || st.includes("battle") || st.includes("ongoing") || st.includes("running") || st.includes("en_curso") || st.includes("curso")){
-      return true;
-    }
+/* Título arriba (blanco sobre el fondo) */
+.content-area h1{
+  font-size: 2.35rem;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.45);
+}
+
+.intro-text{
+  color: rgba(255,255,255,0.92);
+  text-shadow: 0 2px 10px rgba(0,0,0,0.40);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+/* Títulos fuera de cards (blancos) */
+.section-title{
+  margin: 18px 0 10px;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.45);
+}
+
+/* Separador suave */
+hr.section-sep{
+  border: none;
+  height: 1px;
+  background: rgba(255,255,255,0.20);
+  margin: 22px 0;
+}
+
+/* Cards (legibles) */
+.card{
+  background: rgba(255,255,255,0.92);
+  color: #2b2b2b;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+}
+
+.card h2{
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+.card h3{
+  margin-bottom: 8px;
+  color: #3498db;
+}
+
+/* Listas */
+.content-area ul,
+.content-area ol{
+  padding-left: 1.2rem;
+  margin-bottom: 12px;
+}
+.content-area li{ margin: 6px 0; }
+
+/* Utilidades */
+.text-center{ text-align: center; }
+.mt-3{ margin-top: 30px; }
+
+
+/* =========================================================
+   ✅ CONTENIDO "Primera Fase"
+   ========================================================= */
+
+.titulo-principal {
+        font-family: "Lato", sans-serif;
+        font-style: normal;
+        font-weight: 800;
+        font-size: 50px;
+        line-height: 77px;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, #e0b96c, #ffdcb5 35%, #e0b96c 70%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, .7));
+        margin: 0 0 30px 0;
+}
+
+.torneo-meta{
+  
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  backdrop-filter: none;
+
+  
+  padding: 0;
+}
+
+.torneo-meta,
+#torneoMeta{
+  width: 92%;
+  max-width: 980px;
+  margin: 10px auto 0;
+  display: grid;
+  gap: 10px;
+}
+
+#torneoMeta{
+  margin-top: 2px;   
+}
+
+.meta-row {
+        margin-bottom: 22px; 
+        padding: 10px;
+}
+
+.meta-row--league,
+.meta-row--format,
+.meta-row--datetime,
+.meta-row--participants,
+.meta-row--mode,
+.meta-row--prizes{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ✅ IMPORTANTE: sin z-index fijo, porque crea stacking y tapa tooltips */
+.meta-row--format,
+.meta-row--mode{
+  position: relative;
+  overflow: visible;
+  z-index: auto;
+}
+
+
+.meta-label {
+        font-weight: 800;
+        color: #ffe8a3;
+        margin-right: 10px;
+        font-size: 16px;
+}
+
+.meta-value {
+        color: white;
+        font-size: 18px;
+}
+
+.date-only,
+.time-only {
+        font-weight: 600;
+}
+
+.meta-value--format {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+}
+
+.meta-value--datetime {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+}
+
+.meta-row--datetime .meta-value--datetime{
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.format-text,
+.bo-text {
+        font-weight: 600;
+}
+
+.format-sep {
+        color: rgba(255, 255, 255, 0.5);
+}
+
+.league-badges {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+}
+
+.league-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(255, 215, 0, 0.2);
+        border-radius: 20px;
+        border: 2px solid rgba(255, 215, 0, 0.5);
+}
+
+.league-chip--main{
+  border-color: rgba(255,220,120,0.22);
+}
+
+.league-chip--tiebreak {
+        background: rgba(100, 150, 255, 0.2);
+        border-color: rgba(100, 150, 255, 0.5);
+}
+
+.tiebreak-label { }
+
+.league-logo-img,
+#leagueLogoImg,
+#tiebreakLogoImg{
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.55));
+}
+
+#torneoLeagueText{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.league-part{ display: inline-flex; align-items: center; gap: 8px; }
+
+/* =========================================================
+   TOOLTIP (ícono i) - siempre al frente
+   ========================================================= */
+
+.bo-help,
+#boHelpWrap,
+#modeHelpWrap{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  overflow: visible;
+
+  /* ✅ ayuda a que “suba” por encima de otras filas */
+  z-index: 1;
+}
+
+/* Cuando está abierto por click (JS .open) */
+.bo-help.open,
+#boHelpWrap.open,
+#modeHelpWrap.open{
+  z-index: 999999;
+}
+
+/* Botón i */
+.info-btn{
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.3);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.info-btn:hover{
+  background: rgba(255, 215, 0, 0.5);
+  transform: scale(1.1);
+}
+
+/* Tooltip (sirve para BO y MODALIDAD) */
+.tooltip{
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 10px);
+  top: auto;
+  transform: translateX(-50%);
+  display: none;
+
+  width: 420px;
+  max-width: calc(100vw - 24px);
+  min-width: 240px;
+  box-sizing: border-box;
+
+  padding: 10px 12px;
+  border-radius: 14px;
+
+  background: rgba(8,12,20,0.92);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 10px 22px rgba(0,0,0,.35);
+
+  color: #fff;
+  font-weight: 800;
+  font-size: 12.5px;
+  line-height: 1.25;
+  white-space: normal;
+  word-break: break-word;
+  text-align: center;
+
+  /* ✅ SIEMPRE adelante */
+  z-index: 999999;
+}
+
+/* Mostrar tooltip por hover (PC) */
+.bo-help:hover .tooltip{
+  display: block;
+}
+
+/* Mostrar tooltip por click (móvil / JS agrega .open) */
+#boHelpWrap.open #boTooltip,
+#modeHelpWrap.open #modeTooltip{
+  display: block;
+}
+
+
+/* Ajustes específicos cuando está dentro de #torneoMeta (tu header del torneo) */
+#torneoMeta .meta-row{
+  margin: 2px 0;     
+  padding: 0;        
+}
+
+#torneoMeta .meta-label{
+  font-family: "Lato", sans-serif;
+  font-weight: 900;
+  font-size: 28px;
+  text-transform: uppercase;
+  color: #e0b96c;
+  filter: drop-shadow(0px 2px 1px rgba(0,0,0,.7));
+}
+
+#torneoMeta .meta-value{
+  font-family: "Lato", sans-serif;
+  font-weight: 900;
+  font-size: 40px;
+  letter-spacing: .2px;
+  color: #ffdcb5;
+  filter: drop-shadow(0px 2px 1px rgba(0,0,0,.7));
+}
+
+#torneoMeta .meta-label,
+#torneoMeta .meta-value,
+#torneoMeta .format-text,
+#torneoMeta .bo-text,
+#torneoMeta .time-only{
+  line-height: 1.05; 
+}
+
+#torneoMeta .meta-row--league .meta-value{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#torneoMeta .league-badges{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#torneoMeta .league-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,220,120,0.22);
+  box-shadow:
+    inset 0 0 10px rgba(255,255,255,0.06),
+    0 0 12px rgba(0,0,0,0.25);
+}
+
+#torneoMeta .league-chip--tiebreak{
+  border-color: rgba(109,255,178,0.28);
+}
+
+#torneoMeta .league-chip--tiebreak,
+#torneoMeta .league-chip--tiebreak .tiebreak-label{
+  color: #6dffb2;
+}
+
+#torneoMeta .tiebreak-label{
+  font-weight: 900;
+  letter-spacing: .4px;
+}
+
+#torneoMeta .meta-value--datetime{
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+#torneoMeta .time-only{
+  font-size: 34px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+
+#torneoMeta .meta-row--format .meta-label{ opacity: .95; }
+
+#torneoMeta .format-text{
+  font-size: 30px;
+  font-weight: 900;
+  color: #ffe7b0;
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+
+#torneoMeta .bo-text{
+  font-size: 34px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+
+#torneoMeta .format-sep{
+  font-size: 40px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  margin: 0 6px;
+  opacity: .95;
+}
+
+#torneoMeta .meta-row--mode .meta-label{ opacity: .95; }
+
+#torneoMeta .meta-value--mode{ display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+#torneoMeta .mode-text{
+  font-size: 30px;
+  font-weight: 900;
+  color: #ffe7b0;
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+
+#torneoMeta .meta-row--prizes .meta-label{ opacity: .95; }
+
+#torneoMeta .meta-value--prizes{ display: flex; justify-content: center; }
+
+#torneoMeta .prize-list{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#torneoMeta .prize-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,220,120,0.26);
+  box-shadow:
+    inset 0 0 12px rgba(255,255,255,0.07),
+    0 0 14px rgba(0,0,0,0.28);
+}
+
+#torneoMeta .prize-icon-box{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+#torneoMeta .prize-icon-box img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#torneoMeta .prize-text{
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+#torneoMeta .prize-rank{
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffffff;
+  opacity: .95;
+}
+
+#torneoMeta .prize-name{
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffdcb5;
+}
+
+/* Botón abrir modal registro (clase + IDs que usas en JS) */
+/* =========================================================
+   BOTÓN PRINCIPAL: Registrarme (openModalBtn)
+   ========================================================= */
+.open-modal-btn,
+#openModalBtn {
+  padding: 16px 36px;
+  background: linear-gradient(90deg, #ffe27a, #ffd048);
+  border-radius: 20px;
+  color: #5a3a00;
+  font-size: 22px;
+  font-weight: 900;
+  border: 2px solid #fff2a0;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 0 12px #ffe27a, 0 0 22px #5c80b1;
+
+  /* ✅ centrado correcto en escritorio */
+  display: block;
+  width: fit-content;
+  max-width: 560px;
+  margin: 18px auto 22px;
+}
+
+.open-modal-btn:hover,
+#openModalBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px #ffe27a, 0 0 45px #0d5f99;
+}
+
+
+/* =========================================================
+   TIPOGRAFÍA AUXILIAR
+   ========================================================= */
+.sub1 {
+  font-family: 'Lato', sans-serif;
+  font-weight: 800;
+  font-size: 36px;
+  line-height: 44px;
+  text-transform: uppercase;
+  color: white;
+  filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, .7));
+  margin-bottom: 10px;
+}
+
+/* =========================================================
+   ✅ LOADING: "Cargando torneo…"
+   ========================================================= */
+
+#torneoInfo{
+  /* Estilo base (para mensajes tipo "No hay torneos" / error) */
+  font-family: "Lato", sans-serif;
+  font-weight: 900;
+  letter-spacing: .4px;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  text-align: center;
+
+  margin: 18px auto 0;
+  max-width: calc(100% - 24px);
+}
+
+/* Solo anima cuando está en estado loading */
+#torneoInfo[data-state="loading"]{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  width: fit-content;
+  padding: 14px 18px;
+  border-radius: 999px;
+
+  background: linear-gradient(135deg, rgba(0,0,0,0.26), rgba(12,50,100,0.18));
+  border: 1px solid rgba(255,220,120,0.26);
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    inset 0 0 12px rgba(255,255,255,0.06),
+    0 14px 32px rgba(0,0,0,0.35);
+
+  animation: torneoLoadingPulse 1.8s ease-in-out infinite;
+}
+
+/* Spinner */
+#torneoInfo[data-state="loading"]::before{
+  content:"";
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+
+  border: 3px solid rgba(255,220,120,0.25);
+  border-top-color: rgba(118,232,255,0.95);
+  border-right-color: rgba(118,232,255,0.55);
+
+  animation: torneoSpin .85s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(118,232,255,0.35));
+}
+
+/* Puntitos */
+#torneoInfo[data-state="loading"]::after{
+  content:"";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,220,120,0.95);
+
+  box-shadow:
+    12px 0 0 rgba(255,220,120,0.55),
+    24px 0 0 rgba(255,220,120,0.25);
+
+  animation: torneoDots 1.1s ease-in-out infinite;
+  margin-left: 2px;
+}
+
+@keyframes torneoSpin { to { transform: rotate(360deg);} }
+
+@keyframes torneoDots {
+  0%   { opacity: .25; transform: translateX(0); }
+  35%  { opacity: 1;   transform: translateX(0); }
+  70%  { opacity: .25; transform: translateX(10px); }
+  100% { opacity: .25; transform: translateX(0); }
+}
+
+@keyframes torneoLoadingPulse{
+  0%,100% { transform: translateY(0); filter: brightness(1); }
+  50%     { transform: translateY(-1px); filter: brightness(1.08); }
+}
+
+/* Accesibilidad: reduce animaciones si el usuario lo pide */
+@media (prefers-reduced-motion: reduce){
+  #torneoInfo[data-state="loading"],
+  #torneoInfo[data-state="loading"]::before,
+  #torneoInfo[data-state="loading"]::after{
+    animation: none !important;
   }
-
-  if(!t?.open && !isPrepActive(t) && isTrue(t?.generated)) return true;
-
-  const matches = Array.isArray(t?.matches) ? t.matches : [];
-  const hasPairs = matches.some(m => {
-    const a = String(m?.PlayerAId ?? m?.playerAId ?? m?.AId ?? m?.aId ?? "").trim();
-    const b = String(m?.PlayerBId ?? m?.playerBId ?? m?.BId ?? m?.bId ?? "").trim();
-    return !!a && !!b;
-  });
-
-  if(!t?.open && !isPrepActive(t) && hasPairs) return true;
-
-  return false;
-}
-
-function setHeaderBattleMode(isBattle){
-  const lbl1 = $("metaDateLabel");
-  const lbl2 = $("metaTimeLabel");
-  const d = $("torneoDateOnly");
-  const h = $("torneoTimeOnly");
-
-   if(isBattle){
-    lbl1.innerHTML =
-      'FASE DE ENFRENTAMIENTO' +
-      '<span class="phase-sep"> / </span>' +
-      'TORNEO: <span class="phase-status">EN CURSO</span>';
-
-    lbl1.classList.add("battle-phase-line");
-
-    d.style.display = "none";
-    lbl2.style.display = "none";
-    h.style.display = "none";
-  }else{
-    lbl1.classList.remove("battle-phase-line");
-    lbl1.textContent = "FECHA:";
-    lbl2.textContent = "HORA:";
-
-    d.style.display = "";
-    lbl2.style.display = "";
-    h.style.display = "";
-  }
-}
-
-// ===============================
-// ✅ Scores / estado match (robusto con fallback)
-// ===============================
-function numOr0_(v){
-  const n = Number(v);
-  return Number.isFinite(n) ? n : 0;
-}
-
-function getScoreA_(m){
-  return numOr0_(m?.ScoreA ?? m?.scoreA ?? m?.aScore ?? m?.AScore ?? m?.A_score ?? m?.score1 ?? 0);
-}
-function getScoreB_(m){
-  return numOr0_(m?.ScoreB ?? m?.scoreB ?? m?.bScore ?? m?.BScore ?? m?.B_score ?? m?.score2 ?? 0);
-}
-
-function isMatchDone_(m){
-  const st = String(m?.Status ?? m?.status ?? "").trim().toLowerCase();
-  if(st === "done" || st === "finished" || st === "final" || st === "closed") return true;
-  if(isTrue(m?.Done ?? m?.done ?? m?.Locked ?? m?.locked ?? m?.Closed ?? m?.closed)) return true;
-  const w = String(m?.WinnerId ?? m?.winnerId ?? "").trim();
-  const l = String(m?.LoserId ?? m?.loserId ?? "").trim();
-  if(w || l) return true;
-  return false;
-}
-
-function isMatchDoneByScore_(t, m){
-  const bo = Number(m?.bestOf ?? m?.BestOf ?? t?.bestOf ?? 3) || 3;
-  const need = needWinsFromBestOf(bo);
-  return getScoreA_(m) >= need || getScoreB_(m) >= need;
-}
-
-function isMatchClosed_(t, m){
-  return isMatchDone_(m) || isMatchDoneByScore_(t, m);
-}
-
-function matchSortKey_(m){
-  const r = Number(m?.Round ?? m?.round ?? 1);
-  const s = Number(m?.Slot ?? m?.slot ?? 0);
-  return [r, s];
-}
-
-function sortMatches_(arr){
-  return (arr || []).slice().sort((a,b)=>{
-    const [ar,as] = matchSortKey_(a);
-    const [br,bs] = matchSortKey_(b);
-    return (ar-br) || (as-bs);
-  });
-}
-
-function getMatchId_(m){
-  return String(m?.MatchId ?? m?.matchId ?? m?.id ?? "").trim();
-}
-
-function getMatchGroupId_(m){
-  const raw = (m?.GroupId ?? m?.groupId ?? m?.Group ?? m?.group ?? "");
-  return normalizeGroupId_(raw);
-}
-
-function getMatchPlayerId_(m, side){
-  if(side === "A"){
-    return String(m?.PlayerAId ?? m?.playerAId ?? m?.AId ?? m?.aId ?? m?.playerA ?? "").trim();
-  }
-  return String(m?.PlayerBId ?? m?.playerBId ?? m?.BId ?? m?.bId ?? m?.playerB ?? "").trim();
-}
-
-function getMatchPlayerName_(m, side){
-  if(side === "A"){
-    // Prioriza NickA antes que NombreA
-    return String(m?.PlayerAName ?? m?.playerAName ?? m?.NickA ?? m?.NombreA ?? "").trim();
-  }
-  // Prioriza NickB antes que NombreB
-  return String(m?.PlayerBName ?? m?.playerBName ?? m?.NickB ?? m?.NombreB ?? "").trim();
-}
-
-function splitTeamTokens_(v){
-  if(!v) return [];
-  if(Array.isArray(v)) return v.map(x => String(x||"").trim()).filter(Boolean);
-  const s = String(v||"").trim();
-  if(!s) return [];
-  return s.split(/[,;|\n\r]+/g).map(x=>x.trim()).filter(Boolean);
-}
-
-function extractTeamFromMatch_(m, side){
-  const pick = (side === "A")
-    ? (m?.TeamA ?? m?.teamA ?? m?.PokemonsA ?? m?.pokemonsA ?? m?.PokemonA ?? m?.pokemonA ?? "")
-    : (m?.TeamB ?? m?.teamB ?? m?.PokemonsB ?? m?.pokemonsB ?? m?.PokemonB ?? m?.pokemonB ?? "");
-
-  const a = splitTeamTokens_(pick);
-  if(a.length) return a.slice(0,6);
-
-  const out = [];
-  const pref = side;
-  for(let i=1;i<=6;i++){
-    const v = m?.[`${pref}${i}`] ?? m?.[`${pref.toLowerCase()}${i}`] ?? "";
-    if(v) out.push(String(v).trim());
-  }
-  return out.slice(0,6);
-}
-
-function getBattlePlayer_(t, m, side){
-  const pid = getMatchPlayerId_(m, side);
-  const byId = t?.byId || {};
-  const meta = pid ? (byId[pid] || {}) : {};
-
-  const name = meta?.name || getMatchPlayerName_(m, side) || (pid || "TBD");
-  const team = (Array.isArray(meta?.team) && meta.team.length)
-    ? meta.team
-    : extractTeamFromMatch_(m, side);
-
-  return { id: pid, name, team };
-}
-
-function normalizeIconId_(token){
-  const s = String(token || "").trim();
-  if(!s) return "";
-  const m = s.match(/^(\d{1,4}(?:_[a-z0-9]+)?)\b/i);
-  return m ? m[1] : s;
-}
-
-function isShadowIconId_(id){
-  return /_a1$/i.test(String(id || "").trim());
-}
-
-function baseIconIdForDisplay_(id){
-  var s = String(id || "").trim();
-  if(!s) return "";
-  // Shadow: usamos la cara normal (sin _a1) como imagen
-  if(isShadowIconId_(s)) return s.replace(/_a1$/i, "");
-  return s;
 }
 
 
-function monImgUrl_(token){
-  var id = normalizeIconId_(token);
-  if(/^\d{1,4}(?:_[a-z0-9]+)?$/i.test(id)){
-    var displayId = baseIconIdForDisplay_(id);
-    return iconUrl(displayId);
-  }
-  return spriteUrl(token);
+/* =========================================================
+   MODALES (ESTRUCTURA GENERAL)
+   ========================================================= */
+.modal-overlay,
+#formModal{
+  display: none;
+  position: fixed;
+  inset: 0; /* reemplaza top/left/width/height */
+  background: rgba(10, 5, 30, 0.75);
+  backdrop-filter: blur(8px);
+
+  justify-content: center;
+  align-items: center;
+
+  /* ✅ por encima de logo, tooltips, etc */
+  z-index: 200000;
+
+  /* ✅ si el modal es alto (móvil horizontal), scrollea el overlay */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  /* un poco de aire en pantallas pequeñas */
+  padding: 18px;
 }
 
 
-function renderBattleTeam_(team){
-  if(!Array.isArray(team) || team.length === 0) return "";
-
-  return team.map(tok => {
-    const rawId = normalizeIconId_(tok);
-    if(!rawId) return `<span class="battle-mon">?</span>`;
-
-    const title = smartIconTitle_(rawId);
-    const isShadow = isShadowIconId_(rawId);
-
-    const firstUrl = /^\d/.test(rawId) ? iconUrl(rawId) : monImgUrl_(rawId);
-    const fallbackId = /^\d/.test(rawId) ? (fallbackIconIdForMissingVariant(rawId) || "") : "";
-
-    return `
-      <div class="battle-mon" title="${escapeHtml(title)}">
-        <span class="poke-icon-wrap" data-tip="${escapeHtml(title)}" title="${escapeHtml(title)}">
-          <img class="battle-mon-img"
-               src="${firstUrl}"
-               alt="${escapeHtml(title)}"
-               loading="lazy"
-               data-optid="${escapeHtml(rawId)}"
-               data-fallbackid="${escapeHtml(fallbackId)}"
-               data-shadow="${isShadow ? "1" : "0"}"
-               onload="onPokeIconLoad_(this)"
-               onerror="onPokeIconError_(this)">
-        </span>
-      </div>
-    `;
-  }).join("");
+.modal-box {
+  background: linear-gradient(135deg, rgba(20,55,110,0.55), rgba(140,20,80,0.55));
+  padding: 40px;
+  width: 90%;
+  max-width: 720px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  border: 2px solid rgba(255,220,120,0.45);
+  box-shadow: 0 0 20px rgba(255, 232, 150, 0.35), 0 0 45px rgba(0, 80, 150, 0.35);
+  backdrop-filter: blur(14px);
+  position: relative;
+  animation: fadeIn 0.25s ease-out;
 }
 
-function renderBattleTeamUnknown_(count = 6){
-  const n = Math.max(1, Number(count || 6));
-  return new Array(n).fill(0).map(() => `
-    <div class="battle-mon" title="?"><span>?</span></div>
-  `).join("");
+/* Scrollbar del Modal */
+.modal-box::-webkit-scrollbar { width: 6px; }
+.modal-box::-webkit-scrollbar-track { background: rgba(255,255,255,0.08); border-radius: 10px; }
+.modal-box::-webkit-scrollbar-thumb { background: #6d1547; }
+.modal-box::-webkit-scrollbar-thumb:hover { background: #8a1f64; }
+
+.modal-title {
+  font-size: 34px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #ffe8a3;
+  margin-bottom: 20px;
+  text-align: center;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(255,218,120,0.7);
 }
 
-function renderBattleFinalPlaceholderCard(t){
-  const bo = Number(t?.bestOf ?? 3) || 3;
-  const meta = `Final · BO${bo}`;
-
-  return `
-    <div class="battle-card battle-card--next">
-      <div class="battle-head">
-        <div class="battle-title">Próximo enfrentamiento 2</div>
-        <div class="battle-meta">${meta}</div>
-      </div>
-
-      <div class="battle-body--next">
-        <div class="battle-player">
-          <div class="battle-name">Finalista 1</div>
-          <div class="battle-team">${renderBattleTeamUnknown_(6)}</div>
-        </div>
-
-        <div class="battle-next-vs" aria-hidden="true">VS</div>
-
-        <div class="battle-player">
-          <div class="battle-name">Finalista 2</div>
-          <div class="battle-team">${renderBattleTeamUnknown_(6)}</div>
-        </div>
-      </div>
-    </div>
-  `;
+.close-modal,
+#closeModalBtn {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 34px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+  text-shadow: 0 0 8px rgba(255,220,120,0.6);
 }
 
-function fmtMMSS(totalSec){
-  const sec = Math.max(0, Math.floor(Number(totalSec || 0)));
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
-  return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+.close-modal:hover,
+#closeModalBtn:hover {
+  color: #ffe27a;
+  transform: scale(1.15);
 }
 
-function stopPrepTimer(){
-  if(PREP_TIMER){
-    clearInterval(PREP_TIMER);
-    PREP_TIMER = null;
-  }
-  PREP_TARGET_END_MS = 0;
+/* =========================================================
+   FORMULARIO DE REGISTRO
+   ========================================================= */
+.modal-form-row {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 0;
 }
 
-function startPrepTimer(prepEndsAtStamp){
-  stopPrepTimer();
-
-  const endMs = parseGmt5StampToMs(prepEndsAtStamp);
-  if(!endMs) return;
-
-  PREP_TARGET_END_MS = endMs;
-
-  const tick = () => {
-    const now = Date.now();
-    const remainMs = Math.max(0, endMs - now);
-    const remainSec = Math.ceil(remainMs / 1000);
-
-    const el = $("torneoTimeOnly");
-    if(el) el.textContent = fmtMMSS(remainSec);
-        const bar = $("prepCountdown");
-    if(bar) bar.textContent = fmtMMSS(remainSec);
-
-    if(remainMs <= 0){
-      stopPrepTimer();
-      showToast("⏳ Preparación finalizada");
-      loadAll(true).catch(()=>{});
-    }
-  };
-
-  tick();
-  PREP_TIMER = setInterval(tick, 1000);
+.form-column {
+  flex: 1;
+  min-width: 260px;
 }
 
-function setHeaderPrepMode(isPrep){
-  const lbl1 = $("metaDateLabel");
-  const lbl2 = $("metaTimeLabel");
-  if(!lbl1 || !lbl2) return;
-
-  if(isPrep){
-    lbl1.textContent = "FASE DE PREPARACIÓN";
-    lbl2.textContent = "TERMINA EN:";
-  }else{
-    lbl1.textContent = "FECHA:";
-    lbl2.textContent = "HORA:";
-  }
+/* =========================================================
+   SELECTOR DE POKÉMON (POKE PICK) - ARREGLADO
+   ========================================================= */
+.pokePick {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  /* El z-index base es bajo para que no tape otros elementos */
+  z-index: 1; 
 }
 
-// ===============================
-// POKÉDEX (para filtrar el modal)
-// ===============================
-let POKEMON_DB = [];
-let POKE_BY_DEX = new Map();
-let POKE_BY_NAME = new Map(); 
-let ICON_META_BY_ID = new Map(); 
-
-// ===============================
-// MOVES (para mostrar reglas)
-// ===============================
-let MOVES_FAST = [];
-let MOVES_CHARGED = [];
-let MOVE_BY_ID = new Map();
-let MOVE_BY_NORMNAME = new Map();
-const UI_LANG = "es_419"; 
-
-function normName(s){
-  return String(s||"")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+/* 🔥 ESTO ARREGLA EL BUG: 
+   Cuando se está escribiendo (:focus-within) O la lista está abierta (.is-open),
+   forzamos que este contenedor suba al nivel máximo (10000). */
+.pokePick:focus-within,
+.pokePick.is-open {
+  z-index: 10000 !important;
 }
 
-async function loadPokemonDB(){
-  if (POKEMON_DB.length) return;
-  // ✅ evita el típico bug de GitHub Pages por mayúsculas/minúsculas
-  let r = await fetch("pokemon.json");
-  if (!r.ok) r = await fetch("Pokemon.json");
-  if (!r.ok) throw new Error("No se pudo cargar pokemon.json (revisa el nombre exacto del archivo en tu repo)");
-
-  POKEMON_DB = await r.json();
-
-  POKE_BY_DEX.clear();
-  POKE_BY_NAME.clear();
-  ICON_META_BY_ID.clear();
-
-  const inferVariantTag = (iconIdLower) => {
-    if(/_s$/.test(iconIdLower)) return "Shiny";
-    if(/_a1(\b|_)/.test(iconIdLower)) return "Shadow";
-    if(/_a2(\b|_)/.test(iconIdLower)) return "Purificado";
-    if(/_g(\b|\d|_)/.test(iconIdLower)) return "Gigamax";
-    if(/_d(\b|\d|_)/.test(iconIdLower)) return "Dynamax";
-    if(/_m\d+$/.test(iconIdLower) || /_m$/.test(iconIdLower)) return "Mega";
-    return "";
-  };
-
-  POKEMON_DB.forEach(p => {
-    const dex = Number(p.dex);
-    if (!dex) return;
-
-    POKE_BY_DEX.set(dex, p);
-
-    const nES = p?.name?.es_419 || p?.name?.es_ES || p?.name?.en || "";
-    const nEN = p?.name?.en || "";
-    POKE_BY_NAME.set(normName(nES), dex);
-    if (nEN) POKE_BY_NAME.set(normName(nEN), dex);
-
-    const name = nES || nEN || `#${dex}`;
-    ICON_META_BY_ID.set(String(dex), { dex, name, label: name });
-
-    const rel = Array.isArray(p?.uicons?.relevantIconIds) ? p.uicons.relevantIconIds : [];
-    rel.forEach(iconId => {
-      const idLower = String(iconId).toLowerCase();
-      if(!idLower) return;
-      const tag = inferVariantTag(idLower);
-      const label = tag ? `${name} — ${tag}` : name;
-      if(!ICON_META_BY_ID.has(idLower)){
-        ICON_META_BY_ID.set(idLower, { dex, name, label });
-      }
-    });
-  });
+.pokePick input {
+  flex: 1;
+  margin-bottom: 0;
 }
 
-async function loadMovesDB(){
-  if (MOVE_BY_ID.size) return;
-  const candidates = [
-    "moves.i18n.latam.withId.json",
-    "Moves.i18n.latam.withId.json"
-  ];
-
-  let r = null;
-  for (const f of candidates){
-    const rr = await fetch(f);
-    if (rr.ok){ r = rr; break; }
-  }
-
-  if(!r) throw new Error("No se pudo cargar moves.i18n.latam.withId.json");
-
-  const data = await r.json();
-  MOVES_FAST = Array.isArray(data?.fast) ? data.fast : [];
-  MOVES_CHARGED = Array.isArray(data?.charged) ? data.charged : [];
-
-  MOVE_BY_ID.clear();
-  MOVE_BY_NORMNAME.clear();
-
-  const put = (m) => {
-    const id = String(m?.id || "").trim();
-    if(!id) return;
-    MOVE_BY_ID.set(id, m);
-    MOVE_BY_ID.set(id.toLowerCase(), m);
-
-    const name = String(m?.[UI_LANG] || m?.es_419 || m?.es_ES || m?.en || "").trim();
-    if(name) MOVE_BY_NORMNAME.set(normName(name), m);
-  };
-
-  MOVES_FAST.forEach(put);
-  MOVES_CHARGED.forEach(put);
+.pokeFace {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
-function splitListLower(v){
-  if(Array.isArray(v)){
-    return v.map(x => String(x||"").trim().toLowerCase()).filter(Boolean);
-  }
-  return String(v||"")
-    .split(",")
-    .map(x => x.trim().toLowerCase())
-    .filter(Boolean);
+.pokePick:focus-within {
+  /* Mantenemos compatibilidad con tu código anterior */
+  z-index: 10000;
 }
 
-function splitDexList(str){
-  return String(str||"")
-    .split(",")
-    .map(x => x.trim())
-    .filter(Boolean)
-    .map(x => Number(x))
-    .filter(n => Number.isFinite(n) && n > 0);
+.poke-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  margin-top: 6px;
+  display: none;
+  
+  /* Altura controlada */
+  max-height: 280px; 
+  overflow-y: auto;
+  
+  border-radius: 14px;
+  background: rgba(10, 18, 35, 0.98); /* Fondo sólido para que no se transparente */
+  border: 1px solid rgba(255,220,120,0.22);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.75);
+  backdrop-filter: blur(10px);
+  
+  /* Z-index interno muy alto */
+  z-index: 20000; 
 }
 
-function splitTokens(v){
-  if(Array.isArray(v)){
-    return v.map(x => String(x||"").trim()).filter(Boolean);
-  }
-  return String(v||"")
-    .split(",")
-    .map(x => x.trim())
-    .filter(Boolean);
+/* =========================================================
+   MODAL DE EQUIPO (VISUALIZACIÓN)
+   ========================================================= */
+.team-modal-box {
+  max-width: 560px;
+  padding: 22px;
 }
 
-function splitDexAndIds(str){
-  const dex = new Set();
-  const ids = new Set();
-  splitTokens(str).forEach(tok => {
-    if (/^\d+$/.test(tok)) dex.add(Number(tok));
-    else ids.add(String(tok).toLowerCase());
-  });
-  return { dex, ids };
+.team-modal-title {
+  font-size: 26px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  color: #ffe8a3;
+  text-align: center;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
 }
 
-// ===============================
-// NORMALIZADORES (categorías / etiquetas)
-// ===============================
-function normToken(s){
-  return String(s||"").trim().toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,""); 
+.team-modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 14px;
+  color: rgba(255,255,255,0.90);
+  font-weight: 900;
 }
 
-function normCategoryToken(tok){
-  const t = normToken(tok);
-  const map = {
-    "oscuro":"shadow","shadow":"shadow",
-    "purificado":"purified","purified":"purified",
-    "shiny":"shiny","brillante":"shiny",
-    "dinamax":"dynamax","dynamax":"dynamax",
-    "gigamax":"gigamax","gigantamax":"gigamax",
-    "mega":"mega",
-    "normal":"normal",
-    "bebe":"baby","baby":"baby",
-    "legendario":"legendary","legendary":"legendary",
-    "mitico":"mythical","mythical":"mythical"
-  };
-  return map[t] || t;
+.team-poke-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 
-function splitCategorySet(str){
-  return new Set(
-    splitTokens(str).map(normCategoryToken).filter(Boolean)
-  );
+/* Etiquetas de los inputs */
+.modal-box label {
+  display: block;
+  color: #fff7cc;
+  margin-bottom: 6px;
+  font-weight: 700;
 }
 
-function variantLabel(key, megaIndex){
-  switch(key){
-    case "shadow": return "Shadow";
-    case "purified": return "Purificado";
-    case "shiny": return "Shiny";
-    case "dynamax": return "Dynamax";
-    case "gigamax": return "Gigamax";
-    case "mega": return megaIndex ? `Mega ${megaIndex}` : "Mega";
-    default: return key || "";
-  }
+/* Campos de texto */
+.modal-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(12,50,100,0.35);
+  border: 1px solid rgba(255,220,120,0.4);
+  color: #fff;
+  margin-bottom: 15px;
+  transition: 0.25s;
+  box-sizing: border-box;
 }
 
-function makeLabel(name, tag){
-  return tag ? `${name} — ${tag}` : `${name}`;
+/* Efecto al escribir (Focus) */
+.modal-box input:focus {
+  outline: none;
+  background: rgba(15,70,130,0.45);
+  border-color: #ffe27a;
+  box-shadow: 0 0 10px rgba(255,228,120,0.8), 0 0 20px rgba(120,200,255,0.5);
 }
 
-function baseNameFromInput(raw){
-  let s = String(raw||"").trim();
-  if(!s) return "";
-  s = s.replace(/^(\d{1,4})\s*-\s*/,"");
-  s = s.replace(/\s*\([^)]*\)\s*$/,"").trim();
-  s = s.split(/\s[-—]\s/)[0].trim();
-  return s;
-}
-
-function pokeDisplayName(p){
-  return p?.name?.es_419 || p?.name?.es_ES || p?.name?.en || `#${p?.dex || ""}`;
-}
-
-function firstRelMatch(p, re){
-  const rel = Array.isArray(p?.uicons?.relevantIconIds) ? p.uicons.relevantIconIds.map(String) : [];
-  const hit = rel.find(x => re.test(String(x)));
-  return hit ? String(hit) : null;
-}
-
-function buildVariantOptionsForPokemon(p){
-  const dex = Number(p.dex);
-  if(!dex) return [];
-
-  const name = pokeDisplayName(p);
-  const rec  = p?.uicons?.recommended || {};
-  const options = [];
-
-  // ---------- BASE (forma principal) ----------
-  const normalId = String(rec.normal || dex);
-  options.push({ id: normalId, dex, label: makeLabel(name, ""), variantKey: "" });
-
-// En tu JSON: p.pogo.shadow indica si existe shadow en Pokémon GO.
-  const pogoHasShadow = !!(p?.pogo?.shadow);
-
-  // Si el repo no tiene icono shadow/purified, a veces rec.shadow viene igual al normal (ej: 211),
-  // y eso hace que se elimine por duplicado. Para evitarlo, creamos un ID "virtual" (211_a1 / 211_a2)
-  // y luego en la UI hacemos fallback al icono base si el PNG no existe.
-  let shadowId = String(rec.shadow || firstRelMatch(p, new RegExp(`^${dex}_a1\b`)) || "");
-  let purifiedId = String(rec.purified || firstRelMatch(p, new RegExp(`^${dex}_a2\b`)) || "");
-
-  const normLower = String(normalId).toLowerCase();
-  const shadowLower = String(shadowId).toLowerCase();
-  const purifiedLower = String(purifiedId).toLowerCase();
-
-  if(pogoHasShadow){
-    if(!shadowId || shadowId === "undefined" || shadowId === "null" || shadowLower === normLower){
-      shadowId = `${dex}_a1`; // ✅ virtual shadow id
-    }
-    if(!purifiedId || purifiedId === "undefined" || purifiedId === "null" || purifiedLower === normLower){
-      purifiedId = `${dex}_a2`; // ✅ virtual purified id
-    }
-  }else{
-    if(shadowLower === normLower) shadowId = "";
-    if(purifiedLower === normLower) purifiedId = "";
-  }
-
-  if(shadowId && shadowId !== "undefined" && shadowId !== "null"){
-    options.push({ id: shadowId, dex, label: makeLabel(name, variantLabel("shadow")), variantKey: "shadow" });
-  }
-  if(purifiedId && purifiedId !== "undefined" && purifiedId !== "null"){
-    options.push({ id: purifiedId, dex, label: makeLabel(name, variantLabel("purified")), variantKey: "purified" });
-  }
-
-  const shinyId =
-    (rec.shiny ? String(rec.shiny) : "") ||
-    firstRelMatch(p, new RegExp(`^${dex}_s$`)) ||
-    firstRelMatch(p, new RegExp(`^${dex}_.+_s$`)) ||
-    "";
-
-  if(shinyId && shinyId !== "undefined" && shinyId !== "null"){
-    options.push({ id: String(shinyId), dex, label: makeLabel(name, variantLabel("shiny")), variantKey: "shiny" });
-  }
-
-  const dmaxId = String(rec.dynamax || firstRelMatch(p, new RegExp(`^${dex}_b1\\b`)) || "");
-  if(dmaxId && dmaxId !== "undefined" && dmaxId !== "null"){
-    options.push({ id: dmaxId, dex, label: makeLabel(name, variantLabel("dynamax")), variantKey: "dynamax" });
-  }
-
-  const gmaxId = String(rec.gigamax || "");
-  if(gmaxId && gmaxId !== "undefined" && gmaxId !== "null"){
-    options.push({ id: gmaxId, dex, label: makeLabel(name, variantLabel("gigamax")), variantKey: "gigamax" });
-  }
-
-  const megaArr = Array.isArray(rec.mega) ? rec.mega : [];
-  megaArr.forEach((mid, idx) => {
-    if(!mid) return;
-    const id = String(mid);
-    const n = idx + 1;
-    options.push({ id, dex, label: makeLabel(name, variantLabel("mega", n)), variantKey: "mega" });
-  });
-
-  // ---------- FORMAS REGIONALES (Alola, Galar, Hisui, Paldea...) ----------
-  const forms = Array.isArray(p.forms) ? p.forms : [];
-  forms.forEach(f => {
-    if(!f) return;
-
-    const region = String(f.region || "").trim();
-    const fRec = f.recommended || {};
-
-    const baseName = region ? `${name} · ${region}` : name;
-    const formTag = region || "regional";
-
-    const fNormal = String(fRec.normal || f.uicon || "");
-    if(fNormal && fNormal !== "undefined" && fNormal !== "null"){
-      options.push({ id: fNormal, dex, label: makeLabel(baseName, ""), variantKey: "", formRegion: formTag });
-    }
-
-    const fShadow = String(fRec.shadow || "");
-    if(fShadow && fShadow !== "undefined" && fShadow !== "null"){
-      options.push({ id: fShadow, dex, label: makeLabel(baseName, variantLabel("shadow")), variantKey: "shadow", formRegion: formTag });
-    }
-
-    const fPurified = String(fRec.purified || "");
-    if(fPurified && fPurified !== "undefined" && fPurified !== "null"){
-      options.push({ id: fPurified, dex, label: makeLabel(baseName, variantLabel("purified")), variantKey: "purified", formRegion: formTag });
-    }
-
-    const fShiny = String(fRec.shiny || "");
-    if(fShiny && fShiny !== "undefined" && fShiny !== "null"){
-      options.push({ id: fShiny, dex, label: makeLabel(baseName, variantLabel("shiny")), variantKey: "shiny", formRegion: formTag });
-    }
-
-    const fDmax = String(fRec.dynamax || "");
-    if(fDmax && fDmax !== "undefined" && fDmax !== "null"){
-      options.push({ id: fDmax, dex, label: makeLabel(baseName, variantLabel("dynamax")), variantKey: "dynamax", formRegion: formTag });
-    }
-
-    const fGmax = String(fRec.gigamax || "");
-    if(fGmax && fGmax !== "undefined" && fGmax !== "null"){
-      options.push({ id: fGmax, dex, label: makeLabel(baseName, variantLabel("gigamax")), variantKey: "gigamax", formRegion: formTag });
-    }
-
-    const fMegaArr = Array.isArray(fRec.mega) ? fRec.mega : [];
-    fMegaArr.forEach((mid, idx) => {
-      if(!mid) return;
-      const id = String(mid);
-      const n = idx + 1;
-      options.push({ id, dex, label: makeLabel(baseName, variantLabel("mega", n)), variantKey: "mega", formRegion: formTag });
-    });
-  });
-
-  // quitar duplicados por id
-  const seen = new Set();
-  return options.filter(o => {
-    const k = String(o.id).toLowerCase();
-    if(seen.has(k)) return false;
-    seen.add(k);
-    return true;
-  });
+/* Color del texto de ayuda (Placeholder) */
+.modal-box input::placeholder {
+  color: rgba(255,255,255,0.55);
 }
 
 
-function buildAllowedOptions(t){
-  const bannedTypes = new Set(splitListLower(t.bannedTypes));
-  const bannedCats  = splitCategorySet(t.bannedCategories);
-
-  const banned = splitDexAndIds(t.bannedPokemon);
-  const allow  = splitDexAndIds(t.allowedPokemon);
-
-  const out = [];
-  const allowedDexSet = new Set();
-
-  for (const p of POKEMON_DB){
-    const dex = Number(p.dex);
-    if(!dex) continue;
-
-    const cat = normCategoryToken(p.category);
-    const types = Array.isArray(p.types) ? p.types.map(x => String(x).toLowerCase()) : [];
-
-    const baseCatBanned = (cat && bannedCats.has(cat));
-    const typeBanned = types.some(tp => bannedTypes.has(tp));
-    const dexBanned = banned.dex.has(dex);
-
-    const options = buildVariantOptionsForPokemon(p);
-
-    for(const o of options){
-      const idLower = String(o.id).toLowerCase();
-      const allowedByDexNormal = allow.dex.has(dex) && (o.variantKey === "");
-      const allowedById = allow.ids.has(idLower);
-
-      if(allowedByDexNormal || allowedById){
-        out.push(o);
-        allowedDexSet.add(dex);
-        continue;
-      }
-
-      if(dexBanned) continue;
-      if(banned.ids.has(idLower)) continue;
-      if(baseCatBanned) continue;
-      if(o.variantKey && bannedCats.has(normCategoryToken(o.variantKey))) continue;
-      if(typeBanned) continue;
-
-      out.push(o);
-      allowedDexSet.add(dex);
-    }
-  }
-
-  allow.dex.forEach(dx => allowedDexSet.add(dx));
-  return { options: out, allowedDexSet };
+/* Botón de cada liga */
+.league-switch-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: rgba(10, 18, 35, 0.35);
+  border: 1px solid rgba(255,220,120,0.25);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: .3px;
+  transition: .18s ease;
 }
 
-function fillPokemonDatalist(options){
-  const dl = document.getElementById("pokemonList");
-  if (!dl) return;
-
-  const order = { "":0, shadow:1, purified:2, shiny:3, dynamax:4, gigamax:5, mega:6 };
-
-  const opts = (Array.isArray(options) ? options : []).slice();
-  CURRENT_ALLOWED_OPTIONS_SORTED = opts;
-
-  opts.sort((a,b) => {
-    const d = Number(a.dex) - Number(b.dex);
-    if(d !== 0) return d;
-    return (order[a.variantKey || ""] ?? 99) - (order[b.variantKey || ""] ?? 99);
-  });
-
-  CURRENT_ALLOWED_OPTIONS_ALL = opts.slice();
-
-  CURRENT_ALLOWED_OPTION_SET = new Set();
-  CURRENT_ALLOWED_ID_SET = new Set();
-  POKE_OPTION_LABEL_BY_ID = new Map();
-  POKE_OPT_BY_LABEL = new Map();
-  DEFAULT_LABEL_BY_DEX = new Map();
-
-  dl.innerHTML = opts.map(o => {
-    const labelRaw = String(o.label || "");
-    const labelEsc = labelRaw.replace(/"/g,"&quot;");
-    const idLower = String(o.id || "").toLowerCase();
-
-    CURRENT_ALLOWED_OPTION_SET.add(labelRaw);
-    CURRENT_ALLOWED_ID_SET.add(idLower);
-
-    POKE_OPTION_LABEL_BY_ID.set(idLower, labelRaw);
-    POKE_OPT_BY_LABEL.set(labelRaw, { ...o });
-
-    if((o.variantKey || "") === "" && !DEFAULT_LABEL_BY_DEX.has(Number(o.dex))){
-      DEFAULT_LABEL_BY_DEX.set(Number(o.dex), labelRaw);
-    }
-
-    return `<option value="${labelEsc}"></option>`;
-  }).join("");
+.league-switch-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.25);
+  border-color: rgba(255,220,120,0.45);
 }
 
-// ===============================
-// ✅ Dropdown custom Pokémon (bonito)
-// ===============================
-function pokeLabelParts_(labelRaw){
-  let s = String(labelRaw || "").trim();
-  s = s.replace(/^(\d{1,4})\s*-\s*/, "");
-  if (s.includes("—")) {
-    const [a,b] = s.split("—");
-    return { name: (a||"").trim(), tag: (b||"").trim() };
-  }
-  const m = s.match(/^(.*)\s-\s(Shadow|Purificado|Shiny|Dynamax|Gigamax|Mega.*)$/i);
-  if(m) return { name: (m[1]||"").trim(), tag: (m[2]||"").trim() };
-  return { name: s.trim(), tag: "" };
+/* Estado activo (Liga seleccionada) */
+.league-switch-btn.is-active {
+  background: linear-gradient(135deg, rgba(255,226,122,0.22), rgba(120,170,255,0.12));
+  border-color: rgba(255,226,122,0.75);
+  box-shadow: 0 0 0 2px rgba(255,226,122,0.15), 0 16px 34px rgba(0,0,0,0.28);
 }
 
-function getDropElForInput_(inputEl){
-  const id = inputEl?.dataset?.drop;
-  return id ? document.getElementById(id) : null;
+/* Icono y texto dentro del botón */
+.league-switch-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.45));
 }
 
-function hidePokeDropdown_(inputEl){
-  const d = getDropElForInput_(inputEl);
-  if(!d) return;
-  d.style.display = "none";
-  d.innerHTML = "";
-  delete d.dataset.activeIndex;
-
-  // ✅ CORRECCIÓN: Quitamos la clase al padre para que baje su nivel
-  const parent = inputEl.closest('.pokePick');
-  if(parent) parent.classList.remove('is-open');
+.league-switch-text {
+  font-size: 15px;
+  text-transform: uppercase;
 }
 
-function hideAllPokeDropdowns_(){
-  document.querySelectorAll(".poke-dropdown").forEach(d => {
-    d.style.display = "none";
-    d.innerHTML = "";
-    delete d.dataset.activeIndex;
+/* Badges de color (ej: "LIGA 1500" azul) */
+.league-hint-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-left: 8px;
+  font-weight: 900;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 10px 18px rgba(0,0,0,0.20);
+}
+
+/* Colores específicos de ligas */
+.league-hint-badge--500 { background: rgba(255, 60, 60, 0.85); border-color: rgba(255, 120, 120, 0.35); }
+.league-hint-badge--1500 { background: rgba(60, 150, 255, 0.82); border-color: rgba(140, 200, 255, 0.35); }
+.league-hint-badge--2500 { background: rgba(0, 0, 0, 0.75); border-color: rgba(255, 255, 255, 0.22); }
+.league-hint-badge--9000 { background: rgba(165, 80, 255, 0.82); border-color: rgba(210, 160, 255, 0.35); }
+
+
+/* Scrollbar del dropdown */
+.poke-dropdown::-webkit-scrollbar { width: 6px; }
+.poke-dropdown::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 10px; }
+.poke-dropdown::-webkit-scrollbar-thumb { background: rgba(255,226,122,0.35); border-radius: 10px; }
+
+/* Cada opción de la lista */
+.poke-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.poke-item:hover,
+.poke-item.is-active {
+  background: rgba(255,226,122,0.12);
+}
+
+.poke-name {
+  font-weight: 800;
+  color: rgba(255,255,255,0.95);
+}
+
+.poke-muted {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.55);
+  white-space: nowrap;
+}
+
+.poke-muted:empty { display: none; }
+
+
+.send-all-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #6d1547, #123f82);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #fff;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 18px;
+  transition: 0.3s;
+}
+
+.send-all-btn:hover {
+  background: linear-gradient(90deg, #b5114a, #06497a);
+  transform: scale(1.05);
+  box-shadow: 0 0 14px rgba(246,255,0,0.7);
+}
+
+/* --- Toast Notification --- */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #222;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 50px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5); /* Sombra más fuerte para que resalte */
+  font-weight: 600;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* ✅ FIX: Ahora estará por encima de cualquier modal */
+  z-index: 999999; 
+  
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Borde opcional para visibilidad */
+}
+
+.toast.show { 
+  transform: translateX(-50%) translateY(0); 
+}
+
+/* =========================================================
+   ✅ BARRA DE PREPARACIÓN (Cuenta Regresiva)
+========================================================= */
+
+/* Contenedor principal de la barra */
+.prep-countdown-bar,
+#prepCountdownBar {
+    width: 92%;
+    max-width: 980px;
+    margin: 12px auto 0;
+    padding: 12px 16px;
+
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(255, 220, 120, 0.18);
+    border-radius: 18px;
+    backdrop-filter: blur(8px);
+
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05), 0 0 14px rgba(0, 0, 0, 0.20);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Contenedor interno para alinear elementos */
+.prep-countdown-inner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+/* Textos de etiqueta ("FASE DE PREPARACIÓN", "TERMINA EN:") */
+.prep-phase,
+.prep-label {
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #e0b96c;
+    filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, .7));
+}
+
+/* El tiempo numérico (ej: 30:00) */
+.prep-time,
+#prepCountdown {
+    font-family: 'Lato', sans-serif;
+    font-weight: 1000;
+    font-size: 28px;
+    color: #76e8ff; /* Azul neón */
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .35);
+}
+
+/* Separador visual (guión) */
+.prep-sep {
+    opacity: .7;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* =========================================================
+   ✅ META: PARTICIPANTES (Fila y Textos)
+========================================================= */
+
+/* Fila contenedora general (alineación) */
+.meta-row,
+.meta-row--participants {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 2px 0;
+    padding: 0;
+}
+
+/* La etiqueta (ej: "PARTICIPANTES:") */
+.meta-label {
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    text-transform: uppercase;
+    color: #e0b96c;
+    filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, .7));
+    line-height: 1.05;
+    margin-right: 10px;
+}
+
+/* Contenedor del valor (agrupa el número y el texto "jugadores") */
+.meta-value,
+.meta-value--participants {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
     
-    // ✅ CORRECCIÓN: Limpiamos la clase en todos los selectores
-    const parent = d.closest('.pokePick');
-    if(parent) parent.classList.remove('is-open');
-  });
+    /* Estilos base de texto para valores */
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    font-size: 40px; /* Tamaño base grande */
+    letter-spacing: .2px;
+    color: #ffdcb5;
+    filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, .7));
+    line-height: 1.05;
 }
 
-function setActivePokeItem_(dropEl, idx){
-  const items = dropEl.querySelectorAll(".poke-item");
-  const max = items.length;
-  if(!max) return;
-
-  let i = Number(idx);
-  if(!Number.isFinite(i)) i = 0;
-  if(i < 0) i = 0;
-  if(i > max - 1) i = max - 1;
-
-  items.forEach(x => x.classList.remove("is-active"));
-  const it = items[i];
-  if(it){
-    it.classList.add("is-active");
-    it.scrollIntoView({ block: "nearest" });
-  }
-  dropEl.dataset.activeIndex = String(i);
+/* El número de participantes (con gradiente especial) */
+.participants-text {
+    font-size: 30px;
+    font-weight: 1000;
+    background: linear-gradient(90deg, #76e8ff 0%, #a98bff 55%, #ff78d6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .25);
 }
 
-function renderPokeDropdown_(inputEl){
-  const dropEl = getDropElForInput_(inputEl);
-  if(!dropEl) return;
-
-  const q0 = String(inputEl.value || "").trim();
-  const q = normName(q0.replace(/^(\d{1,4})\s*-\s*/, "")).trim();
-
-  const src = Array.isArray(CURRENT_ALLOWED_OPTIONS_SORTED) ? CURRENT_ALLOWED_OPTIONS_SORTED : [];
-  const list = [];
-
-  const activeId = String(inputEl?.id || "");
-  const chosen = getChosenDexSetExcept_(activeId);
-
-  for(const o of src){
-    const dx = Number(o?.dex);
-    if(dx && chosen.has(dx)) continue;
-
-    const label = String(o?.label || "").trim();
-    if(!label) continue;
-
-    const { name, tag } = pokeLabelParts_(label);
-    const hay = normName(`${name} ${tag}`).trim();
-
-    if(!q || hay.includes(q)) {
-      list.push({ label, name, tag });
-      if(list.length >= 60) break;
-    }
-  }
-
-  if(!list.length){
-    hidePokeDropdown_(inputEl);
-    return;
-  }
-
-  dropEl.innerHTML = list.map((it, idx) => {
-    const enc = encodeURIComponent(it.label);
-    return `
-      <div class="poke-item" data-label="${enc}" data-idx="${idx}">
-        <span class="poke-name">${escapeHtml(it.name)}</span>
-        <span class="poke-muted">${escapeHtml(it.tag)}</span>
-      </div>
-    `;
-  }).join("");
-
-  dropEl.style.display = "block";
-  setActivePokeItem_(dropEl, 0);
-
-  // ✅ CORRECCIÓN: Agregamos clase al padre para ponerlo ENCIMA de los demás inputs
-  const parent = inputEl.closest('.pokePick');
-  if(parent) parent.classList.add('is-open');
+/* El texto pequeño "jugadores" */
+.participants-sub {
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.92);
+    opacity: .9;
+    font-size: 18px; /* Ajuste visual relativo al número */
+    text-shadow: none; /* Limpia sombras pesadas si es necesario */
 }
 
-// ✅ CORRECCIÓN FINAL: Detector de clics global
-// Esto cierra la lista si haces clic en el fondo negro, titulo o cualquier lado que no sea el buscador.
-document.addEventListener('click', function(e) {
-    // Si el clic NO fue dentro de un selector (pokePick), cerramos todo
-    if (!e.target.closest('.pokePick')) {
-        hideAllPokeDropdowns_();
-    }
-}, true); // 'true' para asegurar que capture el evento antes que otros
-
-function pickActivePokeItem_(inputEl){
-  const dropEl = getDropElForInput_(inputEl);
-  if(!dropEl || dropEl.style.display === "none") return false;
-
-  const idx = Number(dropEl.dataset.activeIndex || 0);
-  const it = dropEl.querySelector(`.poke-item[data-idx="${idx}"]`) || dropEl.querySelector(".poke-item");
-  if(!it) return false;
-
-  const label = decodeURIComponent(it.dataset.label || "");
-  if(!label) return false;
-
-  inputEl.value = label; 
-  hidePokeDropdown_(inputEl);
-  inputEl.dispatchEvent(new Event("change"));
-  return true;
+/* Responsive para móviles (ajuste de tamaños) */
+@media (max-width: 768px) {
+    .meta-label { font-size: 22px; }
+    .meta-value { font-size: 30px; }
 }
 
-function resetModalForm(){
-  ["nombre","nick","codigo","campfire","p1","p2","p3","p4","p5","p6"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.value = "";
-      delete el.dataset.dex;
-      delete el.dataset.pid;
-      if(typeof modalClearMultiLeagueState_ === "function") modalClearMultiLeagueState_();
-    }
-  });
+/* =========================================================
+   ✅ CONTENEDORES DE RESUMEN Y GRID
+========================================================= */
 
-  ["p1","p2","p3","p4","p5","p6"].forEach(id => {
-    const img = document.getElementById(id + "img");
-    if (img) {
-      img.removeAttribute("src");
-      img.alt = "";
-      img.style.visibility = "hidden";
-    }
-  });
-
-  const btn = document.getElementById("btnRegister");
-  if (btn){
-    btn.dataset.sending = "0";
-    btn.disabled = false;
-    btn.textContent = "Enviar registro";
-  }
+/* Contenedor principal del resumen */
+.event-summary,
+#eventSummary {
+    width: 92%;
+    max-width: 1180px;
+    margin: 18px auto 0;
+    text-align: left;
 }
 
-function parseDexFromInput(v){
-  const s = String(v||"").trim();
-  if(!s) return null;
-  const m = s.match(/^(\d{1,4})\b/);
-  if(m) return Number(m[1]);
-  const base = baseNameFromInput(s);
-  const dx = POKE_BY_NAME.get(normName(base));
-  return dx ? Number(dx) : null;
+/* Wrapper específico para la fase de preparación */
+.prep-wrap {
+    width: 96%;
+    max-width: 1400px;
+    margin: 18px auto 0;
+    text-align: left;
 }
 
-function getChosenDexSetExcept_(exceptId){
-  const set = new Set();
-  ["p1","p2","p3","p4","p5","p6"].forEach(id => {
-    if(id === exceptId) return;
-    const el = document.getElementById(id);
-    if(!el) return;
-    const dx = Number(el.dataset.dex) || parseDexFromInput(el.value);
-    if(dx) set.add(Number(dx));
-  });
-  return set;
+/* Grid de tarjetas (4 columnas por defecto) */
+.prep-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(300px, 1fr));
+    column-gap: 24px;
+    row-gap: 24px;
+    align-items: start;
+    justify-content: center;
+    margin-top: 14px;
 }
 
-function renderPokemonDatalistView_(optsView){
-  const dl = document.getElementById("pokemonList");
-  if(!dl) return;
-  dl.innerHTML = (Array.isArray(optsView) ? optsView : []).map(o => {
-    const labelRaw = String(o?.label || "");
-    const labelEsc = labelRaw.replace(/"/g,"&quot;");
-    return `<option value="${labelEsc}"></option>`;
-  }).join("");
+/* =========================================================
+   ✅ TARJETA DE PARTICIPANTE (PREP-CARD)
+========================================================= */
+
+.prep-card {
+    width: 100%;
+    max-width: none;
+    padding: 12px;
+    border-radius: 18px;
+    position: relative;
+    
+    /* Variable de color por defecto (azul claro) */
+    --gcol: 120, 232, 255; 
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    background: rgba(10, 18, 35, 0.55);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.42), inset 0 0 12px rgba(255, 255, 255, 0.05);
+
+    transition: none !important;
+    transform: none !important;
+    box-sizing: border-box;
 }
 
-function refreshPokemonDatalistForSlot_(activeId){
-  if(!Array.isArray(CURRENT_ALLOWED_OPTIONS_ALL) || !CURRENT_ALLOWED_OPTIONS_ALL.length) return;
-  const chosen = getChosenDexSetExcept_(activeId);
-  const view = CURRENT_ALLOWED_OPTIONS_ALL.filter(o => !chosen.has(Number(o.dex)));
-  renderPokemonDatalistView_(view);
+/* Borde gradiente especial de la tarjeta */
+.prep-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 !important;
+    border-radius: 18px !important;
+    padding: 2px;
+
+    background: linear-gradient(135deg,
+        rgba(255, 220, 120, 0.70),
+        rgba(120, 170, 255, 0.35),
+        rgba(255, 120, 220, 0.45)
+    );
+
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+
+    pointer-events: none;
 }
 
-function lockInputsToAllowed(allowedDexSet){
-  CURRENT_ALLOWED_DEX_SET = allowedDexSet;
-  hideAllPokeDropdowns_();
+/* Nombre del jugador */
+.prep-name {
+    font-size: 35px;
+    font-weight: 900;
+    text-align: center;
+    margin: 0;
+    letter-spacing: 0.4px;
 
-  const ids = ["p1","p2","p3","p4","p5","p6"];
+    background: linear-gradient(90deg, #e0b96c, #ffdcb5 35%, #e0b96c 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 
-function setShadowFallbackAura(imgEl, enabled){
-  if(!imgEl) return;
-
-  // ✅ si el HTML no tiene wrapper, lo creamos automáticamente
-  if (!imgEl.closest(".poke-icon-wrap")) {
-    const wrap = document.createElement("span");
-    wrap.className = "poke-icon-wrap";
-    imgEl.parentNode?.insertBefore(wrap, imgEl);
-    wrap.appendChild(imgEl);
-  }
-
-  const wrap = imgEl.closest(".poke-icon-wrap");
-  if(!wrap) return;
-
-  wrap.classList.toggle("shadow-fallback", !!enabled);
+    filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, .7));
 }
 
-
-const clearField = (id) => {
-  const el = document.getElementById(id);
-  const img = document.getElementById(id + "img");
-  if (!el) return;
-
-  el.value = "";
-  delete el.dataset.dex;
-  delete el.dataset.pid;
-
-  if(img){
-    setShadowFallbackAura(img, false);
-    img.onerror = null;
-    img.removeAttribute("src");
-    img.alt = "";
-    img.style.visibility = "hidden";
-  }
-};
-
-  const applyOption = (id, opt) => {
-    const el = document.getElementById(id);
-    const img = document.getElementById(id + "img");
-    if(!el) return false;
-
-    const dex = Number(opt.dex);
-    const optId = String(opt.id || "");
-
-    if(!dex || !CURRENT_ALLOWED_DEX_SET?.has(dex) || !optId) return false;
-
-    const chosen = new Set();
-    ids.forEach(x => {
-      if(x === id) return;
-      const other = document.getElementById(x);
-      const dx = Number(other?.dataset?.dex);
-      if(dx) chosen.add(dx);
-    });
-    if(chosen.has(dex)){
-      showToast("⚠ No puedes repetir el mismo Pokémon");
-      clearField(id);
-      return false;
-    }
-
-    el.value = opt.label;
-    el.dataset.dex = String(dex);
-    el.dataset.pid = optId;
-    hideAllPokeDropdowns_();
-
-   if(img){
-  const optId = String(opt.id || "");
-  const fallbackId = fallbackIconIdForMissingVariant(optId);
-
-  // ✅ Siempre apaga aura al intentar cargar un icono nuevo
-  setShadowFallbackAura(img, false);
-
-  img.onerror = () => {
-    // Si es shadow y falló el icono shadow, activamos aura
-    if(opt?.variantKey === "shadow"){
-      setShadowFallbackAura(img, true);
-    }
-
-    // ✅ 1er fallback: intenta el icono base (211 o 019_61, etc.)
-    if(fallbackId && fallbackId !== optId){
-      img.onerror = () => {
-        img.removeAttribute("src");
-        img.style.visibility = "hidden";
-      };
-      img.src = iconUrl(fallbackId);
-      return;
-    }
-
-    // ✅ si no hay fallback, oculta
-    img.removeAttribute("src");
-    img.style.visibility = "hidden";
-  };
-
-  img.src = iconUrl(optId);
-  img.alt = pokeDisplayName(POKE_BY_DEX.get(dex));
-  img.style.visibility = "visible";
+/* =========================================================
+   ✅ BADGE: NÚMERO DE PARTICIPANTE (Base)
+========================================================= */
+.badge-numero {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.15);
+    color: #76e8ff; /* Color cyan neón */
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 0.85em; /* Se adapta automáticamente al tamaño del texto padre */
+    font-weight: 900;
+    vertical-align: middle;
+    margin-right: 8px;
+    border: 1px solid rgba(118, 232, 255, 0.3);
+    text-shadow: none;
+    line-height: 1.2;
+    box-shadow: 0 0 5px rgba(118, 232, 255, 0.2);
 }
 
+/* =========================================================
+   ✅ SECCIÓN DE CÓDIGO DE ENTRENADOR
+========================================================= */
 
-    return true;
-  };
+.prep-code-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 
-  ids.forEach(pid => {
-    const el = document.getElementById(pid);
-    const img = document.getElementById(pid + "img");
-    if (!el) return;
+    padding: 9px 10px;
+    border-radius: 14px;
 
-    el.setAttribute("autocomplete","off");
-    el.setAttribute("autocorrect","off");
-    el.setAttribute("autocapitalize","none");
-    el.setAttribute("spellcheck","false");
-    el.setAttribute("name", `poke_${pid}_${SELECTED_ID || "t"}`);
-
-    const v = (el.value || "").trim();
-    const opt = POKE_OPT_BY_LABEL.get(v);
-
-    if(opt){
-      applyOption(pid, opt);
-      return;
-    }
-
-    const dex = parseDexFromInput(v);
-    if(dex && CURRENT_ALLOWED_DEX_SET?.has(dex)){
-      const defLabel = DEFAULT_LABEL_BY_DEX.get(dex);
-      const defOpt = defLabel ? POKE_OPT_BY_LABEL.get(defLabel) : null;
-      if(defOpt){
-        applyOption(pid, defOpt);
-        return;
-      }
-    }
-
-    if(img){
-      img.removeAttribute("src");
-      img.alt = "";
-      img.style.visibility = "hidden";
-    }
-    delete el.dataset.dex;
-    delete el.dataset.pid;
-  });
-
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-
-    if (el.dataset.boundPoke === "1") return;
-    el.dataset.boundPoke = "1";
-    el.addEventListener("focus", () => {
-      refreshPokemonDatalistForSlot_(id);
-    });
-
-    const dropEl = getDropElForInput_(el);
-    if(dropEl && dropEl.dataset.boundDrop !== "1"){
-      dropEl.dataset.boundDrop = "1";
-      dropEl.addEventListener("mousedown", (ev) => {
-        const item = ev.target.closest(".poke-item");
-        if(!item) return;
-        ev.preventDefault();
-        const label = decodeURIComponent(item.dataset.label || "");
-        if(!label) return;
-        el.value = label;
-        hidePokeDropdown_(el);
-        el.dispatchEvent(new Event("change"));
-      });
-    }
-
-    el.addEventListener("focus", () => {
-      hideAllPokeDropdowns_();
-      renderPokeDropdown_(el);
-    });
-
-    el.addEventListener("keydown", (ev) => {
-      const drop = getDropElForInput_(el);
-      const open = drop && drop.style.display !== "none";
-
-      if(ev.key === "Escape"){
-        hidePokeDropdown_(el);
-        return;
-      }
-
-      if(ev.key === "ArrowDown" || ev.key === "ArrowUp"){
-        ev.preventDefault();
-        if(!open) renderPokeDropdown_(el);
-        const d = getDropElForInput_(el);
-        if(!d) return;
-        const items = d.querySelectorAll(".poke-item");
-        if(!items.length) return;
-        const cur = Number(d.dataset.activeIndex || 0);
-        const next = (ev.key === "ArrowDown") ? cur + 1 : cur - 1;
-        setActivePokeItem_(d, next);
-        return;
-      }
-
-      if(ev.key === "Enter"){
-        if(open){
-          ev.preventDefault();
-          pickActivePokeItem_(el);
-        }
-      }
-    });
-
-    el.addEventListener("input", () => {
-      const v = el.value.trim();
-      if (!v) clearField(id);
-      if (el.dataset.dex || el.dataset.pid) {
-        delete el.dataset.dex;
-        delete el.dataset.pid;
-        const img = document.getElementById(id + "img");
-        if (img) {
-          img.removeAttribute("src");
-          img.alt = "";
-          img.style.visibility = "hidden";
-        }
-      }
-      if(v){
-        renderPokeDropdown_(el);
-      }else{
-        hidePokeDropdown_(el);
-      }
-    });
-
-    el.addEventListener("change", () => {
-      const v = el.value.trim();
-      if (!v) { clearField(id); return; }
-
-      if (CURRENT_ALLOWED_OPTION_SET.has(v)) {
-        const opt = POKE_OPT_BY_LABEL.get(v);
-        if(opt) return applyOption(id, opt);
-      }
-
-      const dex = parseDexFromInput(v);
-      if(dex && !CURRENT_ALLOWED_DEX_SET?.has(dex)){
-        showToast("⚠ Ese Pokémon no está permitido en este torneo");
-        clearField(id);
-        return;
-      }
-
-      if(dex && CURRENT_ALLOWED_DEX_SET?.has(dex)){
-        const defLabel = DEFAULT_LABEL_BY_DEX.get(dex);
-        const defOpt = defLabel ? POKE_OPT_BY_LABEL.get(defLabel) : null;
-        if(defOpt) return applyOption(id, defOpt);
-      }
-
-      showToast("⚠ Elige el Pokémon desde la lista");
-      clearField(id);
-    });
-
-    el.addEventListener("blur", () => {
-      const v = el.value.trim();
-      if (!v) return;
-      if (!el.dataset.dex) {
-        el.dispatchEvent(new Event("change"));
-      }
-    });
-    setTimeout(() => hidePokeDropdown_(el), 120);
-  });
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 220, 120, 0.25);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
 }
 
-// ===============================
-// ✅ MULTI-LIGA EN MODAL (leagueRulesJson)
-// ===============================
-let MODAL_RULES_OBJ = null;              
-let MODAL_LEAGUE_KEYS = [];              
-let MODAL_ACTIVE_LEAGUE_KEY = "";        
-let MODAL_MULTI_TORNEO_ID = "";          
-const MODAL_PICKS_BY_LEAGUE = new Map(); 
-let RULES_ACTIVE_LEAGUE_KEY = "";   
-let RULES_MULTI_TORNEO_ID = "";      
-let RULES_PREP_TORNEO_ID = "";
-let RULES_PREP_WAS_ACTIVE = false;
-let MODAL_JUST_OPENED = false;           
-const MODAL_LEAGUE_CACHE = new Map(); 
-
-function setPokemonInputsDisabled_(disabled){
-  ["p1","p2","p3","p4","p5","p6"].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.disabled = !!disabled;
-  });
+.prep-code {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
 }
 
-function safeJsonParse_(raw){
-  if(!raw) return null;
-  try{
-    if(typeof raw === "object") return raw;
-    return JSON.parse(String(raw));
-  }catch(_){
-    return null;
-  }
+.prep-code-label {
+    font-size: 11px;
+    font-weight: 900;
+    color: #ffe6b3;
+    text-transform: uppercase;
 }
 
-function getPerLeagueRules_(t){
-  const obj = safeJsonParse_(t?.leagueRulesJson);
-  if(!obj || typeof obj !== "object") return null;
-  if(String(obj.mode||"").toLowerCase() !== "perleague") return null;
-  const leagues = obj.leagues;
-  if(!leagues || typeof leagues !== "object") return null;
-  const keys = Object.keys(leagues);
-  if(!keys.length) return null;
-  return obj;
+.prep-code-val {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #fff;
 }
 
-function leagueCpFromLeagueKey_(leagueKey){
-  const s = String(leagueKey||"").toLowerCase();
-  if(s.includes("master") || s === "ml" || s.includes("masterleague")) return "9000";
-  const m = s.match(/(500|1500|2500|9000)/);
-  if(m) return m[1];
-  const m2 = s.match(/(\d{3,5})/);
-  return m2 ? m2[1] : "";
+/* Botón de copiar */
+.prep-copy-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 220, 120, 0.35);
+    background: rgba(255, 220, 120, 0.12);
+    box-shadow: 0 0 12px rgba(255, 220, 120, 0.22);
+    cursor: pointer;
 }
 
-function resetPokemonPickFieldsOnly_(){
-  ["p1","p2","p3","p4","p5","p6"].forEach(id => {
-    const el = document.getElementById(id);
-    const img = document.getElementById(id + "img");
-    if(el){
-      el.value = "";
-      delete el.dataset.dex;
-      delete el.dataset.pid;
-      refreshPokemonDatalistForSlot_(document.activeElement?.id || id);
-    }
-    if(img){
-      img.removeAttribute("src");
-      img.alt = "";
-      img.style.visibility = "hidden";
-    }
-  });
+.prep-copy-ico {
+    width: 20px;
+    height: 20px;
+    fill: rgba(255, 255, 255, 0.92);
 }
 
-function modalGetPidFromInputId_(id){
-  const el = document.getElementById(id);
-  if(!el) return "";
-  const pid = String(el.dataset.pid || "").trim();
-  if(pid) return pid;
-  const opt = POKE_OPT_BY_LABEL.get(String(el.value||"").trim());
-  if(opt?.id) return String(opt.id);
-  const dx = parseDexFromInput(el.value);
-  return dx ? String(dx) : "";
+/* =========================================================
+   ✅ EQUIPO POKÉMON (GRID DE 6)
+========================================================= */
+
+.prep-team {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+
+    padding: 8px;
+    margin: 0;
+
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-function modalSaveCurrentLeaguePicks_(){
-  if(!MODAL_ACTIVE_LEAGUE_KEY) return;
-  ["p1","p2","p3","p4","p5","p6"].forEach(id => {
-    const el = document.getElementById(id);
-    if(!el) return;
-    const v = String(el.value || "").trim();
-    if(v && !el.dataset.pid && !el.dataset.dex){
-      el.dispatchEvent(new Event("change"));
-    }
-  });
-  const pids = ["p1","p2","p3","p4","p5","p6"].map(id => modalGetPidFromInputId_(id));
-  MODAL_PICKS_BY_LEAGUE.set(MODAL_ACTIVE_LEAGUE_KEY, pids);
+.prep-poke {
+    height: 48px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 14px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
 }
 
-function modalSetLeagueHint_(leagueKey){
-  const hint = document.getElementById("modalLeagueHint");
-  if(!hint) return;
-  const cp = leagueCpFromLeagueKey_(leagueKey); 
-  if(!cp){
-    hint.textContent = "Selecciona tus 6 Pokémon para la liga";
-    return;
-  }
-  const badgeText = (cp === "9000") ? "LIGA MASTER" : `LIGA ${cp}`;
-  hint.innerHTML = `Selecciona tus 6 Pokémon para la <span class="league-hint-badge league-hint-badge--${cp}">${badgeText}</span>`;
+.prep-poke img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
 }
 
-function modalRenderLeagueButtons_(){
-  const wrap = document.getElementById("modalLeagueSwitch");
-  const box  = document.getElementById("modalLeagueBtns");
-  if(!wrap || !box) return;
+/* =========================================================
+   ✅ FOOTER Y ESTADO (STATUS)
+========================================================= */
 
-  if(!MODAL_RULES_OBJ || !MODAL_LEAGUE_KEYS.length){
-    wrap.style.display = "none";
-    box.innerHTML = "";
-    return;
-  }
-
-  wrap.style.display = "block";
-
-  box.innerHTML = MODAL_LEAGUE_KEYS.map(k => {
-    const cp = leagueCpFromLeagueKey_(k);
-    const active = (k === MODAL_ACTIVE_LEAGUE_KEY) ? " is-active" : "";
-    const label = cp ? (cp === "9000" ? "Liga Master" : `Liga ${cp}`) : k;
-    const local = cp ? `${LEAGUE_ICON_LOCAL}${cp}.png` : "";
-    const remote = cp ? `${LEAGUE_ICON_REMOTE}${cp}.png` : "";
-    const img = cp
-      ? `<img class="league-switch-logo" src="${escapeHtml(local)}" alt=""
-           onerror="this.onerror=null;this.src='${escapeHtml(remote)}'">`
-      : "";
-
-    return `<button type="button" class="league-switch-btn${active}" data-league="${escapeHtml(k)}">
-      ${img}
-      <span class="league-switch-text">${escapeHtml(label)}</span>
-    </button>`;
-  }).join("");
-
-  box.querySelectorAll("button[data-league]").forEach(btn => {
-    btn.onclick = () => {
-      const key = btn.getAttribute("data-league");
-      if(!key || key === MODAL_ACTIVE_LEAGUE_KEY) return;
-      modalSaveCurrentLeaguePicks_();
-      MODAL_ACTIVE_LEAGUE_KEY = key;
-      modalRenderLeagueButtons_();
-      modalSetLeagueHint_(key);
-      const t = TORNEOS.find(x => x.torneoId === SELECTED_ID) || TORNEOS[0];
-      if(!t) return;
-      modalApplyLeagueRules_(t, MODAL_RULES_OBJ, key);
-    };
-  });
-  modalSetLeagueHint_(MODAL_ACTIVE_LEAGUE_KEY);
+.prep-footer {
+    margin: 0;
+    display: flex;
+    justify-content: center;
 }
 
-function buildAllowedOptionsFromRules(rule){
-  const bannedTypes  = new Set(splitListLower(rule?.bannedTypes));
-  const allowedTypes = new Set(splitListLower(rule?.allowedTypes));
-  const bannedCats   = splitCategorySet(rule?.bannedCategories);
-  const allowedCats  = splitCategorySet(rule?.allowedCategories);
-  const banned = splitDexAndIds(rule?.bannedPokemon);
-  const allow  = splitDexAndIds(rule?.allowedPokemon);
+.prep-status {
+    font-size: 12px;
+    font-weight: 900;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(255, 220, 120, 0.25);
+    color: #ffe6b3;
+    box-shadow: 0 0 10px rgba(255, 220, 120, 0.16);
 
-  const out = [];
-  const allowedDexSet = new Set();
-
-  for (const p of POKEMON_DB){
-    const dex = Number(p.dex);
-    if(!dex) continue;
-
-    const baseCat = normCategoryToken(p.category);
-    const types = Array.isArray(p.types) ? p.types.map(x => String(x).toLowerCase()) : [];
-    const baseCatBanned = (baseCat && bannedCats.has(baseCat));
-    const baseCatAllowed = (allowedCats.size === 0) ? true : (baseCat ? allowedCats.has(baseCat) : true);
-    const typeHasAllowed = (allowedTypes.size === 0) ? true : types.some(tp => allowedTypes.has(tp));
-    const typeBanned = (bannedTypes.size === 0) ? false : types.some(tp => bannedTypes.has(tp));
-    const dexBanned = banned.dex.has(dex);
-
-    const options = buildVariantOptionsForPokemon(p);
-
-    for(const o of options){
-      const idLower = String(o.id).toLowerCase();
-      const allowedByDexNormal = allow.dex.has(dex) && (o.variantKey === "");
-      const allowedById = allow.ids.has(idLower);
-
-      if(allowedByDexNormal || allowedById){
-        out.push(o);
-        allowedDexSet.add(dex);
-        continue;
-      }
-
-      if(dexBanned) continue;
-      if(banned.ids.has(idLower)) continue;
-      if(baseCatBanned) continue;
-      const vTok = normCategoryToken(o.variantKey);
-      if(o.variantKey && bannedCats.has(vTok)) continue;
-      if(!baseCatAllowed) continue;
-      if(o.variantKey && allowedCats.size && !allowedCats.has(vTok)) continue;
-      if(!typeHasAllowed) continue;
-      if(typeBanned) continue;
-
-      out.push(o);
-      allowedDexSet.add(dex);
-    }
-  }
-  allow.dex.forEach(dx => allowedDexSet.add(dx));
-  return { options: out, allowedDexSet };
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 
-function modalApplyLeagueRules_(t, rulesObj, leagueKey, preserveInputs=false){
-  const rule = (rulesObj?.leagues && rulesObj.leagues[leagueKey]) ? rulesObj.leagues[leagueKey] : {};
-  let cached = MODAL_LEAGUE_CACHE.get(leagueKey);
-
-  if(!cached){
-    setPokemonInputsDisabled_(true);
-    cached = buildAllowedOptionsFromRules(rule);
-    MODAL_LEAGUE_CACHE.set(leagueKey, cached);
-    setPokemonInputsDisabled_(false);
-  }
-
-  fillPokemonDatalist(cached.options);
-  lockInputsToAllowed(cached.allowedDexSet);
-
-  if(preserveInputs) return;
-
-  resetPokemonPickFieldsOnly_();
-  const saved = MODAL_PICKS_BY_LEAGUE.get(leagueKey);
-  if(Array.isArray(saved) && saved.length === 6){
-    saved.forEach((pid, i) => {
-      const cleanPid = String(pid||"").trim();
-      if(!cleanPid) return;
-      const label = POKE_OPTION_LABEL_BY_ID.get(cleanPid.toLowerCase()) || cleanPid;
-      const el = document.getElementById(`p${i+1}`);
-      if(!el) return;
-      el.value = label;
-      el.dispatchEvent(new Event("change"));
-    });
-  }
+/* Punto indicador de estado (base) */
+.prep-status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.70);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.10);
 }
 
-function modalClearMultiLeagueState_(){
-  MODAL_RULES_OBJ = null;
-  MODAL_LEAGUE_KEYS = [];
-  MODAL_ACTIVE_LEAGUE_KEY = "";
-  MODAL_MULTI_TORNEO_ID = "";
-  MODAL_PICKS_BY_LEAGUE.clear();
-  MODAL_LEAGUE_CACHE.clear(); 
-
-  const wrap = document.getElementById("modalLeagueSwitch");
-  const box  = document.getElementById("modalLeagueBtns");
-  const hint = document.getElementById("modalLeagueHint");
-
-  if(wrap) wrap.style.display = "none";
-  if(box) box.innerHTML = "";
-  if(hint) hint.textContent = "";
+/* Estado VS (azul/cyan) */
+.prep-status--vs::before {
+    background: rgba(120, 232, 255, 0.95);
+    box-shadow: 0 0 0 3px rgba(120, 232, 255, 0.18);
 }
 
-async function setupModalPokemonFilterForSelectedTournament(){
-  await loadPokemonDB();
-  const t = TORNEOS.find(x => x.torneoId === SELECTED_ID) || TORNEOS[0];
-  if (!t) return;
+/* ... (mantener el resto del código igual hasta llegar a las secciones de battle) ... */
 
-  const rules = getPerLeagueRules_(t);
-  const keys = rules ? Object.keys(rules.leagues || {}) : [];
-  const isMulti = !!rules && keys.length > 1;
-
-  if(isMulti){
-    MODAL_RULES_OBJ = rules;
-    if(MODAL_MULTI_TORNEO_ID !== t.torneoId){
-      MODAL_MULTI_TORNEO_ID = t.torneoId;
-      MODAL_PICKS_BY_LEAGUE.clear();
-      MODAL_LEAGUE_KEYS = keys;
-      MODAL_ACTIVE_LEAGUE_KEY = keys[0] || "";
-    }else{
-      MODAL_LEAGUE_KEYS = keys;
-      if(!MODAL_ACTIVE_LEAGUE_KEY || !rules.leagues[MODAL_ACTIVE_LEAGUE_KEY]){
-        MODAL_ACTIVE_LEAGUE_KEY = keys[0] || "";
-      }
-    }
-    modalRenderLeagueButtons_();
-    const preserve = isModalOpen() && (MODAL_MULTI_TORNEO_ID === t.torneoId) && !MODAL_JUST_OPENED;
-    modalApplyLeagueRules_(t, rules, MODAL_ACTIVE_LEAGUE_KEY, preserve);
-    MODAL_JUST_OPENED = false;
-    return;
-  }
-
-  MODAL_JUST_OPENED = false;
-  modalClearMultiLeagueState_();
-  const { options, allowedDexSet } = buildAllowedOptions(t);
-  fillPokemonDatalist(options);
-  lockInputsToAllowed(allowedDexSet);
+/* ✅ MEJORA: Contenedores Flex para centrado de impares */
+.liveTablesGrid,
+.nextQueueList {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 20px !important; /* Más espacio entre cuadros */
+    justify-content: center !important; /* Centra los cuadros, incluido el impar */
+    align-items: flex-start;
+    width: 100%;
 }
 
-/* Toast */
-function showToast(msg) {
-  const t = $("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2600);
+/* ✅ MEJORA: Ajuste de las tarjetas para que no se estiren raro */
+.battle-card--live, 
+.nextQueueList .battle-card--next {
+    flex: 0 1 auto;
+    min-width: 320px; /* Evita que se colapsen demasiado */
+    max-width: 100%;
 }
 
-function escapeHtml(str){
-  return String(str ?? "").replace(/[&<>"']/g, m => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[m]));
+/* ✅ MEJORA: Protección de los rostros de los Pokémon */
+.battle-mon {
+    aspect-ratio: 1 / 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
 }
 
-function isTrue(v){
-  const s = String(v||"").trim().toLowerCase();
-  return s === "true" || s === "verdadero" || s === "1" || s === "si" || s === "sí" || s === "TRUE".toLowerCase();
+.battle-mon img {
+    width: 90% !important;
+    height: 90% !important;
+    object-fit: contain !important;
+    padding: 2px;
 }
 
-function isPresencialMode_(t){
-  const m = String(t?.mode ?? t?.Mode ?? "").trim().toLowerCase();
-  return m === "presencial";
-}
-function getTablesCount_(t){
-  const raw = (t?.tablesCount ?? t?.TablesCount ?? t?.mesas ?? t?.Mesas ?? 0);
-  const n = Number(raw);
-  return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
-}
-function hasMainStage_(t){
-  return String(t?.hasMainStage ?? t?.HasMainStage ?? t?.mainStage ?? t?.MainStage ?? "").trim().toUpperCase() === "TRUE";
-}
-function getSimulCapacity_(t){
-  const tables = getTablesCount_(t);
-  return tables + (hasMainStage_(t) ? 1 : 0);
+/* ✅ MEJORA: El VS no debe estorbar */
+.battle-next-vs {
+    z-index: 10;
+    flex-shrink: 0;
 }
 
-function getMatchOpStatus_(m){
-  return String(m?.MatchStatus ?? m?.matchStatus ?? "").trim().toLowerCase();
-}
-function getMatchLocationType_(m){
-  return String(m?.LocationType ?? m?.locationType ?? "").trim().toLowerCase();
-}
-function getMatchLocationText_(m){
-  const raw = (m?.Location ?? m?.location ?? "");
-  const type = getMatchLocationType_(m);
-  let text = "";
-  if(raw && typeof raw === "object"){
-    text = String(raw.name || raw.label || "").trim();
-  }else{
-    text = String(raw || "").trim();
-  }
-  if(!text && type === "main") text = "Escenario Principal";
-  return text;
+/* ✅ Bloquear scroll del fondo cuando el modal está abierto */
+html.modal-open,
+body.modal-open{
+  overflow: hidden;
+  height: 100%;
 }
 
-function isMainLocation_(m){
-  const type = String(getMatchLocationType_(m) || "").toLowerCase();
-  const text = String(getMatchLocationText_(m) || "");
-  return (type === "main") || /escenario|main|stage/i.test(text);
+body.modal-open{
+  position: fixed;
+  width: 100%;
+  left: 0;
+  right: 0;
 }
 
-function renderMesaChip_(m){
-  const text = getMatchLocationText_(m);
-  if(!text) return "";
-  let type = getMatchLocationType_(m);
-  if(!type){
-    if(/escenario|main|stage/i.test(text)) type = "main";
-  }
-  const isMain = (type === "main");
-  const icon = isMain ? "🎤" : "🪑";
-  const cls  = isMain ? "battle-mesa-chip battle-mesa-chip--main" : "battle-mesa-chip";
-  return `<span class="${cls}">${icon} ${escapeHtml(text)}</span>`;
+/* ✅ Botón de enviar dentro del modal centrado */
+#formModal #btnRegister{
+  display: flex;
+  justify-content: center;
+  width: min(520px, 100%);
+  margin: 18px auto 0;
 }
 
-function parseMesaNumber_(txt){
-  const s = String(txt || "");
-  const m = s.match(/(\d+)/);
-  return m ? Number(m[1]) : 9999;
-}
-function locationSortKey_(m){
-  const text = getMatchLocationText_(m);
-  const type = getMatchLocationType_(m);
-  const isMain = (type === "main") || /escenario|main|stage/i.test(text);
-  const num = parseMesaNumber_(text);
-  return [isMain ? 0 : 1, num, String(text || "").toLowerCase()];
-}
-function sortByLocation_(a,b){
-  const ak = locationSortKey_(a);
-  const bk = locationSortKey_(b);
-  return (ak[0]-bk[0]) || (ak[1]-bk[1]) || ak[2].localeCompare(bk[2]);
-}
-function getOrderedLocations_(matches){
-  const map = new Map();
-  (matches || []).forEach(m=>{
-    const text = getMatchLocationText_(m);
-    if(!text) return;
-    if(!map.has(text)){
-      map.set(text, { text, type: getMatchLocationType_(m) });
-    }
-  });
-  return Array.from(map.values()).sort((a,b)=>{
-    const am = (String(a.type).toLowerCase() === "main" || /escenario|main|stage/i.test(a.text)) ? 0 : 1;
-    const bm = (String(b.type).toLowerCase() === "main" || /escenario|main|stage/i.test(b.text)) ? 0 : 1;
-    const an = parseMesaNumber_(a.text);
-    const bn = parseMesaNumber_(b.text);
-    return (am-bm) || (an-bn) || String(a.text).localeCompare(String(b.text));
-  });
+/* =========================================================
+   SHADOW FALLBACK (SVG LOCAL) — detrás del icono
+   Cuando NO existe el icon "shadow" (ej: 211_a1.png),
+   mostramos el SVG morado detrás, pero dejamos la cara base.
+========================================================= */
+
+.poke-icon-wrap{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+
+  /* Ajustes base (los afinamos con @media en responsive.css) */
+  --shadow-aura-pad: 6px;
+  --shadow-aura-opacity: 0.95;
 }
 
-function fmtDateTimeHuman(dt){
-  if(!dt) return "-";
-  let d = null;
-  if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}/.test(dt)) d = new Date(dt.replace(" ", "T"));
-  else d = new Date(dt);
-  if (isNaN(d.getTime())) return dt;
-  return d.toLocaleString("es-PE", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+/* Asegura que la cara quede delante del SVG */
+.poke-icon-wrap > img{
+  position: relative;
+  z-index: 2;
+  display: block;
 }
 
-function fmtDateParts(dt){
-  if(!dt) return { date: "-", time: "-", raw: "-" };
-  let d = null;
-  if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}/.test(dt)) d = new Date(dt.replace(" ", "T"));
-  else d = new Date(dt);
-  if (isNaN(d.getTime())) return { date: String(dt), time: "", raw: String(dt) };
-  const date = d.toLocaleDateString("es-PE", { year:"numeric", month:"2-digit", day:"2-digit" });
-  const time = d.toLocaleTimeString("es-PE", { hour:"2-digit", minute:"2-digit", hour12:true });
-  return { date, time, raw: `${date} ${time}` };
-}
+/* El SVG detrás */
+.poke-icon-wrap.shadow-fallback::before{
+  content: "";
+  position: absolute;
+  inset: calc(var(--shadow-aura-pad) * -1);
 
-const TYPE_META = {
-  normal:{ es:"Normal", emo:"⚪" }, fire:{ es:"Fuego", emo:"🔥" }, water:{ es:"Agua", emo:"💧" },
-  electric:{ es:"Eléctrico", emo:"⚡" }, grass:{ es:"Planta", emo:"🌿" }, ice:{ es:"Hielo", emo:"❄️" },
-  fighting:{ es:"Lucha", emo:"🥊" }, poison:{ es:"Veneno", emo:"☠️" }, ground:{ es:"Tierra", emo:"🟤" },
-  flying:{ es:"Volador", emo:"🪽" }, psychic:{ es:"Psíquico", emo:"🔮" }, bug:{ es:"Bicho", emo:"🐛" },
-  rock:{ es:"Roca", emo:"🪨" }, ghost:{ es:"Fantasma", emo:"👻" }, dragon:{ es:"Dragón", emo:"🐉" },
-  dark:{ es:"Siniestro", emo:"🌑" }, steel:{ es:"Acero", emo:"⚙️" }, fairy:{ es:"Hada", emo:"✨" }
-};
+  background: url("purple-flame.svg") center / contain no-repeat;
+  opacity: var(--shadow-aura-opacity);
 
-function typeBadgeHtml(typeRaw){
-  const type = String(typeRaw||"").trim().toLowerCase();
-  const meta = TYPE_META[type] || { es: (type || "Tipo"), emo: "🏷️" };
-  return `<span class="type-badge" title="${escapeHtml(meta.es)}">
-    ${typeIconHtml(type)} ${escapeHtml(meta.es)}
-  </span>`;
-}
+  /* glow suave */
+  filter: drop-shadow(0 0 10px rgba(150, 90, 255, 0.65));
 
-function categoryNice(token){
-  const t = normCategoryToken(token);
-  const map = {
-    normal:"Normal", baby:"Bebé", legendary:"Legendario", mythical:"Mítico",
-    shadow:"Shadow", purified:"Purificado", shiny:"Shiny",
-    dynamax:"Dynamax", gigamax:"Gigamax", 
-    mega:"Megaevolución" // ✅ CAMBIO: Ahora dirá "Megaevolución" en lugar de "Mega"
-  };
-  return map[t] || (String(token||"").trim() || "-");
-}
-function leagueLogoText(league){
-  const s = String(league||"");
-  const m = s.match(/(\d{3,5})/);
-  return m ? m[1] : "GO";
-}
-
-async function apiGET(actionName, params = {}) {
-  const u = new URL(API);
-  u.searchParams.set("accion", actionName);
-  u.searchParams.set("_ts", Date.now().toString());
-  Object.entries(params).forEach(([k,v]) => u.searchParams.set(k, v ?? ""));
-  const r = await fetch(u.toString(), { cache: "no-store" });
-  return r.json();
-}
-
-async function torneoRegisterGET(payload = {}) {
-  const params = { ...payload };
-  delete params.accion;
-  delete params.action; 
-  return apiGET("torneo_register", params);
-}
-
-/* Modal */
-let scrollPos = 0;
-
-function bloquearScrollBody() {
-  if (document.body.classList.contains("modal-open")) return; // evita doble lock
-  scrollPos = window.scrollY || 0;
-
-  document.documentElement.classList.add("modal-open");
-  document.body.classList.add("modal-open");
-  document.body.style.top = `-${scrollPos}px`;
-}
-
-function restaurarScrollBody() {
-  document.documentElement.classList.remove("modal-open");
-  document.body.classList.remove("modal-open");
-  document.body.style.top = "";
-  window.scrollTo(0, scrollPos);
+  pointer-events: none;
+  z-index: 1;
 }
 
 
-$("openModalBtn").onclick = async () => {
-  MODAL_JUST_OPENED = true;
-  $("formModal").style.display = "flex";
-  bloquearScrollBody();
-  setupNumeroContactoField_();
-  const btnReg = $("btnRegister");
-  if (btnReg) btnReg.disabled = true;
-  try {
-    if (!TORNEOS.length) await loadAll(true);
-    await setupModalPokemonFilterForSelectedTournament();
-  } catch (e) {
-    showToast("⚠ " + (e?.message || e));
-  } finally {
-    if (btnReg) btnReg.disabled = false;
-  }
-};
-
-$("closeModalBtn").onclick = () => {
-  $("formModal").style.display = "none";
-  restaurarScrollBody();
-};
-window.addEventListener("click", (e) => {
-  if (e.target === $("formModal")) {
-    $("formModal").style.display = "none";
-    restaurarScrollBody();
-  }
-});
 
 
-window.__BRACKET_FIT = true;        // true = ajusta (escala), false = scroll libre
-window.__BRACKET_SHOW_ALL = false;  // true = muestra rondas antiguas
+/* =========================================================
+   ✅ REGLAS (rulesCard + rulesToggleBtn + colapsable)
+========================================================= */
+.rules-card,
+#rulesCard{
+  width: 92%;
+  max-width: 980px;
+  margin: 18px auto 0;
+  padding: 16px 16px 10px;
+  text-align: left;
 
+  background: rgba(0,0,0,0.20);
+  border: 1px solid rgba(255,220,120,0.18);
+  border-radius: 18px;
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.05), 0 0 14px rgba(0,0,0,0.25);
+}
+
+.rules-head{ display:flex; align-items:center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.rules-title{
+  font-family: 'Lato', sans-serif;
+  font-weight: 900;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  color: #ffe6b3;
+  filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, .7));
+}
+
+
+.rules-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rule-section{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.rule-section h4{
+  margin: 0 0 8px 0;
+  font-family: 'Lato', sans-serif;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  color: #ffe6b3;
+}
+
+/* Colores de títulos (tu JS usa estas clases) */
+.sec-title-ban{ color: #ff5d5d !important; }
+.sec-title-allow{ color: #6dffb2 !important; }
+
+/* Soporte extra si alguna vez renderizas moves en lista */
+.move-list{ display:flex; flex-direction: column; gap: 8px; }
+.move-item{ display:flex; align-items:center; justify-content: space-between; gap: 10px; }
+.move-name{ font-family: 'Lato', sans-serif; font-weight: 900; color: rgba(255,255,255,0.96); }
+
+
+.rule-section--ban{ border: 1px solid rgba(255, 93, 93, 0.20); }
+.rule-section--allow{ border: 1px solid rgba(109, 255, 178, 0.20); }
+
+.rule-chips{ display:flex; flex-wrap: wrap; gap: 8px; }
+.rule-empty{ font-weight: 900; color: rgba(255,255,255,0.85); }
+
+.rules-toggle,
+#rulesToggleBtn{
+  font-weight: 900;
+  font-size: 13px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid rgba(255,220,120,0.25);
+  background: rgba(0,0,0,0.22);
+  color: #ffe6b3;
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
+}
+
+.rules-toggle:hover,
+#rulesToggleBtn:hover{
+  background: rgba(0,0,0,0.28);
+}
+
+.rules-toggle:active,
+#rulesToggleBtn:active{
+  transform: translateY(1px);
+}
+
+
+/* clase is-collapsed (tu lista) */
+.rules-card.is-collapsed .rules-grid{
+  display:none;
+}
+
+.type-icon{
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+/* chip base (tu lista) */
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 900;
+  font-size: 13px;
+  color: #fff;
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.chip-type{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* =========================================================
+   FILTROS VISUALES DE REGLAS (OCULTAR CHIPS)
+   ========================================================= */
+
+/* Ocultar "Bebé" solo en la sección de PERMITIDOS */
+.rule-section--allow .chip[data-slug="baby"],
+.rule-section--allow .chip[data-slug="bebe"] {
+    display: none !important;
+}
+
+/* Ocultar Dynamax, Gigamax y Shiny solo en la sección de PROHIBIDOS */
+.rule-section--ban .chip[data-slug="dynamax"],
+.rule-section--ban .chip[data-slug="gigamax"],
+.rule-section--ban .chip[data-slug="shiny"] {
+    display: none !important;
+}
+
+/* ===== Shadow aura dentro de cajas pequeñas (prep/battle) ===== */
+.prep-poke .poke-icon-wrap,
+.battle-mon .poke-icon-wrap{
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* Para que no se corte tanto el flame dentro de cajitas */
+.prep-poke .poke-icon-wrap.shadow-fallback::before{ inset: -4px; }
+.battle-mon .poke-icon-wrap.shadow-fallback::before{ inset: -2px; }
+
+
+/* =========================================================
+   ✅ BRACKET (MODAL + LAYOUT)
+========================================================= */
+
+.bracket-section{
+  width: 100%;
+}
+
+.bracket-head-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bracket-hint{
+  margin-top: 10px;
+  font-size: 0.95rem;
+  opacity: 0.9;
+  color: rgba(255,255,255,0.85);
+}
+
+/* Botón "Ver Bracket" */
+.bracket-open-btn{
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+
+  padding: 12px 18px;
+  border-radius: 14px;
+
+  font-weight: 900;
+  letter-spacing: 0.3px;
+
+  color: #1a0f06;
+  background: linear-gradient(180deg, rgba(255,220,120,0.98), rgba(255,170,70,0.98));
+  box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+}
+
+.bracket-open-btn:hover{
+  filter: brightness(1.03);
+  transform: translateY(-1px);
+}
+
+.bracket-open-btn:active{
+  transform: translateY(0);
+}
+
+/* Modal full screen */
+.bracket-modal-overlay{
+  padding: 10px; /* aire mínimo */
+}
+
+.bracket-modal{
+  width: min(1400px, calc(100vw - 20px));
+  height: min(860px, calc(100vh - 20px));
+
+  border-radius: 22px;
+  border: 2px solid rgba(255,220,120,0.35);
+  background: linear-gradient(135deg, rgba(20,55,110,0.65), rgba(140,20,80,0.55));
+  box-shadow: 0 0 22px rgba(255, 232, 150, 0.22), 0 0 45px rgba(0, 80, 150, 0.22);
+
+  overflow: hidden;
+  display:flex;
+  flex-direction: column;
+}
+
+
+/* Header del modal */
+.bracket-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+}
+
+.bracket-modal-title{
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.95);
+}
+
+/* OJO: .close-modal por defecto es absolute (para formModal). Aquí lo neutralizamos */
+.bracket-modal-header .close-modal{
+  position: static;
+  top: auto;
+  right: auto;
+
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size: 32px;
+  line-height: 1;
+
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+/* ====== BRACKET MODAL: el body debe ESTIRAR y permitir overflow interno ====== */
+.bracket-modal-body{
+  flex: 1;
+  min-height: 0;          /* CLAVE para que overflow funcione en flex */
+  display: flex;
+  align-items: stretch;   /* no center */
+  justify-content: stretch;
+  padding: 10px;
+}
+
+/* el wrapper debe ocupar el espacio y NO crecer por contenido */
+.bracket-wrap{
+  flex: 1 1 auto;
+  min-width: 0;           /* CLAVE: permite scroll horizontal en flex */
+  min-height: 0;          /* CLAVE: permite scroll vertical en flex */
+  width: 100%;
+  height: 100%;
+}
+
+/* tu scroll area está bien, pero agrega min-height:0 + touch/pan */
+.bracket-scroll{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+
+  border-radius: 18px;
+  border: 1px solid rgba(255,220,120,0.22);
+  background: rgba(10, 5, 30, 0.22);
+  -webkit-overflow-scrolling: touch;
+
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y;
+}
+
+
+/* SVG líneas */
+.bracket-lines{
+  position:absolute;
+  inset:0;
+  z-index: 1;
+  pointer-events: none;
+
+  /* ✅ IMPORTANTÍSIMO: que el SVG se escale igual que el layout */
+  transform: scale(var(--bracketScale, 1));
+  transform-origin: top left;
+}
+
+
+/* Layout (se escala con --bracketScale desde JS) */
+.bracket-layout{
+  position: relative;
+  z-index: 2;
+
+  display:flex;
+  align-items:flex-start;
+  gap: 24px;
+
+  width: max-content;
+  padding: 16px;
+
+  transform: scale(var(--bracketScale, 1));
+  transform-origin: top left;
+}
+
+/* Lados */
+.bracket-side{
+  display:flex;
+  align-items:flex-start;
+  gap: 18px;
+}
+
+/* ✅ clave: el lado derecho va “espejado” para que avance hacia el centro */
+.bracket-side.right{
+  flex-direction: row-reverse;
+}
+
+/* Columnas por ronda */
+.round-col{
+  min-width: 260px;
+  display:flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.round-col.is-hidden{
+  display:none;
+}
+
+.round-title{
+  text-align:center;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  padding: 8px 10px;
+  border-radius: 12px;
+
+  color: rgba(255,255,255,0.95);
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Match card */
+.match-node{
+  width: 260px;
+  border-radius: 16px;
+  overflow:hidden;
+
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,220,120,0.18);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+}
+
+.match-node.is-current{
+  border-color: rgba(255,220,120,0.55);
+  box-shadow: 0 0 0 2px rgba(255,220,120,0.22), 0 12px 28px rgba(0,0,0,0.28);
+}
+
+.player-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 9px 10px;
+}
+
+.player-row + .player-row{
+  border-top: 1px solid rgba(255,255,255,0.10);
+}
+
+.player-name{
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.92);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-badge{
+  min-width: 34px;
+  text-align:center;
+
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 10px;
+
+  color: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.player-row.win{
+  background: rgba(70, 210, 120, 0.16);
+}
+
+.player-row.lose{
+  opacity: 0.68;
+}
+
+/* Centro */
+.bracket-center{
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  gap: 12px;
+  min-width: 300px;
+}
+
+.center-title{
+  font-weight: 1000;
+  letter-spacing: 0.8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  color: rgba(255,255,255,0.95);
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Evita transiciones durante fit */
+.bracket-scroll.no-anim *{
+  transition: none !important;
+}
+
+/* Estilo para la etiqueta de Ronda y BO */
+.battle-meta-text {
+    color: #76e8ff; /* Color cian neón para resaltar el BO */
+    font-weight: 1000;
+    text-transform: uppercase;
+    background: rgba(118, 232, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(118, 232, 255, 0.2);
+}
+
+/* Separador visual */
+.battle-meta-text::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: #ffdcb5;
+    border-radius: 50%;
+    margin: 0 8px;
+    vertical-align: middle;
+}
+
+/* --- BOTÓN BASES NEON (Centrado) --- */
+.btn-bases-neon {
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #00f3ff;
+    color: #00f3ff;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+    
+    /* ESTO ES LO QUE LO CENTRA: */
+    display: block;       /* Comportamiento de bloque */
+    margin: 20px auto;    /* Auto a los lados lo centra */
+    max-width: 350px;     /* Ancho máximo para que no se estire */
+    width: 100%;
+}
+
+.btn-bases-neon:hover {
+    background: #00f3ff;
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+    transform: scale(1.05);
+}
+
+/* --- ESTILOS DEL MODAL --- */
+.modal-backdrop {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* Fondo oscuro */
+    backdrop-filter: blur(5px);
+    z-index: 10000;
+}
+
+.modal-window {
+    background: #111827; /* Fondo azul oscuro casi negro */
+    width: 90%;
+    max-width: 700px;
+    margin: 4vh auto;
+    border-radius: 12px;
+    border: 1px solid #374151;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh; /* Altura máxima */
+    animation: slideIn 0.3s ease-out;
+    position: relative;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #374151;
+    background: #1f2937;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+}
+.modal-header h2 { margin: 0; color: #fbbf24; font-size: 1.5rem; }
+
+.modal-close {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 2rem;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.modal-close:hover { color: #fff; }
+
+.modal-scroll-content {
+    padding: 20px;
+    overflow-y: auto; /* Scroll interno */
+    text-align: left;
+    color: #e5e7eb;
+    line-height: 1.6;
+}
+
+.rule-section { margin-bottom: 25px; }
+.rule-section h3 { color: #60a5fa; border-left: 4px solid #60a5fa; padding-left: 10px; margin-bottom: 10px; }
+.rule-section ul { padding-left: 20px; list-style-type: none; }
+.rule-section li { margin-bottom: 8px; position: relative; padding-left: 15px; }
+.rule-section li::before { content: "•"; color: #fbbf24; position: absolute; left: 0; font-weight: bold; }
+
+/* Estilo de Premios */
+.premios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; }
+.premio-card { padding: 15px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; border: 1px solid #4b5563; background: #1f2937; }
+.premio-card.gold { border-color: #fbbf24; color: #fbbf24; }
+.premio-card.silver { border-color: #9ca3af; color: #e5e7eb; }
+.premio-card.bronze { border-color: #d97706; color: #d97706; }
+.puesto { font-size: 0.9rem; text-transform: uppercase; font-weight: bold; }
+.monto { font-size: 1.4rem; font-weight: 800; margin: 5px 0; color: #fff; }
+
+.modal-footer { padding: 15px; border-top: 1px solid #374151; text-align: center; background: #1f2937; border-radius: 0 0 12px 12px; }
+.btn-confirm { background: #2563eb; color: white; border: none; padding: 10px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+.btn-confirm:hover { background: #1d4ed8; }
+
+
+/* --- FILA DE BOTONES EXTRA --- */
+.hero-buttons-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Separación entre botones */
+    margin: 25px auto 25px auto;
+    flex-wrap: wrap; /* Se adaptan si la pantalla es muy chica */
+}
+
+/* Estilo Base para botones pequeños */
+.btn-mini {
+    padding: 8px 16px;       /* Más pequeños */
+    font-size: 0.85rem;      /* Letra más fina */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 50px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+    border: 1px solid;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Variación Naranja (Bases) */
+.btn-orange {
+    color: #ff9d00;
+    border-color: #ff9d00;
+    box-shadow: 0 0 5px rgba(255, 157, 0, 0.2);
+}
+.btn-orange:hover {
+    background: #ff9d00;
+    color: #000;
+    box-shadow: 0 0 15px rgba(255, 157, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Variación Verde (WhatsApp) */
+.btn-whatsapp {
+    color: #25D366;
+    border-color: #25D366;
+    box-shadow: 0 0 5px rgba(37, 211, 102, 0.2);
+}
+.btn-whatsapp:hover {
+    background: #25D366;
+    color: #000;
+    box-shadow: 0 0 15px rgba(37, 211, 102, 0.6);
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   Cortar nombres largos con puntos suspensivos (...)
+========================================================= */
+.prep-name {
+    white-space: nowrap;       /* Evita que el texto baje a la siguiente línea */
+    overflow: hidden;          /* Oculta lo que se sale del contenedor */
+    text-overflow: ellipsis;   /* Agrega los puntos suspensivos al final */
+    max-width: 100%;           /* Asegura que no sobrepase su cuadro */
+    display: block;            
+    padding: 0 5px;            /* Un pequeño margen interno para que no pegue a los bordes */
+}
 
 /* ===============================
-   ✅ BRACKET MODAL (pantalla completa)
+   ESTILOS DEL PODIO Y 4TO PUESTO
    =============================== */
-function isBracketModalOpen_(){
-  const m = $("bracketModal");
-  return !!m && m.style.display && m.style.display !== "none";
+.podium-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    height: 220px;
+    padding-bottom: 20px;
+    border-bottom: 2px dashed #e2e8f0;
 }
 
-function openBracketModal_(){
-  const modal = $("bracketModal");
-  if(!modal) return;
-
-  modal.style.display = "flex";
-  bloquearScrollBody();
-
-  const wrap = $("bracket");
-  const t = window.__BRACKET_LATEST_T || (TORNEOS.find(x => x.torneoId === SELECTED_ID) || TORNEOS[0]);
-
-  if(!wrap){
-    return;
-  }
-  if(!t){
-    wrap.innerHTML = `<div class="rule-empty" style="padding:14px; text-align:center;">Bracket no disponible.</div>`;
-    return;
-  }
-
-  // ✅ Render cuando YA está visible (si no, las líneas salen en 0px)
-  requestAnimationFrame(() => {
-    renderBracket(t);
-
-    // segundo “redraw” por si termina de acomodar tamaños
-    setTimeout(() => {
-      try{
-       setTimeout(() => {
-  fitBracketToScreen();
-  if(window.__BRACKET_DRAW_FN) window.__BRACKET_DRAW_FN();
-}, 180);
-
-
-      }catch(_){}
-    }, 180);
-  });
+.podium-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 110px;
 }
 
-function closeBracketModal_(){
-  const modal = $("bracketModal");
-  if(modal) modal.style.display = "none";
-
-  // limpia para forzar rebuild al abrir (evita líneas desfasadas)
-  const wrap = $("bracket");
-  if(wrap) wrap.innerHTML = "";
-
-  restaurarScrollBody();
+.podium-rank {
+    font-size: 40px;
+    font-weight: 900;
+    margin-bottom: -15px; /* Hace que el número se superponga con la caja */
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-function wireBracketModalOnce_(){
-  const btn = $("openBracketBtn");
-  const modal = $("bracketModal");
-  const close = $("closeBracketBtn");
-  if(!btn || !modal || !close) return;
-  if(btn.dataset.bound === "1") return;
-  btn.dataset.bound = "1";
+.podium-1 .podium-rank { color: #fbbf24; font-size: 55px; } /* Oro */
+.podium-2 .podium-rank { color: #cbd5e1; } /* Plata */
+.podium-3 .podium-rank { color: #d97706; } /* Bronce */
 
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    openBracketModal_();
-  });
-
-  close.addEventListener("click", (e) => {
-    e.preventDefault();
-    closeBracketModal_();
-  });
-
-  window.addEventListener("click", (e) => {
-    if(e.target === modal) closeBracketModal_();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if(e.key === "Escape" && isBracketModalOpen_()) closeBracketModal_();
-  });
+.podium-box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 25px 5px 10px 5px;
+    border-radius: 8px 8px 0 0;
+    color: white;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
 }
 
-wireBracketModalOnce_();
+.podium-1 .podium-box { height: 140px; background: linear-gradient(180deg, #fbbf24, #b45309); }
+.podium-2 .podium-box { height: 100px; background: linear-gradient(180deg, #cbd5e1, #475569); }
+.podium-3 .podium-box { height: 70px; background: linear-gradient(180deg, #d97706, #78350f); }
 
-
-const ICON_BASE = "https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/pokemon/";
-function iconUrl(iconId){
-  return `${ICON_BASE}${iconId}.png`;
+.podium-name {
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    word-break: break-word;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    line-height: 1.2;
 }
 
-
-// ✅ Si el icono de una variante NO existe (ej: 211_a1), usamos fallback al icono base (ej: 211)
-// - Para formas: 019_61_a1 -> 019_61
-function fallbackIconIdForMissingVariant(iconId){
-  const s = String(iconId||"").trim();
-  if(!s) return "";
-  const m1 = s.match(/^(.*?)(?:_a1|_a2|_s)$/i);
-  if(m1) return m1[1];
-  const m2 = s.match(/^(.*?)(?:_b1|_b2)$/i);
-  if(m2) return m2[1];
-  const m3 = s.match(/^0*(\d{1,4})/);
-  return m3 ? String(Number(m3[1])) : "";
+.podium-prize {
+    font-size: 11px;
+    font-weight: 800;
+    margin-top: 8px;
+    background: rgba(255, 255, 255, 0.25);
+    padding: 3px 6px;
+    border-radius: 4px;
+    text-align: center;
 }
 
-
-function smartIconTitle_(iconId){
-  const raw = normalizeIconId_(iconId);
-  if(!raw) return "";
-
-  // Si existe meta, úsalo. Si no, intenta con el base.
-  let label = iconLabelFor(raw);
-  const fb = fallbackIconIdForMissingVariant(raw);
-
-  if((!label || label === raw) && fb){
-    const baseLabel = iconLabelFor(fb);
-    if(baseLabel && baseLabel !== fb) label = baseLabel;
-  }
-
-  // Solo agrega “- Shadow” cuando corresponde
-  if(isShadowIconId_(raw) && label && !/shadow/i.test(label)){
-    label = `${label} - Shadow`;
-  }
-
-  return label || raw;
+.fourth-place-container {
+    text-align: center;
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-size: 16px;
+    color: #334155;
 }
 
-function onPokeIconLoad_(img){
-  // Si NO hubo fallback, nos aseguramos que no se muestre el svg
-  const wrap = img?.closest?.(".poke-icon-wrap");
-  if(!wrap) return;
-
-  const isShadow = img.dataset.shadow === "1";
-  const didFallback = img.dataset.didFallback === "1";
-
-  if(isShadow && !didFallback){
-    wrap.classList.remove("shadow-fallback");
-  }
-}
-
-function onPokeIconError_(img){
-  const wrap = img?.closest?.(".poke-icon-wrap");
-  const optId = img?.dataset?.optid || "";
-  const fb = img?.dataset?.fallbackid || "";
-  const isShadow = img?.dataset?.shadow === "1";
-
-  // Evita loops
-  if(img.dataset.didFallback === "1"){
-    img.removeAttribute("src");
-    img.style.visibility = "hidden";
-    return;
-  }
-
-  // Si hay fallback, lo usamos
-  if(fb && fb !== optId){
-    img.dataset.didFallback = "1";
-
-    // ✅ SOLO si es shadow y el icono shadow falló, recién activamos el svg
-    if(isShadow && wrap){
-      wrap.classList.add("shadow-fallback");
-    }
-
-    img.src = iconUrl(fb);
-    return;
-  }
-
-  // Si no hay fallback, ocultamos
-  img.removeAttribute("src");
-  img.style.visibility = "hidden";
-}
-
-
-function setShadowFallbackAura(imgEl, enabled){
-  if(!imgEl) return;
-
-  // ✅ asegura wrapper
-  let wrap = imgEl.closest?.(".poke-icon-wrap");
-  if(!wrap){
-    wrap = document.createElement("span");
-    wrap.className = "poke-icon-wrap";
-    imgEl.parentNode?.insertBefore(wrap, imgEl);
-    wrap.appendChild(imgEl);
-  }
-
-  wrap.classList.toggle("shadow-fallback", !!enabled);
-}
-
-
-
-// ===============================
-// ASSETS LOCALES (tu repo)
-// ===============================
-const TYPE_ICON_LOCAL = "tipo/";     
-const LEAGUE_ICON_LOCAL = "Ligas/";  
-
-// ===============================
-// FALLBACK REMOTO (nileplumb)
-// ===============================
-const TYPE_ICON_REMOTE = "https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/type/";
-const LEAGUE_ICON_REMOTE = "https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/UICONS/misc/";
-
-const TYPE_ID_BY_NAME = {
-  normal:1, fighting:2, flying:3, poison:4, ground:5, rock:6,
-  bug:7, ghost:8, steel:9, fire:10, water:11, grass:12,
-  electric:13, psychic:14, ice:15, dragon:16, dark:17, fairy:18
-};
-
-function typeIdFromName(typeRaw){
-  const k = String(typeRaw||"").trim().toLowerCase();
-  return TYPE_ID_BY_NAME[k] || 0;
-}
-
-function typeIconHtml(typeRaw){
-  const id = typeIdFromName(typeRaw);
-  if(!id) return "";
-  const local = `${TYPE_ICON_LOCAL}${id}.png`;
-  const remote = `${TYPE_ICON_REMOTE}${id}.png`;
-  return `<img class="type-icon" src="${escapeHtml(local)}" alt="tipo" title="${escapeHtml(typeRaw||'')}"
-    onerror="this.onerror=null;this.src='${remote}'">`;
-}
-
-
-function wireTypeIconFallbacks(){
-  // Evita el error "wireTypeIconFallbacks is not defined"
-  // y además fuerza fallback remoto si fallan íconos locales.
-
-  // Tipos (img.type-icon)
-  document.querySelectorAll("img.type-icon").forEach(img => {
-    if(img.dataset.fallbackBound === "1") return;
-    img.dataset.fallbackBound = "1";
-
-    img.addEventListener("error", () => {
-      const src = img.getAttribute("src") || "";
-      if(src.includes(TYPE_ICON_REMOTE)) return;
-
-      const m = src.match(/(\d+)\.png$/);
-      if(!m) return;
-
-      img.src = `${TYPE_ICON_REMOTE}${m[1]}.png`;
-    });
-  });
-
-  // Ligas (img.league-logo-img)
-  document.querySelectorAll("img.league-logo-img").forEach(img => {
-    if(img.dataset.fallbackBound === "1") return;
-    img.dataset.fallbackBound = "1";
-
-    img.addEventListener("error", () => {
-      const src = img.getAttribute("src") || "";
-      if(src.includes(LEAGUE_ICON_REMOTE)) return;
-
-      const m = src.match(/(500|1500|2500|9000)\.png$/);
-      if(!m) return;
-
-      img.src = `${LEAGUE_ICON_REMOTE}${m[1]}.png`;
-    });
-  });
-}
-
-
-function leagueCpFromString(league){
-  const s = String(league||"");
-  const m = s.match(/(500|1500|2500|9000)/);
-  return m ? m[1] : "";
-}
-
-function leagueLogoUrls(league){
-  const cp = leagueCpFromString(league);
-  if(!cp) return { local:"", remote:"" };
-  return {
-    local: `${LEAGUE_ICON_LOCAL}${cp}.png`,
-    remote: `${LEAGUE_ICON_REMOTE}${cp}.png`
-  };
-}
-
-function isModalOpen(){
-  const fm = $("formModal");
-  return fm && fm.style.display === "flex";
+.fourth-prize {
+    color: #16a34a;
+    font-weight: 900;
+    background: #dcfce7;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-left: 10px;
+    display: inline-block;
 }
 
 /* ===============================
-   ✅ BRACKET SIN 'FLASH' (patch)
-=============================== */
-const BRACKET_MEM = new Map(); 
-
-function bracketDomId_(m, idx){
-  const id = getMatchId_(m);
-  if(id) return id;
-  const r = Number(m?.Round ?? m?.round ?? 1) || 1;
-  const slotRaw = (m?.Slot ?? m?.slot);
-  const slot = Number(slotRaw);
-  if(Number.isFinite(slot)) return `r${r}s${slot}`;
-  return `r${r}i${Number(idx)||0}`;
-}
-
-function bracketSig_(matches){
-  const ms = sortMatches_(Array.isArray(matches) ? matches : []);
-  return ms.map((m,i)=>{
-    const r = Number(m?.Round ?? m?.round ?? 1) || 1;
-    const slot = Number(m?.Slot ?? m?.slot ?? i);
-    const mid = getMatchId_(m) || "";
-    return `${r}:${slot}:${mid}`;
-  }).join("|");
-}
-
-function bracketComputeCurrent_(t, matches){
-  const real = matches.filter(m => getMatchPlayerId_(m,"A") && getMatchPlayerId_(m,"B"));
-  const pending = real.filter(m => !isMatchClosed_(t, m));
-  return pending[0] || null;
-}
+   ESTILOS DEL HISTORIAL DEL CAMPEÓN
+   =============================== */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.history-match {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.history-round {
+    font-weight: bold;
+    color: #3b82f6;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+.history-score {
+    font-size: 18px;
+    font-weight: 900;
+    color: #10b981;
+    background: #ecfdf5;
+    padding: 2px 10px;
+    border-radius: 6px;
+}
+
+.history-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.history-opp-name {
+    font-weight: bold;
+    color: #1e293b;
+    font-size: 15px;
+}
+
+.history-team {
+    display: flex;
+    gap: 4px;
+}
+
+.history-team img {
+    width: 35px;
+    height: 35px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    border: 1px solid #cbd5e1;
+    object-fit: contain;
+    padding: 2px;
+}
+
+/* ===============================
+   ESTILOS DEL PODIO PREMIUM 100% CSS
+   =============================== */
+.podio-flex {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Alinea los pedestales por debajo */
+    gap: 15px;
+    margin-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.05); /* Base del podio sutil */
+}
+
+/* Modificamos tu .premio-card para que actúe como pedestal */
+.podio-flex .premio-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 16px 16px 8px 8px; /* Bordes redondeados más suaves arriba */
+    padding: 20px 10px;
+    position: relative;
+    transition: transform 0.3s;
+    backdrop-filter: blur(5px);
+}
+
+.podio-flex .premio-card:hover {
+    transform: translateY(-5px);
+}
 
-function bracketRealSlotsCount_(m){
-  const aId = getMatchPlayerId_(m,"A");
-  const bId = getMatchPlayerId_(m,"B");
-  const aName = getMatchPlayerName_(m,"A");
-  const bName = getMatchPlayerName_(m,"B");
-
-  const isReal = (id, name) => {
-    if(String(id||"").trim()) return true;
-    const n = String(name||"").trim();
-    if(!n) return false;
-    return n.toUpperCase() !== "TBD";
-  };
-
-  return (isReal(aId, aName) ? 1 : 0) + (isReal(bId, bName) ? 1 : 0);
-}
-
-function bracketScoreSplit_(left, right){
-  const rl = left.reduce((s,m)=>s + bracketRealSlotsCount_(m), 0);
-  const rr = right.reduce((s,m)=>s + bracketRealSlotsCount_(m), 0);
-
-  const lenPenalty  = Math.abs(left.length - right.length) * 2;
-  const realPenalty = Math.abs(rl - rr) * 6;
-
-  // castiga lado vacío
-  const emptyPenalty = (right.length === 0 || left.length === 0) ? 999 : 0;
-
-  return (rl + rr) - lenPenalty - realPenalty - emptyPenalty;
-}
-
-function bracketSplitRoundToSides_(list){
-  const L = Array.isArray(list) ? list : [];
-  if(L.length <= 1) return { left: L.slice(), right: [] };
-
-  // A) mitad/mitad (actual)
-  const half = Math.ceil(L.length / 2);
-  const splitA = { left: L.slice(0, half), right: L.slice(half) };
-
-  // B) intercalado por índice (ideal si viene izq/der/izq/der...)
-  const splitB = {
-    left: L.filter((_,i)=> i % 2 === 0),
-    right: L.filter((_,i)=> i % 2 === 1),
-  };
-
-  // C) por paridad de Slot (si existe)
-  const slots = L.map(m => Number(m?.Slot ?? m?.slot)).filter(Number.isFinite);
-  let splitC = null;
-  if(slots.length === L.length){
-    splitC = {
-      left: L.filter(m => (Number(m?.Slot ?? m?.slot) % 2) === 1),
-      right: L.filter(m => (Number(m?.Slot ?? m?.slot) % 2) === 0),
-    };
-    if(splitC.left.length === 0 || splitC.right.length === 0) splitC = null;
-  }
-
-  const cand = [splitA, splitB, ...(splitC ? [splitC] : [])];
-  let best = cand[0];
-  let bestScore = bracketScoreSplit_(best.left, best.right);
-
-  for(const s of cand.slice(1)){
-    const sc = bracketScoreSplit_(s.left, s.right);
-    if(sc > bestScore){
-      best = s;
-      bestScore = sc;
-    }
-  }
-  return best;
-}
-
-
-function bracketComputeVisibility_(t, matches, maxRound){
-  const current = bracketComputeCurrent_(t, matches);
-  const activeRound = current ? Number(current?.Round ?? current?.round ?? 1) : maxRound;
-
-  // ✅ "Cuartos" = maxRound - 2 (porque: Final=maxRound, Semi=maxRound-1, Cuartos=maxRound-2)
-  const quartersRound = Math.max(1, (Number(maxRound) || 1) - 2);
-
-  // ✅ Regla:
-  // - Antes de cuartos: ocultar todo lo que ya pasó => minRoundToShow = activeRound
-  // - Desde cuartos en adelante: congelar en cuartos => minRoundToShow = quartersRound
-  let minRoundToShow = (activeRound >= quartersRound)
-  ? quartersRound
-  : Math.max(1, activeRound);
-
-// ✅ override manual para ver todo
-if(window.__BRACKET_SHOW_ALL) minRoundToShow = 1;
-
-
-  const visibleSideRounds = [];
-  for(let r=1; r<maxRound; r++){
-    if(r >= minRoundToShow) visibleSideRounds.push(r);
-  }
-
-  return { activeRound, minRoundToShow, visibleSideRounds, current };
-}
-
-
-function bracketApplyVisibilityToDom_(minRoundToShow, maxRound){
-  const scroll = document.getElementById("bracketScroll");
-  if(!scroll) return;
-  scroll.querySelectorAll(".round-col[data-round]").forEach(col=>{
-    const r = Number(col.getAttribute("data-round") || 0);
-    col.classList.toggle("is-hidden", r > 0 && r < minRoundToShow);
-  });
-  const visibleSideRounds = [];
-  for(let r=1;r<maxRound;r++){
-    if(r >= minRoundToShow) visibleSideRounds.push(r);
-  }
-  scroll.dataset.visibleRounds = JSON.stringify(visibleSideRounds);
-  if(window.__BRACKET_DRAW_FN) window.__BRACKET_DRAW_FN();
-
-}
-
-function bracketPatchNodes_(t, matches, currentMatch){
-  const scroll = document.getElementById("bracketScroll");
-  if(!scroll) return;
-  if(!window.__BRACKET_DRAW_FN){
-    window.__BRACKET_DRAW_FN = () => requestAnimationFrame(drawBracketLinesStatic_);
-  }
-  const ms = sortMatches_(matches);
-  const map = new Map();
-  ms.forEach((m, idx)=>{
-    const domId = bracketDomId_(m, (typeof m.__brIdx === "number" ? m.__brIdx : idx));
-    map.set(domId, m);
-  });
-  const curId = currentMatch ? bracketDomId_(currentMatch, (typeof currentMatch.__brIdx === "number" ? currentMatch.__brIdx : 0)) : "";
-  scroll.querySelectorAll(".match-node.is-current").forEach(n => n.classList.remove("is-current"));
-  scroll.querySelectorAll(".match-node[data-matchid]").forEach(node=>{
-    const id = node.getAttribute("data-matchid") || "";
-    const m = map.get(id);
-    if(!m) return;
-    const aId = getMatchPlayerId_(m, "A");
-    const bId = getMatchPlayerId_(m, "B");
-    const aName = (t.byId?.[aId]?.name) || getMatchPlayerName_(m,"A") || aId || "TBD";
-    const bName = (t.byId?.[bId]?.name) || getMatchPlayerName_(m,"B") || bId || "TBD";
-    const aScore = getScoreA_(m);
-    const bScore = getScoreB_(m);
-    const bo = Number(m?.bestOf ?? m?.BestOf ?? t?.bestOf ?? 3) || 3;
-    const need = needWinsFromBestOf(bo);
-    const finished = isMatchDone_(m) || (aScore >= need) || (bScore >= need);
-    const rows = node.querySelectorAll(".player-row");
-    if(rows[0]){
-      rows[0].classList.toggle("win",  finished && aScore > bScore);
-      rows[0].classList.toggle("lose", finished && bScore > aScore);
-      const nm = rows[0].querySelector(".player-name");
-      const bd = rows[0].querySelector(".player-badge");
-      if(nm) nm.textContent = aName;
-      if(bd) bd.textContent = String(aScore);
-    }
-    if(rows[1]){
-      rows[1].classList.toggle("win",  finished && bScore > aScore);
-      rows[1].classList.toggle("lose", finished && aScore > bScore);
-      const nm = rows[1].querySelector(".player-name");
-      const bd = rows[1].querySelector(".player-badge");
-      if(nm) nm.textContent = bName;
-      if(bd) bd.textContent = String(bScore);
-    }
-    if(curId && id === curId){
-      node.classList.add("is-current");
-    }
-  });
-  scroll.classList.add("no-anim");
-  requestAnimationFrame(()=> scroll.classList.remove("no-anim"));
-  window.__BRACKET_DRAW_FN();
-}
-
-function drawBracketLinesStatic_(){
-  const scroll = document.getElementById("bracketScroll");
-  const svg = document.getElementById("bracketLines");
-  if(!scroll || !svg) return;
-  const w = scroll.scrollWidth;
-  const h = scroll.scrollHeight;
-  svg.style.width = w + "px";
-  svg.style.height = h + "px";
-  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-  svg.innerHTML = "";
-  const cs = getComputedStyle(scroll);
-  const scale = parseFloat(cs.getPropertyValue("--bracketScale")) || 1;
-  const rootRect = scroll.getBoundingClientRect();
-  const borderL = parseFloat(cs.borderLeftWidth) || 0;
-  const borderT = parseFloat(cs.borderTopWidth) || 0;
-  const rootLeft = rootRect.left + borderL;
-  const rootTop  = rootRect.top  + borderT;
-  const sx = scroll.scrollLeft;
-  const sy = scroll.scrollTop;
-  const ptRight = (el) => {
-    const r = el.getBoundingClientRect();
-    return {
-      x: ((r.right - rootLeft) / scale) + sx,
-      y: ((r.top - rootTop) / scale) + sy + ((r.height / 2) / scale)
-    };
-  };
-  const ptLeft = (el) => {
-    const r = el.getBoundingClientRect();
-    return {
-      x: ((r.left - rootLeft) / scale) + sx,
-      y: ((r.top - rootTop) / scale) + sy + ((r.height / 2) / scale)
-    };
-  };
-const path = (p1, p2) => {
-  const dx = (p2.x - p1.x);
-  const dist = Math.abs(dx);
-
-  if(dist < 8){
-    return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
-  }
-
-  const midX = p1.x + dx * 0.5;
-
-  // ✅ horizontal -> vertical -> horizontal
-  return `M ${p1.x} ${p1.y}
-          L ${midX} ${p1.y}
-          L ${midX} ${p2.y}
-          L ${p2.x} ${p2.y}`;
-};
-
-
-  const add = (d) => {
-    const p = document.createElementNS("http://www.w3.org/2000/svg","path");
-    p.setAttribute("d", d);
-    p.setAttribute("fill","none");
-    p.setAttribute("stroke","rgba(255,220,140,0.45)");
-    p.setAttribute("stroke-width","2");
-    p.setAttribute("stroke-linecap","round","stroke-linejoin");
-    svg.appendChild(p);
-  };
-  let visibleRounds = [];
-  try{
-    visibleRounds = JSON.parse(scroll.dataset.visibleRounds || "[]").map(Number).filter(Number.isFinite);
-  }catch(_){ visibleRounds = []; }
-  const connectSide = (side, roundsArr) => {
-    for(let k=0;k<roundsArr.length-1;k++){
-      const r = roundsArr[k];
-      const r2 = roundsArr[k+1];
-      const childNodes = [...scroll.querySelectorAll(`.match-node[data-side="${side}"][data-round="${r}"]`)];
-      const parentNodes = [...scroll.querySelectorAll(`.match-node[data-side="${side}"][data-round="${r2}"]`)];
-      childNodes.forEach((child, i) => {
-        const parent = parentNodes[Math.floor(i/2)];
-        if(!parent) return;
-        if(side === "left") add(path(ptRight(child), ptLeft(parent)));
-        else add(path(ptLeft(child), ptRight(parent)));
-      });
-    }
-  };
-  connectSide("left", visibleRounds);
-  connectSide("right", visibleRounds);
-  const maxRound = Number(scroll.dataset.maxRound || 0) || 0;
-  if(maxRound > 1){
-    const semiRound = maxRound - 1;
-    const leftSemi = scroll.querySelector(`.match-node[data-side="left"][data-round="${semiRound}"][data-index="0"]`);
-    const rightSemi = scroll.querySelector(`.match-node[data-side="right"][data-round="${semiRound}"][data-index="0"]`);
-    const center = scroll.querySelector(`.match-node[data-side="center"][data-round="${maxRound}"]`);
-    if(center && leftSemi) add(path(ptRight(leftSemi), ptLeft(center)));
-    if(center && rightSemi) add(path(ptLeft(rightSemi), ptRight(center)));
-  }
-}
-
-function roundLabel(r, maxRound){
-  r = Number(r||1);
-  maxRound = Number(maxRound||r);
-  if (maxRound <= 1) return "Final";
-  if (r === maxRound) return "Final";
-  if (r === maxRound - 1) return "Semifinal";
-  if (r === maxRound - 2) return "Cuartos";
-  if (r === maxRound - 3) return "Octavos"; // ✅ Agregado: una ronda antes de Cuartos
-  return `Ronda ${r}`;
-}
-
-function slugPokemon(name){
-  return String(name||"")
-    .trim().toLowerCase()
-    .replace(/\./g,"")
-    .replace(/♀/g,"-f")
-    .replace(/♂/g,"-m")
-    .replace(/['"]/g,"")
-    .replace(/\s+/g,"-");
-}
-function spriteUrl(pokemonName){
-  const s = slugPokemon(pokemonName);
-  if(!s) return "";
-  return `https://img.pokemondb.net/sprites/home/normal/${encodeURIComponent(s)}.png`;
-}
-
-function stripLeaguePrefixPid_(tok){
-  const s = String(tok||"").trim();
-  if(!s) return "";
-  const i = s.indexOf(".");
-  return (i > 0) ? s.slice(i+1).trim() : s;
-}
-
-function firstPidFromCell_(cell){
-  const s = String(cell||"").trim();
-  if(!s) return "";
-  const parts = s.split(/[,;|\n\r]+/g).map(x => x.trim()).filter(Boolean);
-  if(!parts.length) return "";
-  return stripLeaguePrefixPid_(parts[0]);
-}
-
-function pidFromCellByLeague_(cell, leagueCp){
-  const s = String(cell||"").trim();
-  if(!s) return "";
-  const parts = s.split(/[,;|\n\r]+/g).map(x => x.trim()).filter(Boolean);
-  if(!parts.length) return "";
-  const cp = String(leagueCp||"").trim();
-  if(cp){
-    const pref = `liga${cp}.`.toLowerCase();
-    const hit = parts.find(x => String(x||"").toLowerCase().startsWith(pref));
-    if(hit) return stripLeaguePrefixPid_(hit);
-  }
-  return stripLeaguePrefixPid_(parts[0]);
-}
-
-function getTeamFromInscrito(ins){
-  const t = ["P1","P2","P3","P4","P5","P6"].map(k => ins?.[k] || "");
-  const clean = t.map(firstPidFromCell_);
-  if(clean.filter(Boolean).length >= 4) return clean;
-  const t2 = ["p1","p2","p3","p4","p5","p6"].map(k => ins?.[k] || "");
-  return t2.map(firstPidFromCell_);
-}
-
-// ===============================
-// ✅ CACHE (LOCAL) + EXPORT NORMALIZER
-// ===============================
-const CACHE_INDEX_KEY = "pc.torneos.index.v1";
-const CACHE_TORNEO_KEY = (id) => `pc.torneo.data.v1:${id}`;
-
-function cacheParse_(raw, fallback = null){
-  try { return JSON.parse(raw); } catch(_) { return fallback; }
-}
-
-function cacheLoadBootstrap_(){
-  const idx = cacheParse_(localStorage.getItem(CACHE_INDEX_KEY) || "", null);
-  if(!idx || !Array.isArray(idx.torneos) || !idx.torneos.length) return false;
-
-  const torneos = [];
-  for(const it of idx.torneos){
-    const id = String(it?.id || "").trim();
-    if(!id) continue;
-    const t = cacheParse_(localStorage.getItem(CACHE_TORNEO_KEY(id)) || "", null);
-    if(t && t.torneoId) torneos.push(t);
-  }
-  if(!torneos.length) return false;
-
-  TORNEOS = torneos;
-  SELECTED_ID = String(idx.selectedId || "").trim() || torneos[0].torneoId;
-
-  renderTabs();
-  renderSelected();
-  return true;
-}
-
-function cacheSaveAll_(){
-  try{
-    const idx = {
-      v: 1,
-      savedAt: Date.now(),
-      selectedId: SELECTED_ID || "",
-      torneos: (TORNEOS || []).map(t => ({
-        id: String(t.torneoId || "").trim(),
-        ver: Number(t._ver || 0) || 0
-      }))
-    };
-    localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(idx));
-    (TORNEOS || []).forEach(t => {
-      localStorage.setItem(CACHE_TORNEO_KEY(t.torneoId), JSON.stringify(t));
-    });
-  }catch(_){}
-}
-
-function exportPlayersToInscritos_(torneoId, players){
-  const out = [];
-  (players || []).forEach(p => {
-    const team = Array.isArray(p.team) ? p.team : [];
-    out.push({
-      Timestamp: p.ts || p.timestamp || "",
-      TorneoId: torneoId,
-      PlayerId: String(p.playerId || "").trim(),
-      NombrePokemonGO: String(p.nombre || "").trim(),
-      Nick: String(p.nick || "").trim(),
-      Codigo: String(p.codigo || "").trim(),
-      Campfire: String(p.campfire || "").trim(),
-      Estado: String(p.estado || p.state || "Inscrito").trim() || "Inscrito",
-      P1: String(team[0] || "").trim(),
-      P2: String(team[1] || "").trim(),
-      P3: String(team[2] || "").trim(),
-      P4: String(team[3] || "").trim(),
-      P5: String(team[4] || "").trim(),
-      P6: String(team[5] || "").trim(),
-    });
-  });
-  return out;
-}
-
-function exportMatchesToLegacy_(torneoId, matches){
-  return (matches || []).map(m => ({
-    TorneoId: torneoId,
-    MatchId: String(m.matchId ?? m.MatchId ?? "").trim(),
-    Round: Number(m.round ?? m.Round ?? 0),
-    Slot: Number(m.slot ?? m.Slot ?? 0),
-    PlayerAId: String(m.playerAId ?? m.PlayerAId ?? "").trim(),
-    PlayerBId: String(m.playerBId ?? m.PlayerBId ?? "").trim(),
-    ScoreA: (m.scoreA ?? m.ScoreA ?? ""),
-    ScoreB: (m.scoreB ?? m.ScoreB ?? ""),
-    WinnerId: String(m.winnerId ?? m.WinnerId ?? "").trim(),
-    LoserId: String(m.loserId ?? m.LoserId ?? "").trim(),
-    Status: String(m.status ?? m.Status ?? "").trim(),
-    NextMatchId: String(m.nextMatchId ?? m.NextMatchId ?? "").trim(),
-    NextSide: String(m.nextSide ?? m.NextSide ?? "").trim(),
-    MatchStatus: String(m.matchStatus ?? m.MatchStatus ?? "").trim(),
-    Location: String(m.location ?? m.Location ?? "").trim(),
-    TableNo: String(m.tableNo ?? m.TableNo ?? "").trim(),
-    Stage: String(m.stage ?? m.Stage ?? "").trim(),
-    GroupId: String(m.groupId ?? m.GroupId ?? "").trim(),
-    SwissRound: String(m.swissRound ?? m.SwissRound ?? "").trim(),
-    Bracket: String(m.bracket ?? m.Bracket ?? "").trim(),
-    MetaJson: (typeof m.metaJson === "string") ? m.metaJson : JSON.stringify(m.meta || {}),
-    HistoryJson: (typeof m.historyJson === "string") ? m.historyJson : (typeof m.HistoryJson === "string" ? m.HistoryJson : "[]"),
-  }));
-}
-
-function buildByIdFromInscritos_(inscritos){
-  const byId = {};
-  (inscritos || []).forEach(r => {
-    const id = String(r.PlayerId || "").trim();
-    if(!id) return;
-    const name = String(r.Nick || r.NombrePokemonGO || r.Codigo || id).trim();
-    byId[id] = { name, team: getTeamFromInscrito(r) };
-  });
-  return byId;
-}
-
-function buildTournamentFromExport_(meta, exp){
-  const torneoId = String(meta?.torneoId || exp?.torneo?.torneoId || "").trim();
-
-  const players = Array.isArray(exp?.players) ? exp.players : [];
-  const matchesRaw = Array.isArray(exp?.matches) ? exp.matches : [];
-
-  const inscritos = exportPlayersToInscritos_(torneoId, players);
-  const byId = buildByIdFromInscritos_(inscritos);
-  const matches = exportMatchesToLegacy_(torneoId, matchesRaw);
-
-  matches.sort((a,b) => (Number(a.Round) - Number(b.Round)) || (Number(a.Slot) - Number(b.Slot)));
-
-  let maxRound = 1;
-  matches.forEach(m => { if(Number(m.Round) > maxRound) maxRound = Number(m.Round); });
-
-  const current = matches.filter(m => {
-    const r = Number(m.Round || 0);
-    if(!r) return false;
-    const st = String(m.Status || "").toLowerCase();
-    const ms = String(m.MatchStatus || "").toLowerCase();
-    if(st === "done" || ms === "finished") return false;
-    if(ms === "cancelled") return false;
-    return true;
-  });
-
-  const next = current.slice(0, 3);
-
-  const t = {
-    torneoId,
-    title: meta.title || exp?.torneo?.title || "",
-    format: meta.format || exp?.torneo?.format || "",
-    leaguePlan: meta.leaguePlan || exp?.torneo?.leaguePlan || "",
-    league: meta.leaguePlan || exp?.torneo?.leaguePlan || "",
-    mode: meta.mode || exp?.torneo?.mode || "",
-    dateTime: meta.dateTime || exp?.torneo?.dateTime || "",
-
-    bestOf: meta.bestOf || meta.boPhasesJson || exp?.torneo?.bestOf || exp?.torneo?.boPhasesJson || "",
-    boPhasesJson: meta.boPhasesJson,
-    suggestedSize: meta.suggestedSize ?? exp?.torneo?.suggestedSize,
-
-    open: isTrue(meta.inscriptionsOpen ?? exp?.torneo?.inscriptionsOpen),
-    generated: isTrue(meta.generated ?? exp?.torneo?.generated),
-    prepEndsAt: meta.prepEndsAt || exp?.torneo?.prepEndsAt || "",
-
-    tablesCount: meta.tablesCount ?? exp?.torneo?.tablesCount,
-    hasMainStage: meta.hasMainStage ?? exp?.torneo?.hasMainStage,
-    mainStageFrom: meta.mainStageFrom ?? exp?.torneo?.mainStageFrom,
-    mainStageRandomPct: meta.mainStageRandomPct ?? exp?.torneo?.mainStageRandomPct,
-
-    createdAt: meta.createdAt || exp?.torneo?.createdAt || "",
-    createdBy: meta.createdBy || exp?.torneo?.createdBy || "",
-
-    bannedTypes: meta.bannedTypes || "",
-    bannedCategories: meta.bannedCategories || "",
-    bannedPokemon: meta.bannedPokemon || "",
-    allowedPokemon: meta.allowedPokemon || "",
-    bannedFastMoves: meta.bannedFastMoves || "",
-    bannedChargedMoves: meta.bannedChargedMoves || "",
-    allowedTypes: meta.allowedTypes || "",
-    allowedCategories: meta.allowedCategories || "",
-
-    leagueRulesJson: meta.leagueRulesJson || "",
-    prizesJson: meta.prizesJson || "[]",
-
-    status: meta.status || "",
-    finishedAt: meta.finishedAt || "",
-    runnerUp: meta.runnerUp || "",
-
-    inscritos,
-    byId,
-    matches,
-    maxRound,
-    current,
-    next,
-  };
-
-  return t;
-}
-
-
-async function loadAll(force = false) {
-  if (LOADALL_PROMISE) return LOADALL_PROMISE;
-  if (!force && TORNEOS.length && (Date.now() - LAST_LOADALL_TS) < LOADALL_MIN_MS) return;
-  LOADALL_PROMISE = _loadAllInner()
-    .finally(() => {
-      LAST_LOADALL_TS = Date.now();
-      LOADALL_PROMISE = null;
-    });
-  return LOADALL_PROMISE;
-}
-
-async function _loadAllInner(force){
-  const list = await apiGET("torneo_list", SHOW_ALL_TOURNEOS ? {} : { onlyActive: "1" });
-  const metaList = Array.isArray(list?.torneos) ? list.torneos : [];
-
-if(!metaList.length){
-    TORNEOS = [];
-    
-    // 1. Llamamos a la función correctamente (con el guion bajo)
-    renderNoTournamentState_(); 
-    
-    // 2. Destruimos manualmente el caché principal para matar al "torneo fantasma"
-    localStorage.removeItem("pc.torneos.index.v1");
-    
-    // 3. Guardamos el nuevo estado vacío
-    cacheSaveAll_();
-    return;
-  }
-
-  const prevById = new Map((TORNEOS || []).map(t => [String(t.torneoId || "").trim(), t]));
-  const out = [];
-
-  for(const meta of metaList){
-    const torneoId = String(meta?.torneoId || "").trim();
-    if(!torneoId) continue;
-
-    // seguridad: si no mostramos todos, filtra por status active
-    if(!SHOW_ALL_TOURNEOS){
-      const st = String(meta.status || "").toLowerCase();
-      if(st && st !== "active") continue;
-    }
-
-    const ver = Number(meta.version || 0) || 0;
-    const prev = prevById.get(torneoId);
-
-    // ✅ si no cambió versión y no forzamos, reusamos lo que ya tenemos (o el cache cargado)
-    if(prev && !force && Number(prev._ver || 0) === ver){
-      out.push(prev);
-      continue;
-    }
-
-    // ✅ si cambió, recién bajamos el export JSON (1 sola llamada)
-    const exp = await apiGET("torneo_export_json", { torneoId });
-
-    if(exp?.ok){
-      const t = buildTournamentFromExport_(meta, exp);
-      t._ver = ver || Number(exp.version || 0) || 0;
-      t.players = exp.players || []; 
-      out.push(t);
-    }else if(prev){
-      // fallback: si falla red, mantenemos lo anterior
-      out.push(prev);
-    }
-  }
-
-  // si el filtro dejó vacío pero había data, intenta con el primero
-  if(!out.length && metaList.length){
-    const m0 = metaList[0];
-    const torneoId0 = String(m0?.torneoId || "").trim();
-    const exp0 = await apiGET("torneo_export_json", { torneoId: torneoId0 });
-    if(exp0?.ok){
-      const t0 = buildTournamentFromExport_(m0, exp0);
-      t0._ver = Number(m0.version || 0) || 0;
-      t0.players = exp0.players || []; 
-      out.push(t0);
-    }
-  }
-
-  TORNEOS = out;
-
-  const prevSel = String(SELECTED_ID || "").trim();
-  if(prevSel && out.some(t => String(t.torneoId) === prevSel)){
-    SELECTED_ID = prevSel;
-  }else{
-    const openT = out.find(t => isTrue(t.open));
-    SELECTED_ID = (openT ? openT.torneoId : (out[0]?.torneoId || ""));
-  }
-
-  renderTabs();
-  renderSelected();
-
- if (isModalOpen()) {
-    setupModalPokemonFilterForSelectedTournament();
-  }
-
-
-  const torneoActual = TORNEOS.find(x => x.torneoId === SELECTED_ID) || TORNEOS[0];
-  if (torneoActual) {
-    renderMainInscritos(torneoActual);
-  }
-
-  cacheSaveAll_();
-}
-
-
-function renderTabs(){
-  const box = $("eventTabs");
-  if(!box) return;
-  if(TORNEOS.length <= 1){
-    box.style.display = "none";
-    box.innerHTML = "";
-    return;
-  }
-  box.style.display = "flex";
-  box.innerHTML = TORNEOS.map(t => {
-    const labelLiga = t.league ? ` - ${t.league}` : "";
-    const cls = (t.torneoId === SELECTED_ID) ? "event-tab active" : "event-tab";
-    const badge = t.open ? "🟢" : "🔒";
-    return `<button class="${cls}" data-id="${escapeHtml(t.torneoId)}">${escapeHtml(t.title)}${escapeHtml(labelLiga)} ${badge}</button>`;
-  }).join("");
-box.querySelectorAll("button[data-id]").forEach(btn => {
-    btn.onclick = () => {
-      SELECTED_ID = btn.getAttribute("data-id");
-      cacheSaveAll_();
-      renderTabs();
-      renderSelected();
-      setupModalPokemonFilterForSelectedTournament();
-      
-      // ✅ 2. PEGA ESTO AQUÍ: Actualiza los inscritos si cambias de pestaña
-      const torneoActual = TORNEOS.find(x => x.torneoId === SELECTED_ID) || TORNEOS[0];
-      if (torneoActual) {
-        renderMainInscritos(torneoActual);
-      }
-    };
-  });
-}
-
-function extractLeagueCpAny(v){
-  const m = String(v||"").match(/(\d{3,4})/);
-  return m ? m[1] : String(v||"").trim();
-}
-
-function parseLeaguePlan(raw){
-  const s = String(raw||"").trim();
-  const out = { main: [], tiebreak: "" };
-  if(!s) return out;
-  const parts = s.split("|").map(p => p.trim()).filter(Boolean);
-  const mainPart = parts[0] || s;
-  const mainTokens = mainPart.split("+").map(x => x.trim()).filter(Boolean);
-  out.main = mainTokens.map(extractLeagueCpAny).filter(Boolean);
-  const tbPart = parts.find(p => /^tiebreak\s*:/i.test(p));
-  if(tbPart){
-    out.tiebreak = extractLeagueCpAny(tbPart.split(/tiebreak\s*:/i)[1]);
-  }
-  return out;
-}
-
-function isMasterToken_(v){
-  const s = String(v||"").trim().toLowerCase();
-  return (
-    s === "9000" ||
-    s === "ml" ||
-    s === "master" ||
-    s.includes("master")
-  );
-}
-
-function leagueIconCp_(cp){
-  return isMasterToken_(cp) ? "9000" : String(cp||"").trim();
-}
-
-function leagueLogoUrlsFromCp(cp){
-  const c = leagueIconCp_(cp); 
-  if(!c) return { local:"", remote:"" };
-  return {
-    local: `${LEAGUE_ICON_LOCAL}${c}.png`,
-    remote: `${LEAGUE_ICON_REMOTE}${c}.png`
-  };
-}
-
-function formatNice(fmt){
-  const f = String(fmt||"").trim();
-  const k = f.toLowerCase();
-  if(!k) return "-";
-  if(k.includes("grupo") || k.includes("group")) return "Fase de grupos";
-  if(k.includes("double")) return "Doble eliminación";
-  if(k.includes("elim") || k.includes("single") || k.includes("direct")) return "ELIMINACION DIRECTA";
-  return f;
-}
-
-function needWinsFromBestOf(bestOf){
-  const bo = Number(bestOf || 3);
-  return Math.floor(bo / 2) + 1;
-}
-
-function parseJsonArray_(raw){
-  if(!raw) return [];
-  if(Array.isArray(raw)) return raw;
-  const s = String(raw || "").trim();
-  if(!s) return [];
-  try{
-    const v = JSON.parse(s);
-    return Array.isArray(v) ? v : [];
-  }catch(_){
-    return [];
-  }
-}
-
-function parseBestOfPlan_(raw){
-  const empty = { groups: 0, bracket: 0, final: 0 };
-
-  if (raw == null) return { ...empty };
-
-  if (typeof raw === "number") {
-    const n = Number(raw) || 0;
-    return { ...empty, bracket: n };
-  }
-
-  if (typeof raw === "object") {
-    const o = raw || {};
-    return {
-      groups: Number(o.groups || 0) || 0,
-      bracket: Number(o.bracket ?? o.bestOf ?? 0) || 0,
-      final: Number(o.final || 0) || 0
-    };
-  }
-
-  const s = String(raw).trim();
-  if (!s) return { ...empty };
-
-  // "3"
-  if (/^\d+$/.test(s)) return { ...empty, bracket: Number(s) || 0 };
-
-  // '{"version":1,"groups":1,"bracket":3,"final":5}'
-  try {
-    const v = JSON.parse(s);
-    if (typeof v === "number") return { ...empty, bracket: Number(v) || 0 };
-    if (v && typeof v === "object") {
-      return {
-        groups: Number(v.groups || 0) || 0,
-        bracket: Number(v.bracket ?? v.bestOf ?? 0) || 0,
-        final: Number(v.final || 0) || 0
-      };
-    }
-  } catch (_) {}
-
-  return { ...empty };
-}
-
-function buildBestOfPlanExplanation_(t, plan){
-  // fallback normal
-  if (!plan || (!plan.bracket && !plan.final)) return buildBestOfExplanation(t);
-
-  const parts = [];
-
-  if (plan.bracket) {
-    const d = buildBestOfExplanation({ ...t, bestOf: plan.bracket });
-    if (d) parts.push(plan.final ? `BO${plan.bracket} (Bracket): ${d}` : d);
-  }
-
-  if (plan.final && plan.final !== plan.bracket) {
-    const d = buildBestOfExplanation({ ...t, bestOf: plan.final });
-    if (d) parts.push(`BO${plan.final} (Final / 3er puesto): ${d}`);
-  }
-
-  return parts.join("\n\n");
-}
-
-
-function parseBestOfPlan_(raw){
-  const empty = { groups: 0, bracket: 0, final: 0 };
-
-  if (raw == null) return { ...empty };
-
-  if (typeof raw === "number") {
-    const n = Number(raw) || 0;
-    return { ...empty, bracket: n };
-  }
-
-  if (typeof raw === "object") {
-    const o = raw || {};
-    return {
-      groups: Number(o.groups || 0) || 0,
-      bracket: Number(o.bracket ?? o.bestOf ?? 0) || 0,
-      final: Number(o.final || 0) || 0
-    };
-  }
-
-  const s = String(raw).trim();
-  if (!s) return { ...empty };
-
-  // "3"
-  if (/^\d+$/.test(s)) return { ...empty, bracket: Number(s) || 0 };
-
-  // '{"version":1,"groups":1,"bracket":3,"final":5}'
-  try {
-    const v = JSON.parse(s);
-    if (typeof v === "number") return { ...empty, bracket: Number(v) || 0 };
-    if (v && typeof v === "object") {
-      return {
-        groups: Number(v.groups || 0) || 0,
-        bracket: Number(v.bracket ?? v.bestOf ?? 0) || 0,
-        final: Number(v.final || 0) || 0
-      };
-    }
-  } catch (_) {}
-
-  return { ...empty };
-}
-
-function buildBestOfPlanExplanation_(t, plan){
-  // fallback normal
-  if (!plan || (!plan.bracket && !plan.final)) return buildBestOfExplanation(t);
-
-  const parts = [];
-
-  if (plan.bracket) {
-    const d = buildBestOfExplanation({ ...t, bestOf: plan.bracket });
-    if (d) parts.push(plan.final ? `BO${plan.bracket} (Bracket): ${d}` : d);
-  }
-
-  if (plan.final && plan.final !== plan.bracket) {
-    const d = buildBestOfExplanation({ ...t, bestOf: plan.final });
-    if (d) parts.push(`BO${plan.final} (Final / 3er puesto): ${d}`);
-  }
-
-  return parts.join("\n\n");
-}
-
-
-function modeNice_(raw){
-  const s = String(raw || "").trim();
-  if(!s) return "";
-  const k = s.toLowerCase();
-  const hasV = k.includes("virtual");
-  const hasP = k.includes("presen");
-  if(hasV && hasP) return "VIRTUAL / PRESENCIAL";
-  if(hasV) return "VIRTUAL";
-  if(hasP) return "PRESENCIAL";
-  return s.toUpperCase();
-}
-
-function buildBestOfExplanation(t){
-  const bo = Number(t?.bestOf || 0);
-  if(!bo) return "";
-  const plan = parseLeaguePlan(t?.league);
-  const __isBattle = isBattlePhase(t);
-  const __leagueRow = document.getElementById("metaLeagueRow");
-  if(__leagueRow) __leagueRow.style.display = __isBattle ? "none" : "";
-  const mains = (plan.main || []).filter(Boolean);
-  const tb = String(plan.tiebreak || "").trim();
-  const needWins = needWinsFromBestOf(bo);
-  const liga = (cp) => cp ? `Liga ${cp}` : "liga";
-
-  if(bo === 3){
-    if(mains.length >= 2 && tb){
-      return `Al mejor de 3: gana quien consiga ${needWins} victorias. Partida 1 en ${liga(mains[0])}, Partida 2 en ${liga(mains[1])}; si quedan 1-1, el desempate (Partida 3) es en ${liga(tb)}.`;
-    }
-    if(mains.length >= 2 && !tb){
-      return `Al mejor de 3: gana quien consiga ${needWins} victorias. Partida 1 en ${liga(mains[0])}, Partida 2 en ${liga(mains[1])}; si quedan 1-1, la Partida 3 se juega nuevamente en ${liga(mains[0])}.`;
-    }
-    if(mains.length === 1 && tb && tb !== mains[0]){
-      return `Al mejor de 3: gana quien consiga ${needWins} victorias. Partidas en ${liga(mains[0])}; si quedan 1-1, el desempate (Partida 3) es en ${liga(tb)}.`;
-    }
-    if(mains.length === 1){
-      return `Apartir de Octavos Hasta Semifinal: gana quien consiga ${needWins} victorias. Todas las partidas se juegan en ${liga(mains[0])}.`;
-    }
-    return `Al mejor de 3: gana quien consiga ${needWins} victorias.`;
-  }
-
-  if(bo === 5){
-    if(mains.length >= 2 && tb){
-      return `Al mejor de 5: gana quien consiga ${needWins} victorias. Partidas 1-4 alternan Liga ${mains[0]} / Liga ${mains[1]}; si quedan 2-2, el desempate (Partida 5) es en ${liga(tb)}.`;
-    }
-    if(mains.length >= 2 && !tb){
-      return `Al mejor de 5: gana quien consiga ${needWins} victorias. Partidas 1-5 alternan Liga ${mains[0]} / Liga ${mains[1]} (la 5 vuelve a ${liga(mains[0])} si quedan 2-2).`;
-    }
-    if(mains.length === 1 && tb && tb !== mains[0]){
-      return `Al mejor de 5: gana quien consiga ${needWins} victorias. Partidas en ${liga(mains[0])}; si quedan 2-2, el desempate (Partida 5) es en ${liga(tb)}.`;
-    }
-    if(mains.length === 1){
-      return `Final y Difinición 3° Puesto: gana quien consiga ${needWins} victorias. Todas las partidas se juegan en ${liga(mains[0])}.`;
-    }
-    return `Al mejor de 5: gana quien consiga ${needWins} victorias.`;
-  }
-  return `BO${bo}: gana quien consiga ${needWins} victorias.`;
-}
-
-function leaguePartHtml(cp, size="md"){
-  const raw = String(cp||"").trim();
-  if(!raw) return "";
-  const isMaster = isMasterToken_(raw);
-  const label = isMaster ? "MASTER" : raw;
-  const { local, remote } = leagueLogoUrlsFromCp(raw);
-  const src = local || remote || "";
-  const onerr = remote ? `this.onerror=null;this.src='${escapeHtml(remote)}'` : "";
-  return `
-    <span class="league-part">
-      ${src ? `<img class="league-logo-img" src="${escapeHtml(src)}" alt="Liga ${escapeHtml(label)}" onerror="${onerr}">` : ""}
-      <span class="league-cp">${escapeHtml(label)}</span>
-    </span>
-  `;
-}
-
-function setTournamentHeaderUI(t){
-  const titleEl = $("torneoTitle");
-  if(titleEl) titleEl.textContent = String(t?.title || "TORNEO").toUpperCase();
-  const meta = $("torneoMeta");
-  if(meta) meta.style.display = "grid";
-  const plan = parseLeaguePlan(t?.league);
-  const mainParts = (plan.main || []).filter(Boolean);
-  const leagueText = $("torneoLeagueText");
-  const img = $("leagueLogoImg");
-  if(img){
-    img.style.display = "none";
-    img.removeAttribute("src");
-  }
-  if(leagueText){
-    if(mainParts.length){
-      leagueText.innerHTML = mainParts.map(cp => leaguePartHtml(cp)).join(`<span class="league-sep">/</span>`);
-    }else{
-      leagueText.textContent = String(t?.league || "-").toUpperCase();
-    }
-  }
-  const tbBadge = $("torneoTiebreakBadge");
-  const tbText = $("torneoTiebreakText");
-  const tbImg = $("tiebreakLogoImg");
-  const tbCp = String(plan.tiebreak || "").trim();
-  if(tbBadge){
-    if(tbCp){
-      tbBadge.style.display = "inline-flex";
-      if(tbText) tbText.textContent = isMasterToken_(tbCp) ? "MASTER" : tbCp;
-      if(tbImg){
-        const { local, remote } = leagueLogoUrlsFromCp(tbCp);
-        const src = local || remote || "";
-        tbImg.style.display = src ? "inline-block" : "none";
-        if(src){
-          tbImg.src = src;
-          tbImg.onerror = () => { tbImg.onerror = null; if(remote) tbImg.src = remote; };
-        }else{
-          tbImg.removeAttribute("src");
-        }
-      }
-    }else{
-      tbBadge.style.display = "none";
-      if(tbText) tbText.textContent = "";
-      if(tbImg){
-        tbImg.style.display = "none";
-        tbImg.removeAttribute("src");
-      }
-    }
-  }
-
-  const isBattle = isBattlePhase(t);
-  setHeaderBattleMode(isBattle);
-  const dtRow = $("metaDateTimeRow");
-  const prepBar = $("prepCountdownBar");
-  const prepTimeEl = $("prepCountdown");
-
-  if(isBattle){
-    if(dtRow) dtRow.style.display = "flex";   
-    if(prepBar) prepBar.style.display = "none";
-    stopPrepTimer();
-  }else{
-    const isPrep = isPrepActive(t);
-    const dateOnlyEl = $("torneoDateOnly");
-    const timeOnlyEl = $("torneoTimeOnly");
-    if(isPrep){
-      setHeaderPrepMode(true);
-      if(dtRow) dtRow.style.display = "none";
-      if(prepBar) prepBar.style.display = "block";
-      if(dateOnlyEl) dateOnlyEl.textContent = "";
-      
-      // ✅ Lógica nueva: ¿Espera manual o tiempo?
-      if(t.prepEndsAt === "MANUAL"){
-        if(prepTimeEl) prepTimeEl.textContent = "ESPERANDO";
-        if(timeOnlyEl) timeOnlyEl.textContent = "ESPERANDO";
-        stopPrepTimer(); // Detenemos cualquier timer anterior
-      } else {
-        if(prepTimeEl) prepTimeEl.textContent = "30:00"; 
-        if(timeOnlyEl) timeOnlyEl.textContent = "30:00"; 
-        startPrepTimer(t.prepEndsAt);
-      }
-    }else{
-      setHeaderPrepMode(false);
-      if(dtRow) dtRow.style.display = "flex";
-      if(prepBar) prepBar.style.display = "none";
-      stopPrepTimer();
-      const { date, time } = fmtDateParts(t?.dateTime);
-      if(dateOnlyEl) dateOnlyEl.textContent = date || "-";
-      if(timeOnlyEl) timeOnlyEl.textContent = time || "-";
-    }
-  }
-
-const fmtNice = formatNice(t?.format);
-
-// 🟣 NEW: soporta bestOf = 3  y  bestOf = {"bracket":3,"final":5}
-const planBO = parseBestOfPlan_(t?.bestOf);
-
-const labels = [];
-if (planBO.bracket) labels.push(`BO${planBO.bracket}`);
-if (planBO.final && planBO.final !== planBO.bracket) labels.push(`BO${planBO.final}`);
-
-const boLabel = labels.length ? labels.join(" — ") : "-";
-const boDesc  = buildBestOfPlanExplanation_(t, planBO);
-
-
-const fmtEl = $("torneoFormatText");
-if(fmtEl) fmtEl.textContent = fmtNice || "-";
-
-const boEl = $("torneoBoText");
-if(boEl) boEl.textContent = boLabel;
-
-const wrap = document.getElementById("boHelpWrap");
-const tip  = document.getElementById("boTooltip");
-if(wrap && tip){
-  if(boDesc){
-    wrap.style.display = "inline-flex";
-    tip.textContent = boDesc;
-  }else{
-    wrap.style.display = "none";
-    tip.textContent = "";
-  }
-}
-
-  const modeRow = $("metaModeRow");
-  const modeTextEl = $("torneoModeText");
-  const modeWrap = document.getElementById("modeHelpWrap");
-  const modeTip  = document.getElementById("modeTooltip");
-  const modeLabel = modeNice_(t?.mode);
-  if(modeRow){
-    if(!isBattle && modeLabel){
-      modeRow.style.display = "flex";
-      if(modeTextEl) modeTextEl.textContent = modeLabel;
-      const showInfo = /virtual|presen/i.test(modeLabel);
-      if(modeWrap && modeTip){
-        if(showInfo){
-          modeWrap.style.display = "inline-flex";
-          modeTip.textContent = "Necesario estar en el grupo de WhatsApp de la comunidad para más detalles.";
-        }else{
-          modeWrap.style.display = "none";
-          modeTip.textContent = "";
-        }
-      }
-    }else{
-      modeRow.style.display = "none";
-      if(modeTextEl) modeTextEl.textContent = "";
-      if(modeWrap) modeWrap.style.display = "none";
-      if(modeTip) modeTip.textContent = "";
-    }
-  }
-
-  const prizesRow = $("metaPrizesRow");
-  const prizesBox = $("torneoPrizes");
-  const prizes = parseJsonArray_(t?.prizesJson);
-  if(prizesRow){
-    if(prizes.length){
-      prizesRow.style.display = "flex";
-      if(prizesBox){
-        prizesBox.innerHTML = prizes.map((p, idx) => {
-          const rank = `${idx + 1}º Puesto`;
-          const name = String(p?.name || "").trim() || "Premio";
-          const icon = String(p?.icon || "").trim();
-          const iconHtml = icon
-            ? `<span class="prize-icon-box"><img src="${escapeHtml(icon)}" alt="${escapeHtml(name)}" onerror="this.style.display='none'"></span>`
-            : `<span class="prize-icon-box"></span>`;
-          return `<span class="prize-item">
-            ${iconHtml}
-            <span class="prize-text">
-              <span class="prize-rank">${escapeHtml(rank)}</span>
-              <span class="prize-name">${escapeHtml(name)}</span>
-            </span>
-          </span>`;
-        }).join("");
-      }
-    }else{
-      prizesRow.style.display = "none";
-      if(prizesBox) prizesBox.innerHTML = "";
-    }
-  }
-
-  wireModeTooltipOnce();
-  const oldRow = $("torneoBoDescRow");
-  if(oldRow) oldRow.style.display = "none";
-  wireBoTooltipOnce();
-}
-
-function iconLabelFor(token){
-  const key = String(token||"").trim().toLowerCase();
-  if(!key) return "";
-  const meta = ICON_META_BY_ID.get(key) || ICON_META_BY_ID.get(String(key).replace(/^0+/,""));
-  return meta?.label || meta?.name || String(token);
-}
-
-function renderPokemonFaces(tokens, mode){
-  const arr = Array.isArray(tokens) ? tokens : [];
-  if(!arr.length) return "<div class=\"rule-empty\">—</div>";
-  const withDex = arr.map(tok => {
-    const m = String(tok||"").match(/^(\d{1,4})/);
-    return { tok, dex: m ? Number(m[1]) : 999999 };
-  }).sort((a,b)=> (a.dex-b.dex) || String(a.tok).localeCompare(String(b.tok)));
-  return `<div class="poke-face-grid">${withDex.map(x => {
-    const id = String(x.tok).trim();
-    const title = iconLabelFor(id);
-    const cls = (mode === "allow")
-      ? "poke-face-mini poke-face-mini--allow"
-      : "poke-face-mini poke-face-mini--ban";
-    return `<img class="${cls}" src="${escapeHtml(iconUrl(id))}"
-      title="${escapeHtml(title)}" alt="${escapeHtml(title)}"
-      onerror="this.style.display='none'">`;
-  }).join("")}</div>`;
-}
-
-function findMoveMeta(token){
-  const t = String(token||"").trim();
-  if(!t) return null;
-  return MOVE_BY_ID.get(t) || MOVE_BY_ID.get(t.toLowerCase()) || MOVE_BY_NORMNAME.get(normName(t)) || null;
-}
-
-function renderMoveChips(tokens){
-  const arr = Array.isArray(tokens) ? tokens : [];
-  if(!arr.length) return "<div class=\"rule-empty\">—</div>";
-  const chips = arr.map(tok => {
-    const m = findMoveMeta(tok);
-    const name = (m ? (m?.[UI_LANG] || m?.es_419 || m?.es_ES || m?.en) : null) || String(tok);
-    const type = m?.type || "";
-    return `<span class="move-chip" title="${escapeHtml(type||'')}">
-      ${escapeHtml(name)} ${typeIconHtml(type)}
-    </span>`;
-  });
-  return `<div class="rule-chips">${chips.join("")}</div>`;
-}
-
-function renderTypeChips(bannedTypes){
-  const arr = Array.isArray(bannedTypes) ? bannedTypes : [];
-  if(!arr.length) return "<div class=\"rule-empty\">—</div>";
-  return `<div class="rule-chips">${
-    arr.map(tp => {
-      const k = String(tp).toLowerCase();
-      const meta = TYPE_META[k] || { es: tp, emo:"🏷️" };
-      return `<span class="chip chip-type">
-        ${typeIconHtml(k)} ${escapeHtml(meta.es)}
-      </span>`;
-    }).join("")
-  }</div>`;
-}
-
-function renderCatsAllowed(allowedCats){
-  if(!allowedCats || !allowedCats.length) return "<div class=\"rule-empty\">—</div>";
-  return `<div class="rule-chips">${allowedCats.map(c => `<span class="chip">${escapeHtml(categoryNice(c))}</span>`).join("")}</div>`;
-}
-
-function sectionHtml(title, inner, mode){
-  const cls = mode === "allow" ? "rule-section rule-section--allow" : "rule-section rule-section--ban";
-  const tcls = mode === "allow" ? "sec-title-allow" : "sec-title-ban";
-  return `<div class="${cls}"><h4 class="${tcls}">${escapeHtml(title)}</h4>${inner}</div>`;
-}
-
-function setRulesCollapsed_(collapsed){
-  const card = $("rulesCard");
-  if(!card) return;
-  if(collapsed) card.classList.add("is-collapsed");
-  else card.classList.remove("is-collapsed");
-  const btn = $("rulesToggleBtn");
-  if(btn){
-    btn.textContent = collapsed ? "Mostrar" : "Ocultar";
-    btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
-  }
-}
-
-function wireRulesToggleOnce_(){
-  const btn = $("rulesToggleBtn");
-  if(!btn) return;
-  if(btn.dataset.bound === "1") return;
-  btn.dataset.bound = "1";
-  btn.addEventListener("click", () => {
-    const card = $("rulesCard");
-    if(!card) return;
-    setRulesCollapsed_(!card.classList.contains("is-collapsed"));
-  });
-}
-
-function renderRulesCard(t){
-  const box = $("rulesCard");
-  if(!box) return;
-  if(isBattlePhase(t)){
-    box.style.display = "none";
-    box.innerHTML = "";
-    return;
-  }
-  const rulesObj = getPerLeagueRules_(t);
-  const rawKeys = rulesObj ? Object.keys(rulesObj.leagues || {}) : [];
-  const isMultiLeague = !!rulesObj && rawKeys.length > 1;
-  let activeKey = "";
-  let orderedKeys = rawKeys.slice();
-  let tiebreakKey = "";
-
-  if(isMultiLeague){
-    const plan = parseLeaguePlan(t?.league);
-    const mains = (plan.main || []).filter(Boolean);
-    const tb = String(plan.tiebreak || "").trim();
-    const keyByCp = (cpTok) => {
-      const target = leagueIconCp_(cpTok); 
-      return rawKeys.find(k => leagueIconCp_(leagueCpFromLeagueKey_(k)) === target) || "";
-    };
-    if(tb) tiebreakKey = keyByCp(tb);
-    const used = new Set();
-    orderedKeys = [];
-    mains.forEach(cp => {
-      const k = keyByCp(cp);
-      if(k && !used.has(k)){
-        used.add(k);
-        orderedKeys.push(k);
-      }
-    });
-    rawKeys.forEach(k => {
-      if(k === tiebreakKey) return;
-      if(!used.has(k)){
-        used.add(k);
-        orderedKeys.push(k);
-      }
-    });
-    if(tiebreakKey && !used.has(tiebreakKey)){
-      used.add(tiebreakKey);
-      orderedKeys.push(tiebreakKey);
-    }
-    if(RULES_MULTI_TORNEO_ID !== t?.torneoId){
-      RULES_MULTI_TORNEO_ID = t?.torneoId || "";
-      RULES_ACTIVE_LEAGUE_KEY = (orderedKeys[0] || rawKeys[0] || "");
-    }else{
-      if(!RULES_ACTIVE_LEAGUE_KEY || !rulesObj.leagues[RULES_ACTIVE_LEAGUE_KEY]){
-        RULES_ACTIVE_LEAGUE_KEY = (orderedKeys[0] || rawKeys[0] || "");
-      }
-    }
-    activeKey = RULES_ACTIVE_LEAGUE_KEY;
-  }
-
-  const src = isMultiLeague ? (rulesObj.leagues[activeKey] || {}) : (t || {});
-  const bannedTypes  = splitListLower(src?.bannedTypes);
-  const allowedTypes = splitListLower(src?.allowedTypes);
-  const bannedCats  = splitTokens(src?.bannedCategories).map(normCategoryToken).filter(Boolean);
-  const allowedCats = splitTokens(src?.allowedCategories).map(normCategoryToken).filter(Boolean);
-  const bannedPokes  = splitTokens(src?.bannedPokemon);
-  const allowedPokes = splitTokens(src?.allowedPokemon);
-  const banFast      = splitTokens(src?.bannedFastMoves);
-  const banCharged   = splitTokens(src?.bannedChargedMoves);
-
-function renderCatChips(cats){
-    if(!cats || !cats.length) return "<div class=\"rule-empty\">—</div>";
-    const uniq = [...new Set(cats)];
-    return `<div class="rule-chips">${
-      uniq.map(c => {
-        // Agregamos data-slug para poder filtrar por CSS
-        return `<span class="chip" data-slug="${escapeHtml(c)}">${escapeHtml(categoryNice(c))}</span>`;
-      }).join("")
-    }</div>`;
-}
-
-  const sections = [];
-  if(bannedPokes.length)  sections.push(sectionHtml("Pokémon prohibidos", renderPokemonFaces(bannedPokes, "ban"), "ban"));
-  if(allowedPokes.length) sections.push(sectionHtml("Excepciones permitidas", renderPokemonFaces(allowedPokes, "allow"), "allow"));
-  if(banCharged.length) sections.push(sectionHtml("Ataques cargados prohibidos", renderMoveChips(banCharged), "ban"));
-  if(banFast.length)    sections.push(sectionHtml("Ataques rápidos prohibidos", renderMoveChips(banFast), "ban"));
-  if(bannedTypes.length)  sections.push(sectionHtml("Tipos prohibidos",  renderTypeChips(bannedTypes), "ban"));
-  if(allowedTypes.length) sections.push(sectionHtml("Tipos permitidos",  renderTypeChips(allowedTypes), "allow"));
-  if(bannedCats.length)  sections.push(sectionHtml("Tipo de Pokemon Prohibidos", renderCatChips(bannedCats), "ban"));
-  if(allowedCats.length) sections.push(sectionHtml("Tipo de Pokemon Permitidos", renderCatChips(allowedCats), "allow"));
-
-  if(!sections.length && !isMultiLeague){
-    box.style.display = "none";
-    box.innerHTML = "";
-    return;
-  }
-
-  const wasCollapsed = box.classList.contains("is-collapsed");
-  const firstRender = (box.dataset.rulesInit !== "1");
-  box.style.display = "block";
-  const tidNow = String(t?.torneoId || "");
-  if(RULES_PREP_TORNEO_ID !== tidNow){
-    RULES_PREP_TORNEO_ID = tidNow;
-    RULES_PREP_WAS_ACTIVE = false;
-  }
-  const isPrepPhase = isPrepActive(t);
-  const enteringPrep = (isPrepPhase && !RULES_PREP_WAS_ACTIVE);
-  const showToggle = isPrepPhase; 
-
-  let switchHtml = "";
-  if(isMultiLeague){
-    const btns = orderedKeys.map(k => {
-      const cp = leagueCpFromLeagueKey_(k);
-      const label = cp ? (cp === "9000" ? "Liga Master" : `Liga ${cp}`) : k;
-      const { local, remote } = cp ? leagueLogoUrlsFromCp(cp) : { local:"", remote:"" };
-      const srcImg = local || remote || "";
-      const img = srcImg
-        ? `<img class="league-switch-logo" src="${escapeHtml(srcImg)}" alt=""
-             onerror="this.onerror=null;${remote ? `this.src='${escapeHtml(remote)}'` : "this.style.display='none'"}">`
-        : "";
-      const active = (k === activeKey) ? " is-active" : "";
-      const pill = (k === tiebreakKey) ? `<span class="league-switch-pill">Desempate</span>` : "";
-      return `<button type="button" class="league-switch-btn${active}" data-rleague="${escapeHtml(k)}">
-        ${img}
-        <span class="league-switch-text">${escapeHtml(label)}</span>
-        ${pill}
-      </button>`;
-    }).join("");
-    switchHtml = `
-      <div id="rulesLeagueSwitch" class="rules-league-switch">
-        <div id="rulesLeagueBtns" class="rules-league-switch__buttons">${btns}</div>
-      </div>
-    `;
-  }
-
-  const gridHtml = sections.length
-    ? `<div class="rules-grid">${sections.join("")}</div>`
-    : `<div class="rules-empty">No hay reglas definidas para esta liga.</div>`;
-
-  box.innerHTML = `
-    <div class="rules-head">
-      <div class="rules-title">Reglas del torneo</div>
-      ${showToggle ? `<button id="rulesToggleBtn" class="rules-toggle" type="button" aria-expanded="false">Mostrar</button>` : ``}
-    </div>
-    ${switchHtml}
-    ${gridHtml}
-  `;
-
-  if(isMultiLeague){
-    box.querySelectorAll("button[data-rleague]").forEach(btn => {
-      btn.onclick = () => {
-        const key = btn.getAttribute("data-rleague");
-        if(!key || key === RULES_ACTIVE_LEAGUE_KEY) return;
-        RULES_ACTIVE_LEAGUE_KEY = key;
-        renderRulesCard(t);
-        wireTypeIconFallbacks();
-      };
-    });
-  }
-
-  if(showToggle){
-    if(enteringPrep) setRulesCollapsed_(true);
-    else if(firstRender) setRulesCollapsed_(true); 
-    else setRulesCollapsed_(wasCollapsed);          
-    wireRulesToggleOnce_();
-  }else{
-    setRulesCollapsed_(false);                      
-  }
-  RULES_PREP_WAS_ACTIVE = isPrepPhase;
-  box.dataset.rulesInit = "1";
-}
-
-function wireBoTooltipOnce(){
-  const wrap = document.getElementById("boHelpWrap");
-  const btn  = document.getElementById("boHelpBtn");
-  if(!wrap || !btn) return;
-  if(wrap.dataset.bound === "1") return;
-  wrap.dataset.bound = "1";
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    wrap.classList.toggle("open");
-  });
-  document.addEventListener("click", () => wrap.classList.remove("open"));
-  document.addEventListener("keydown", (e) => {
-    if(e.key === "Escape") wrap.classList.remove("open");
-  });
-}
-
-function wireModeTooltipOnce(){
-  const wrap = document.getElementById("modeHelpWrap");
-  const btn  = document.getElementById("modeHelpBtn");
-  if(!wrap || !btn) return;
-  if(wrap.dataset.bound === "1") return;
-  wrap.dataset.bound = "1";
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    wrap.classList.toggle("open");
-  });
-  document.addEventListener("click", () => wrap.classList.remove("open"));
-  document.addEventListener("keydown", (e) => {
-    if(e.key === "Escape") wrap.classList.remove("open");
-  });
-}
-
-function renderSelected(){
-  const t = TORNEOS.find(x => x.torneoId === SELECTED_ID) || TORNEOS[0];
-  setTournamentHeaderUI(t);
-  renderRulesCard(t);
-  wireTypeIconFallbacks();
-
-
-  if (t) {
-      const listaJugadores = t.players || t.inscritos || [];
-      window.currentInscritos = listaJugadores; 
-      if (typeof renderMainInscritos === "function") {
-          renderMainInscritos(t);
-      }
-  }
-
-// --- ACTIVAR FILA DE BOTONES (Bases + WhatsApp) ---
-  const row = document.getElementById("extraButtonsRow");
-  if (row) {
-      row.style.display = "flex"; // Usamos flex para que queden lado a lado
-  }
-
-  const battleBox = $("battlePhase");
-  if(battleBox) battleBox.style.display = "none";
-
-  const groupsSection = $("groupsSection");
-  const groupsGrid = $("groupsGrid");
-  if(groupsSection) groupsSection.style.display = "none";
-  if(groupsGrid) groupsGrid.innerHTML = "";
-
-  $("torneoInfo").textContent = "";
-  $("torneoInfo").style.display = "none";
-
-  const bracketSection = $("bracketSection");
-
-  const hideBracket_ = () => {
-    if (bracketSection) bracketSection.style.display = "none";
-    window.__BRACKET_LATEST_T = null;
-
-    const wrap = $("bracket");
-    if(wrap) wrap.innerHTML = "";
-
-    // si el modal estaba abierto y ya no toca mostrar bracket, lo cerramos
-    if(isBracketModalOpen_()) closeBracketModal_();
-  };
-
-  const showBracket_ = () => {
-    if (bracketSection) bracketSection.style.display = "block";
-
-    // ✅ Guardamos el torneo actual para que el modal lo renderice al click
-    window.__BRACKET_LATEST_T = t;
-
-    // ✅ Si el modal está abierto, entonces sí se actualiza “en vivo”
-    if(isBracketModalOpen_()) renderBracket(t);
-  };
-
-  // Inscripciones abiertas
-  if (t.open) {
-    $("openModalBtn").style.display = "";
-    $("eventSummary").style.display = "none";
-    $("eventSummary").innerHTML = "";
-    if(battleBox) battleBox.style.display = "none";
-    hideBracket_();
-    return;
-  }
-
-  $("openModalBtn").style.display = "none";
-    // 🔧 Transición: cerrado pero aún sin prepEndsAt (debería setearse en backend)
-  if(!t.open && !t.generated && !String(t.prepEndsAt || "").trim()){
-    const es = $("eventSummary");
-    if(es){
-      es.style.display = "block";
-      es.innerHTML = `<div class="event-kicker">PREPARACIÓN</div><div style="opacity:.85">Actualizando fase…</div>`;
-    }
-    hideBracket_();
-
-    // evita spamear timeouts
-    if(!window.__PREP_SYNC_TO){
-      window.__PREP_SYNC_TO = setTimeout(() => {
-        window.__PREP_SYNC_TO = null;
-        loadAll(true).catch(()=>{});
-      }, 8000);
-    }
-    return;
-  }
-
-
-  // Preparación
-  if(isPrepActive(t)){
-    if(battleBox) battleBox.style.display = "none";
-    $("eventSummary").style.display = "none";
-    $("eventSummary").innerHTML = "";
-    renderPrepParticipants(t);
-    hideBracket_();
-    return;
-  }
-
-  // Fase de batallas
-  if(isBattlePhase(t)){
-    $("eventSummary").style.display = "none";
-    $("eventSummary").innerHTML = "";
-    renderBattlePhase(t);
-
-    const isGroups = isGroupFormat_(t);
-    if(isGroups){
-      if(typeof renderGroupsSection === "function") renderGroupsSection(t);
-      hideBracket_();
-      return;
-    }
-
-    if(groupsSection) groupsSection.style.display = "none";
-    if(groupsGrid) groupsGrid.innerHTML = "";
-
-    showBracket_();
-    return;
-    
-  }
-
-  // Resumen (fuera de battlePhase)
-  if(battleBox) battleBox.style.display = "none";
-  $("eventSummary").style.display = "block";
-  $("eventSummary").innerHTML = `
-    <div class="event-kicker">ENFRENTAMIENTOS</div>
-    <div class="cards">
-      ${renderMatchCard("Enfrentamiento actual", t, t.current)}
-      ${renderMatchCard("Próximo enfrentamiento", t, t.next)}
-    </div>
-  `;
-
-  // Ocultar bracket en presencial + muchas mesas hasta cuartos (tu lógica actual)
-  const _ms = sortMatches_(Array.isArray(t?.matches) ? t.matches : []);
-  const _maxRound = _ms.reduce((acc, mm) => {
-    const rr = Number(mm?.Round ?? mm?.round ?? 1) || 1;
-    return Math.max(acc, rr);
-  }, 1);
-
-  const _real = _ms.filter(mm => getMatchPlayerId_(mm,"A") && getMatchPlayerId_(mm,"B"));
-  const _pending = _real.filter(mm => !isMatchClosed_(t, mm));
-  const _curId = String(t?.currentMatchId ?? t?.currentMatchID ?? "").trim();
-  const _cur = (_curId ? _pending.find(mm => getMatchId_(mm) === _curId) : null) || _pending[0] || _real[_real.length - 1] || null;
-
-  const _curRound = Number(_cur?.Round ?? _cur?.round ?? 1) || 1;
-  const _quartersRound = Math.max(1, _maxRound - 2);
-  const _hideBracket = isPresencialMode_(t) && getSimulCapacity_(t) >= 2 && (_curRound < _quartersRound);
-
-  if(_hideBracket){
-    hideBracket_();
-    return;
-  }
-
-  showBracket_();
-  return;
-
-}
-
-
-function renderBattlePhase(t){
-  const box = $("battlePhase");
-  if(!box) return;
-  box.style.display = "block";
-  const nowEl = $("matchNow");
-  const n1El  = $("matchNext1");
-  const n2El  = $("matchNext2");
-  const liveWrap = $("liveTablesWrap");
-  const liveGrid = $("liveTablesGrid");
-  const queueWrap = $("nextQueueWrap");
-  const queueList = $("nextQueueList");
-  const matches = sortMatches_(Array.isArray(t?.matches) ? t.matches : []);
-  const maxRound = matches.reduce((acc, m) => {
-    const r = Number(m?.Round ?? m?.round ?? 1) || 1;
-    return Math.max(acc, r);
-  }, 1);
-  const real = matches.filter(m => getMatchPlayerId_(m,"A") && getMatchPlayerId_(m,"B"));
-  const pending = real.filter(m => !isMatchClosed_(t, m));
-  const curId = String(t?.currentMatchId ?? t?.currentMatchID ?? "").trim();
-  let current = (curId ? pending.find(mm => getMatchId_(mm) === curId) : null) || null;
-  if(!current && isPresencialMode_(t) && hasMainStage_(t)){
-    current = pending.find(isMainLocation_) || null;
-  }
-  current = current || pending[0] || real[real.length - 1] || null;
-  const currentRound = Number(current?.Round ?? current?.round ?? 1) || 1;
-  const isFinalOnly = !!current && (currentRound === maxRound) && (pending.length <= 1);
-  box.classList.toggle("is-final-only", isFinalOnly);
-  const bracketSection = $("bracketSection");
-  if(bracketSection) bracketSection.classList.toggle("is-tight", isFinalOnly);
-
-  if(isFinalOnly){
-    if(nowEl) nowEl.innerHTML = renderBattleNowCard(t, current);
-    if(n1El){ n1El.innerHTML = ""; n1El.style.display = "none"; }
-    if(n2El){ n2El.innerHTML = ""; n2El.style.display = "none"; }
-    if(liveWrap) liveWrap.style.display = "none";
-    if(queueWrap) queueWrap.style.display = "none";
-    if(liveGrid) liveGrid.innerHTML = "";
-    if(queueList) queueList.innerHTML = "";
-    return;
-  }
-
- const presencial = isPresencialMode_(t);
- const simCapacity = presencial ? getSimulCapacity_(t) : 0;
- const quartersRound = Math.max(1, maxRound - 2);
- const isGroups = isGroupFormat_(t);
- const useTablesLayout = presencial && simCapacity >= 2 && (isGroups || (currentRound < quartersRound));
-
-  box.classList.toggle("is-prequarters", useTablesLayout);
-
-  if(useTablesLayout){
-    if(n1El){ n1El.innerHTML = ""; n1El.style.display = "none"; }
-    if(n2El){ n2El.innerHTML = ""; n2El.style.display = "none"; }
-    if(liveWrap) liveWrap.style.display = "block";
-    if(queueWrap) queueWrap.style.display = "block";
-    const running = pending.filter(m => getMatchOpStatus_(m) === "running");
-    let main = null;
-    if(curId) main = pending.find(mm => getMatchId_(mm) === curId) || null;
-    if(!main){
-      main = running.find(isMainLocation_) ||
-             pending.find(isMainLocation_) ||
-             pending[0] || null;
-    }
-    const mainId = main ? getMatchId_(main) : "";
-    if(nowEl) nowEl.innerHTML = renderBattleNowCard(t, main);
-    const wantTables = Math.max(0, simCapacity - 1);
-    const others = [];
-    const seen = new Set();
-    const pushUnique = (m)=>{
-      const id = getMatchId_(m);
-      if(!id || id === mainId) return;
-      if(seen.has(id)) return;
-      seen.add(id);
-      others.push(m);
-    };
-    running.forEach(pushUnique);
-    if(others.length < wantTables){
-      pending.forEach(m=>{
-        if(others.length >= wantTables) return;
-        if(getMatchId_(m) === mainId) return;
-        if(isMainLocation_(m)) return;
-        pushUnique(m);
-      });
-    }
-    const tableLive = others.sort(sortByLocation_).slice(0, wantTables);
-    if(liveGrid){
-      liveGrid.innerHTML = tableLive.map(m => renderBattleLiveTableCard_(t, m, maxRound)).join("");
-    }
-    const activeSet = new Set([mainId, ...tableLive.map(getMatchId_)]);
-    const scheduled = pending
-      .filter(m => !activeSet.has(getMatchId_(m)))
-      .filter(m => getMatchOpStatus_(m) !== "running");
-    const scheduledSorted = scheduled.slice().sort((a,b)=>{
-      const [ar,as] = matchSortKey_(a);
-      const [br,bs] = matchSortKey_(b);
-      return (ar-br) || (as-bs);
-    });
-    const byLoc = new Map();
-    scheduledSorted.forEach(m=>{
-      const loc = getMatchLocationText_(m);
-      if(!loc) return;
-      if(!byLoc.has(loc)) byLoc.set(loc, m);
-    });
-    const locOrder = getOrderedLocations_(pending);
-    const queue = [];
-    const usedIds = new Set();
-    for(const loc of locOrder){
-      if(queue.length >= simCapacity) break;
-      const m = byLoc.get(loc.text);
-      if(!m) continue;
-      const id = getMatchId_(m);
-      if(!id || usedIds.has(id)) continue;
-      usedIds.add(id);
-      queue.push(m);
-    }
-    for(const m of scheduledSorted){
-      if(queue.length >= simCapacity) break;
-      const id = getMatchId_(m);
-      if(!id || usedIds.has(id)) continue;
-      usedIds.add(id);
-      queue.push(m);
-    }
-    if(queueList){
-      queueList.innerHTML = queue.slice(0, simCapacity).map(m => renderBattleQueueCard_(t, m, maxRound)).join("");
-    }
-    return;
-  }
-
-  if(liveWrap) liveWrap.style.display = "none";
-  if(queueWrap) queueWrap.style.display = "none";
-  if(liveGrid) liveGrid.innerHTML = "";
-  if(queueList) queueList.innerHTML = "";
-  if(n1El) n1El.style.display = "";
-  if(n2El) n2El.style.display = "";
-  const _cid = String(t?.currentMatchId ?? t?.currentMatchID ?? "").trim();
-  const cur = (_cid ? pending.find(mm => getMatchId_(mm) === _cid) : null) || pending[0] || real[real.length - 1] || null;
-  if(nowEl) nowEl.innerHTML = renderBattleNowCard(t, cur);
-  const next1 = pending[1] || null;
-  const next2 = pending[2] || null;
-  if(n1El) n1El.innerHTML = renderBattleNextCard(t, next1, 1);
-  const isSemis = (maxRound >= 2) && ((Number(cur?.Round ?? cur?.round ?? 1) || 1) === (maxRound - 1));
-  if(isSemis){
-    if(n2El) n2El.innerHTML = renderBattleFinalPlaceholderCard(t);
-  }else{
-    if(n2El) n2El.innerHTML = renderBattleNextCard(t, next2, 2);
-  }
-}
-
-function renderBattleLiveTableCard_(t, m, maxRound){
-  if(!m) return "";
-  const a = getBattlePlayer_(t, m, "A");
-  const b = getBattlePlayer_(t, m, "B");
-  const r = Number(m?.Round ?? m?.round ?? 1) || 1;
-  const title = getMatchLocationText_(m) || "Mesa";
-  const gid = getMatchGroupId_(m);
-  const chip = gid ? `<span class="battle-group-chip">GRUPO <b>${escapeHtml(gid)}</b></span>` : "";
- const smartBo = getSmartBoLabel_(t, m, maxRound);
-  const metaText = `${roundLabel(r, maxRound)} · ${smartBo}`;
-  const meta = `${chip}<span class="battle-meta-text">${escapeHtml(metaText)}</span>`;
-  return `
-    <div class="battle-card battle-card--next battle-card--live">
-      <div class="battle-head">
-        <div class="battle-title">${escapeHtml(title)}</div>
-        <div class="battle-meta">${meta}</div>
-      </div>
-      <div class="battle-body--next">
-        <div class="battle-player">
-          <div class="battle-name">${escapeHtml(a.name)}</div>
-          <div class="battle-team">${renderBattleTeam_(a.team)}</div>
-        </div>
-        <div class="battle-next-vs" aria-hidden="true">VS</div>
-        <div class="battle-player">
-          <div class="battle-name">${escapeHtml(b.name)}</div>
-          <div class="battle-team">${renderBattleTeam_(b.team)}</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderBattleQueueCard_(t, m, maxRound){
-  if(!m){
-    return `
-      <div class="battle-card battle-card--next">
-        <div class="battle-head">
-          <div class="battle-title">Próximo enfrentamiento</div>
-          <div class="battle-meta">TBD</div>
-        </div>
-        <div class="battle-vsline">—</div>
-      </div>
-    `;
-  }
-  const a = getBattlePlayer_(t, m, "A");
-  const b = getBattlePlayer_(t, m, "B");
-  const r = Number(m?.Round ?? m?.round ?? 1) || 1;
-  const gid = getMatchGroupId_(m);
-  const chip = gid ? `<span class="battle-group-chip">GRUPO <b>${escapeHtml(gid)}</b></span>` : "";
-  const smartBo = getSmartBoLabel_(t, m, maxRound);
-  const metaText = `${roundLabel(r, maxRound)} · ${smartBo}`;
-  const mesaChip = isPresencialMode_(t) ? renderMesaChip_(m) : "";
-  const meta = `${mesaChip}${chip}<span class="battle-meta-text">${escapeHtml(metaText)}</span>`;
-  return `
-    <div class="battle-card battle-card--next">
-      <div class="battle-head">
-        <div class="battle-title">Próximo enfrentamiento</div>
-        <div class="battle-meta">${meta}</div>
-      </div>
-      <div class="battle-body--next">
-        <div class="battle-player">
-          <div class="battle-name">${escapeHtml(a.name)}</div>
-          <div class="battle-team">${renderBattleTeam_(a.team)}</div>
-        </div>
-        <div class="battle-next-vs" aria-hidden="true">VS</div>
-        <div class="battle-player">
-          <div class="battle-name">${escapeHtml(b.name)}</div>
-          <div class="battle-team">${renderBattleTeam_(b.team)}</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderBattleNowCard(t, m){
-  if(!m){
-    return `
-      <div class="battle-card battle-card--now">
-        <div class="battle-head">
-          <div class="battle-title">Enfrentamiento actual</div>
-          <div class="battle-meta">Aún no hay enfrentamientos</div>
-        </div>
-        <div class="battle-vsline">TBD</div>
-      </div>
-    `;
-  }
-  const a = getBattlePlayer_(t, m, "A");
-  const b = getBattlePlayer_(t, m, "B");
-  const aScore = getScoreA_(m);
-  const bScore = getScoreB_(m);
-  const closed = isMatchClosed_(t, m);
-  let aCls = "";
-  let bCls = "";
-  if(closed && aScore !== bScore){
-    if(aScore > bScore){ aCls = "is-win"; bCls = "is-lose"; }
-    else{ aCls = "is-lose"; bCls = "is-win"; }
-  }
-  const r = Number(m?.Round ?? m?.round ?? 1);
-  const gid = getMatchGroupId_(m);
-  const chip = gid
-    ? `<span class="battle-group-chip">GRUPO <b>${escapeHtml(gid)}</b></span>`
-    : "";
-const smartBo = getSmartBoLabel_(t, m, t?.maxRound || maxRound || r);
-  const metaText = `${roundLabel(r, t?.maxRound || r)} · ${smartBo}`;
-    const mesaChip = isPresencialMode_(t) ? renderMesaChip_(m) : "";
-  const meta = `${mesaChip}${chip}<span class="battle-meta-text">${escapeHtml(metaText)}</span>`;
-  return `
-    <div class="battle-card battle-card--now">
-      <div class="battle-head">
-        <div class="battle-title">Enfrentamiento actual</div>
-        <div class="battle-meta">${meta}</div>
-      </div>
-      <div class="battle-body--now">
-        <div class="battle-player">
-          <div class="battle-name ${aCls}">${escapeHtml(a.name)}</div>
-          <div class="battle-team">${renderBattleTeam_(a.team)}</div>
-        </div>
-        <div class="battle-score" aria-label="score">
-          <span class="battle-score-num">${aScore}</span>
-          <span class="battle-score-sep">-</span>
-          <span class="battle-score-num">${bScore}</span>
-        </div>
-        <div class="battle-player">
-          <div class="battle-name ${bCls}">${escapeHtml(b.name)}</div>
-          <div class="battle-team">${renderBattleTeam_(b.team)}</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderBattleNextCard(t, m, idx){
-  const title = `Próximo enfrentamiento`;
-  if(!m){
-    return `
-      <div class="battle-card battle-card--next">
-        <div class="battle-head">
-          <div class="battle-title">${title}</div>
-          <div class="battle-meta">TBD</div>
-        </div>
-        <div class="battle-vsline">—</div>
-      </div>
-    `;
-  }
-  const a = getBattlePlayer_(t, m, "A");
-  const b = getBattlePlayer_(t, m, "B");
-  const r = Number(m?.Round ?? m?.round ?? 1);
-  const gid = getMatchGroupId_(m);
-  const chip = gid
-    ? `<span class="battle-group-chip">GRUPO <b>${escapeHtml(gid)}</b></span>`
-    : "";
- const smartBo = getSmartBoLabel_(t, m, t?.maxRound || r);
-  const metaText = `${roundLabel(r, t?.maxRound || r)} · ${smartBo}`;
-  const mesaChip = isPresencialMode_(t) ? renderMesaChip_(m) : "";
-  const meta = `${mesaChip}${chip}<span class="battle-meta-text">${escapeHtml(metaText)}</span>`;
-  return `
-    <div class="battle-card battle-card--next">
-      <div class="battle-head">
-        <div class="battle-title">${title}</div>
-        <div class="battle-meta">${meta}</div>
-      </div>
-     <div class="battle-body--next">
-  <div class="battle-player">
-    <div class="battle-name">${escapeHtml(a.name)}</div>
-    <div class="battle-team">${renderBattleTeam_(a.team)}</div>
-  </div>
-  <div class="battle-next-vs" aria-hidden="true">VS</div>
-  <div class="battle-player">
-    <div class="battle-name">${escapeHtml(b.name)}</div>
-    <div class="battle-team">${renderBattleTeam_(b.team)}</div>
-  </div>
-</div>
-  `;
-}
-
-var GROUP_WIN_POINTS = (typeof GROUP_WIN_POINTS !== "undefined") ? GROUP_WIN_POINTS : 1;
-
-let TEAM_MODAL_CACHE = new Map();
-
-function stageIsGroups_(m){
-  const st = String(m?.Stage ?? m?.stage ?? "").trim().toLowerCase();
-  if(!st) return true;
-  return st.includes("group") || st.includes("grupo");
-}
-
-function buildGroupsStandings_(t){
-  const matches = Array.isArray(t?.matches) ? t.matches : [];
-  const byId = t?.byId || {};
-  const gmap = new Map(); 
-  function ensure_(gid, pid){
-    if(!gmap.has(gid)) gmap.set(gid, new Map());
-    const mp = gmap.get(gid);
-    if(!mp.has(pid)){
-      const meta = byId[pid] || {};
-      mp.set(pid, {
-        id: pid,
-        name: meta?.name || pid,
-        team: Array.isArray(meta?.team) ? meta.team.slice(0,6) : [],
-        pts: 0,
-        w: 0,
-        l: 0,
-        played: 0,
-        gw: 0,
-        gl: 0
-      });
-    }
-    return mp.get(pid);
-  }
-  matches.forEach(m => {
-    const gid = getMatchGroupId_(m);
-    if(!gid) return;
-    if(!stageIsGroups_(m)) return;
-    const aId = getMatchPlayerId_(m, "A");
-    const bId = getMatchPlayerId_(m, "B");
-    if(!aId || !bId) return;
-    const a = ensure_(gid, aId);
-    const b = ensure_(gid, bId);
-    if(!isMatchClosed_(t, m)) return;
-    const aScore = getScoreA_(m);
-    const bScore = getScoreB_(m);
-    a.played++; b.played++;
-    a.gw += aScore; a.gl += bScore;
-    b.gw += bScore; b.gl += aScore;
-    if(aScore > bScore){
-      a.w++; b.l++;
-      a.pts += GROUP_WIN_POINTS;
-    }else if(bScore > aScore){
-      b.w++; a.l++;
-      b.pts += GROUP_WIN_POINTS;
-    }
-  });
-  const out = [...gmap.entries()].map(([gid, mp]) => {
-    const players = [...mp.values()];
-    players.sort((x,y)=>{
-      const dx = x.gw - x.gl;
-      const dy = y.gw - y.gl;
-      return (y.pts - x.pts)
-        || (dy - dx)
-        || (y.gw - x.gw)
-        || String(x.name).localeCompare(String(y.name), "es", { sensitivity:"base" });
-    });
-    return { gid, players };
-  });
-  out.sort((a,b)=> String(a.gid).localeCompare(String(b.gid), "en", { sensitivity:"base", numeric:true }));
-  return out;
-}
-
-function buildGroupsData_(t){
-  return buildGroupsStandings_(t);
-}
-
-function cacheGroupsForTeamModal_(groups){
-  TEAM_MODAL_CACHE = new Map();
-  (groups || []).forEach(g=>{
-    const gid = String(g?.gid || "").trim();
-    (g.players || []).forEach((p, idx)=>{
-      TEAM_MODAL_CACHE.set(String(p.id), { ...p, gid, rank: idx + 1 });
-    });
-  });
-}
-
-function renderGroupCard_(g){
-  const gid = String(g?.gid || "").trim();
-  const players = Array.isArray(g?.players) ? g.players : [];
-  return `
-    <div class="group-card" data-group="${escapeHtml(gid)}">
-      <div class="group-card-head">
-        <div class="group-card-title">GRUPO <b>${escapeHtml(gid)}</b></div>
-        <div class="group-card-sub">${players.length} jugadores</div>
-      </div>
-      <div class="group-list">
-        ${players.map((p, idx) => `
-          <div class="group-row">
-            <div class="group-rank">${idx + 1}</div>
-            <div class="group-left">
-              <div class="group-name-line">
-                <div class="group-name">${escapeHtml(p.name)}</div>
-                <button class="team-btn" type="button" data-pid="${escapeHtml(String(p.id))}" title="Ver equipo">
-                  <span class="team-btn-ico">👁</span>
-                </button>
-              </div>
-              <div class="group-rec">
-                ${numOr0_(p.w)}-${numOr0_(p.l)}
-                <span class="group-rec-sub">(${numOr0_(p.gw)}-${numOr0_(p.gl)})</span>
-              </div>
-            </div>
-            <div class="group-pts" title="Puntos">${numOr0_(p.pts)}</div>
-          </div>
-        `).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderGroupsSection(t){
-  const sec  = $("groupsSection");
-  const grid = $("groupsGrid");
-  if(!sec || !grid) return;
-  const groups = buildGroupsData_(t);
-  if(!groups.length){
-    sec.style.display = "none";
-    grid.innerHTML = "";
-    return;
-  }
-  cacheGroupsForTeamModal_(groups);
-  wireTeamModalOnce_();
-  sec.style.display = "block";
-  grid.innerHTML = groups.map(g => renderGroupCard_(g)).join("");
-}
-
-let TEAM_MODAL_BOUND = false;
-
-function wireTeamModalOnce_(){
-  if(TEAM_MODAL_BOUND) return;
-  TEAM_MODAL_BOUND = true;
-  const modal = $("teamModal");
-  const closeBtn = $("closeTeamModalBtn");
-  if(closeBtn){
-    closeBtn.addEventListener("click", closeTeamModal_);
-  }
-  window.addEventListener("click", (e) => {
-    if(modal && e.target === modal) closeTeamModal_();
-  });
-  document.addEventListener("keydown", (e) => {
-    if(e.key === "Escape") closeTeamModal_();
-  });
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".team-btn");
-    if(!btn) return;
-    e.preventDefault();
-    const pid = String(btn.dataset.pid || "").trim();
-    if(pid) openTeamModal_(pid);
-  });
-}
-
-function openTeamModal_(pid){
-  const modal = $("teamModal");
-  if(!modal) return;
-  const data = TEAM_MODAL_CACHE.get(String(pid)) || null;
-  if(!data){
-    showToast("⚠ No encontré el equipo de este jugador");
-    return;
-  }
-  const title = $("teamModalTitle");
-  const meta  = $("teamModalMeta");
-  const grid  = $("teamModalGrid");
-  if(title) title.textContent = data.name || "Equipo";
-  if(meta){
-    meta.innerHTML = `
-      <span class="team-badge">GRUPO <b>${escapeHtml(data.gid || "-")}</b></span>
-      <span class="team-stat">#${numOr0_(data.rank) || "-"}</span>
-      <span class="team-stat">PTS: <b>${numOr0_(data.pts)}</b></span>
-      <span class="team-stat">W-L: <b>${numOr0_(data.w)}-${numOr0_(data.l)}</b></span>
-      <span class="team-stat">G: <b>${numOr0_(data.gw)}-${numOr0_(data.gl)}</b></span>
-    `;
-  }
-  if(grid){
-    const team = Array.isArray(data.team) ? data.team.slice(0,6) : [];
-    while(team.length < 6) team.push("");
-    grid.innerHTML = team.map(tok=>{
-      const t = String(tok||"").trim();
-      const label = t ? (iconLabelFor(t) || t) : "Vacío";
-      const url = t ? monImgUrl_(t) : "";
-      if(!t){
-        return `<div class="team-poke team-poke--empty" title="Vacío"><div class="team-poke-empty">—</div></div>`;
-      }
-      return `
-        <div class="team-poke" title="${escapeHtml(label)}">
-          <img src="${escapeHtml(url)}" alt="${escapeHtml(label)}"
-               onerror="this.style.display='none'; this.parentElement.classList.add('team-poke--empty'); this.parentElement.innerHTML='?';">
-        </div>
-      `;
-    }).join("");
-  }
-  modal.style.display = "flex";
-  const reg = $("formModal");
-  const regOpen = reg && reg.style.display === "flex";
-  if(!regOpen) bloquearScrollBody();
-}
-
-function closeTeamModal_(){
-  const modal = $("teamModal");
-  if(!modal) return;
-  modal.style.display = "none";
-  const reg = $("formModal");
-  const regOpen = reg && reg.style.display === "flex";
-  if(!regOpen) restaurarScrollBody();
-}
-
-function fmtTrainerCode12_(raw){
-  const digits = String(raw || "").replace(/\D/g, "").slice(0, 12);
-  if(digits.length !== 12) return String(raw || "").trim();
-  return digits.replace(/(\d{4})(\d{4})(\d{4})/, "$1 $2 $3");
-}
-
-function buildRound1OpponentMap_(t){
-  const map = {};
-  const matches = Array.isArray(t?.matches) ? t.matches : [];
-  const byId = t?.byId || {};
-  matches
-    .filter(m => Number(m.Round || 0) === 1)
-    .forEach(m => {
-      const aId = String(m.PlayerAId || "").trim();
-      const bId = String(m.PlayerBId || "").trim();
-      const aName = byId[aId]?.name || aId || "";
-      const bName = byId[bId]?.name || bId || "";
-      if(aId && bId){
-        map[aId] = bName;
-        map[bId] = aName;
-      }else if(aId && !bId){
-        map[aId] = "BYE";
-      }else if(!aId && bId){
-        map[bId] = "BYE";
-      }
-    });
-  return map;
-}
-
-function normalizeGroupId_(raw){
-  const s = String(raw || "").trim().toUpperCase();
-  if(!s) return "";
-  return s.replace(/^GRUPO\s+/i, "").replace(/^GROUP\s+/i, "").trim();
-}
-
-function buildPlayerGroupMap_(t){
-  const map = {};
-  const matches = Array.isArray(t?.matches) ? t.matches : [];
-  matches.forEach(m => {
-    const stage = String(m?.Stage ?? m?.stage ?? "").trim().toLowerCase();
-    if(stage !== "groups") return;
-    const gid = normalizeGroupId_(m?.GroupId ?? m?.groupId ?? "");
-    if(!gid) return;
-    const a = String(m?.PlayerAId ?? m?.playerAId ?? "").trim();
-    const b = String(m?.PlayerBId ?? m?.playerBId ?? "").trim();
-    if(a && !map[a]) map[a] = gid;
-    if(b && !map[b]) map[b] = gid;
-  });
-  return map;
-}
-
-function renderPrepPokeFace_(name){
-  const n = String(name||"").trim();
-  if(!n) return `<div class="prep-poke"><span>?</span></div>`;
-  const url = spriteUrl(n);
-  return `
-    <div class="prep-poke" title="${escapeHtml(n)}">
-      <img src="${escapeHtml(url)}" alt="${escapeHtml(n)}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span>${escapeHtml(n)}</span>'">
-    </div>
-  `;
-}
-
-async function copyText_(text){
-  const s = String(text || "");
-  if(!s) return false;
-  try{
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      await navigator.clipboard.writeText(s);
-      return true;
-    }
-  }catch(_){ }
-  try{
-    const ta = document.createElement("textarea");
-    ta.value = s;
-    ta.setAttribute("readonly", "");
-    ta.style.position = "absolute";
-    ta.style.left = "-9999px";
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand("copy");
-    document.body.removeChild(ta);
-    return !!ok;
-  }catch(_){
-    return false;
-  }
-}
-
-function wirePrepCopyButtons_(){
-  const root = $("eventSummary");
-  if(!root) return;
-  if(root.dataset.copyBound === "1") return;
-  root.dataset.copyBound = "1";
-  root.addEventListener("click", async (e) => {
-    const btn = e.target.closest(".prep-copy-btn");
-    if(!btn) return;
-    const code = String(btn.getAttribute("data-code") || "").trim();
-    if(!code) return;
-    const digits = code.replace(/\D/g, "");
-    if(digits.length !== 12){
-      showToast("⚠ Código inválido");
-      return;
-    }
-    const ok = await copyText_(digits);
-    showToast(ok ? "✅ Código copiado" : "⚠ No se pudo copiar");
-  });
-}
-
-function teamTokenToIconId_(tok){
-  const s = String(tok || "").trim();
-  if(!s) return "";
-  const first = s.split(" - ")[0].trim();
-  return first.split(/\s+/)[0].trim().toLowerCase();
-}
-
-function renderPrepPokeIcon_(iconId) {
-  const rawId = normalizeIconId_(iconId);
-  if(!rawId) return `<div class="prep-poke"><span class="prep-poke-q">?</span></div>`;
-
-  const title = smartIconTitle_(rawId);
-  const isShadow = isShadowIconId_(rawId);
-
-  // ✅ Primero intenta el icono exacto (ej: 211_a1)
-  const firstUrl = /^\d/.test(rawId) ? iconUrl(rawId) : monImgUrl_(rawId);
-
-  // ✅ Si falla, cae al base (ej: 211 o 019_61)
-  const fallbackId = /^\d/.test(rawId) ? (fallbackIconIdForMissingVariant(rawId) || "") : "";
-
-  return `
-    <div class="prep-poke">
-      <span class="poke-icon-wrap" data-tip="${escapeHtml(title)}" title="${escapeHtml(title)}">
-        <img
-          class="prep-poke-img"
-          src="${firstUrl}"
-          alt="${escapeHtml(title)}"
-          loading="lazy"
-          data-optid="${escapeHtml(rawId)}"
-          data-fallbackid="${escapeHtml(fallbackId)}"
-          data-shadow="${isShadow ? "1" : "0"}"
-          onload="onPokeIconLoad_(this)"
-          onerror="onPokeIconError_(this)"
-        />
-      </span>
-    </div>
-  `;
-}
-
-
-function renderPrepParticipantCard(p, oppName, showVs, groupId){
-  const name = p.Nick || p.NombrePokemonGO || p.Nombre || "Jugador";
-  const numBadge = p.Numero ? `<span class="badge-numero">#${escapeHtml(p.Numero)}</span> ` : "";
-  const codeNice = fmtTrainerCode12_(p.Codigo || p.codigo || "");
-  const team = (getTeamFromInscrito(p) || []).map(x=>String(x||"").trim()).filter(Boolean);
-  const slots = [];
-  for(let i=0;i<6;i++) slots.push(team[i] || "");
-  const teamHtml = slots.map(tok => renderPrepPokeIcon_(tok)).join("");
-  const opp = String(oppName || "").trim();
-  const gid = normalizeGroupId_(groupId);
-const groupHtml = (showVs && gid)
-  ? `<div class="prep-group-badge" title="Grupo ${escapeHtml(gid)}">GRUPO <b>${escapeHtml(gid)}</b></div>`
-  : "";
-  const statusHtml = showVs
-    ? `Próximo enfrentamiento: <b>VS ${opp ? escapeHtml(opp) : "por definir"}</b>`
-    : `Esperando enfrentamiento`;
-  const statusClass = showVs ? "prep-status prep-status--vs" : "prep-status prep-status--wait";
-  const digits = String(codeNice || "").replace(/\D/g,"");
-  const canCopy = (digits.length === 12);
-return `
-    <div class="prep-card" data-group="${escapeHtml(gid)}">
-      ${groupHtml}
-      <div class="prep-name">${numBadge}${escapeHtml(name)}</div>
-      <div class="prep-code-row">
-        <div class="prep-code">
-          <div class="prep-code-label">CÓDIGO ENTRENADOR</div>
-          <div class="prep-code-val">${escapeHtml(codeNice || "—")}</div>
-        </div>
-        <button
-          class="prep-copy-btn"
-          type="button"
-          data-code="${escapeHtml(codeNice)}"
-          aria-label="Copiar código"
-          ${canCopy ? "" : "disabled"}
-        >
-          <svg class="prep-copy-ico" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"/>
-          </svg>
-        </button>
-      </div>
-      <div class="prep-team">
-        ${teamHtml}
-      </div>
-      <div class="prep-footer">
-        <div class="${statusClass}">${statusHtml}</div>
-      </div>
-    </div>
-  `;
-}
-function renderPrepParticipants(t){
-  const box = $("eventSummary");
-  if(!box) return;
-  const inscritos = Array.isArray(t?.inscritos) ? t.inscritos : [];
-  const players = inscritos
-    .filter(x => {
-      const st = String(x.Estado || x.estado || "").toLowerCase();
-      return st === "inscrito" || st === "aprobado" || st === "approved";
-    })
-    .slice();
-  const oppMap  = buildRound1OpponentMap_(t);
-  const groupMap = buildPlayerGroupMap_(t);
-  const showVs  = !!t?.generated; 
-  players.sort((a,b) => {
-    const na = String(a.Nick || a.NombrePokemonGO || a.Nombre || "");
-    const nb = String(b.Nick || b.NombrePokemonGO || b.Nombre || "");
-    if(!showVs){
-      return na.localeCompare(nb, "es", { sensitivity:"base" });
-    }
-    const pidA = String(a.PlayerId || a.playerId || "").trim();
-    const pidB = String(b.PlayerId || b.playerId || "").trim();
-    const gA = normalizeGroupId_(pidA ? (groupMap[pidA] || "") : "");
-    const gB = normalizeGroupId_(pidB ? (groupMap[pidB] || "") : "");
-    const keyA = gA || "ZZZ"; 
-    const keyB = gB || "ZZZ";
-    if(keyA !== keyB){
-      return keyA.localeCompare(keyB, "en", { sensitivity:"base", numeric:true });
-    }
-    return na.localeCompare(nb, "es", { sensitivity:"base" });
-  });
-  const cardsHtml = players.map(p => {
-  const pid = String(p.PlayerId || p.playerId || "").trim();
-  const oppName = pid ? (oppMap[pid] || "") : "";
-  const gid = pid ? (groupMap[pid] || "") : "";
-  return renderPrepParticipantCard(p, oppName, showVs, gid);
-}).join("");
-  box.style.display = "block";
-  box.innerHTML = `
-    <div class="meta-row meta-row--format meta-row--participants">
-     <span class="meta-label">PARTICIPANTES:</span>
-      <span class="meta-value meta-value--participants">
-        <span class="participants-text">${players.length}</span>
-        <span class="participants-sub">jugadores</span>
-      </span>
-    </div>
-    <div class="prep-wrap">
-      <div class="prep-grid">
-        ${cardsHtml || `<div style="color:#fff;opacity:.85;font-weight:900;">Aún no hay participantes.</div>`}
-      </div>
-    </div>
-  `;
-  wirePrepCopyButtons_();
-}
-
-function renderMatchCard(title, t, m){
-  if(!m){
-    return `
-      <div class="match-card">
-        <div class="match-head">
-          <div class="match-title">${escapeHtml(title)}</div>
-          <div class="match-meta">${escapeHtml(t.generated ? "🏆 Bracket" : "⏳ Aún no")}</div>
-        </div>
-        <div style="color:#fff; opacity:.9; font-weight:800;">
-          No hay enfrentamientos pendientes aún.
-        </div>
-      </div>
-    `;
-  }
-  const aId = String(m.PlayerAId||"");
-  const bId = String(m.PlayerBId||"");
-  const a = t.byId[aId] || { name: aId, team: [] };
-  const b = t.byId[bId] || { name: bId, team: [] };
-  const labelR = roundLabel(m.Round, t.maxRound);
-  const meta = `${labelR} · BO${t.bestOf || "-"}`;
-  const aTeam = (a.team || []).map(p => renderPoke(p)).join("");
-  const bTeam = (b.team || []).map(p => renderPoke(p)).join("");
-  return `
-    <div class="match-card">
-      <div class="match-head">
-        <div class="match-title">${escapeHtml(title)}</div>
-        <div class="match-meta">${escapeHtml(meta)}</div>
-      </div>
-      <div class="vs">
-        <div class="playerBox">
-          <div class="playerName">
-            <span>${escapeHtml(a.name)}</span>
-            <span class="playerTag">A</span>
-          </div>
-          <div class="pokeGrid">${aTeam || renderEmptyTeam()}</div>
-        </div>
-        <div class="vs-mid">VS</div>
-        <div class="playerBox">
-          <div class="playerName">
-            <span>${escapeHtml(b.name)}</span>
-            <span class="playerTag">B</span>
-          </div>
-          <div class="pokeGrid">${bTeam || renderEmptyTeam()}</div>
-        </div>
-      </div>
-     <div class="match-footer">
-  Match: ${escapeHtml(m.MatchId || "-")} · Estado: ${escapeHtml(String(m.Status||"pending"))}
-</div>
-    </div>
-  `;
-}
-
-function renderEmptyTeam(){
-  return new Array(6).fill(0).map(()=> `<div class="poke"><span>?</span></div>`).join("");
-}
-
-function renderPoke(name){
-  const n = String(name||"").trim();
-  if(!n) return `<div class="poke"><span>?</span></div>`;
-  const url = spriteUrl(n);
-  return `
-    <div class="poke" title="${escapeHtml(n)}">
-      <img src="${escapeHtml(url)}" alt="${escapeHtml(n)}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span>${escapeHtml(n)}</span>'">
-    </div>
-  `;
-}
-
-function renderBracket(t){
-  const wrap = $("bracket");
-  if(!wrap) return;
-  const torneoId = String(t?.torneoId || SELECTED_ID || "t0");
-  const matches = sortMatches_(Array.isArray(t?.matches) ? t.matches : []);
-  matches.forEach((m,i)=> { try{ m.__brIdx = i; }catch(_){ } });
-  if(!matches.length){
-    wrap.innerHTML = `<div class="rule-empty" style="padding:14px; text-align:center;">Aún no hay bracket generado.</div>`;
-    BRACKET_MEM.delete(torneoId);
-    return;
-  }
-  const byRound = {};
-  matches.forEach(m=>{
-    const r = Number(m?.Round ?? m?.round ?? 1);
-    (byRound[r] ||= []).push(m);
-  });
-  const rounds = Object.keys(byRound).map(Number).sort((a,b)=>a-b);
-  const maxRound = Math.max(...rounds);
-  const sig = bracketSig_(matches);
-  const prev = BRACKET_MEM.get(torneoId) || {};
-  const prevScroll = document.getElementById("bracketScroll");
-  const needBuild = (!prevScroll) || (prev.sig !== sig);
-  const vis = bracketComputeVisibility_(t, matches, maxRound);
-  const minRoundToShow = vis.minRoundToShow;
-  const visibleSideRounds = vis.visibleSideRounds;
-  const current = vis.current;
-  let keepScale = prev.scale || 1;
-  let keepLeft = prev.left || 0;
-  let keepTop  = prev.top  || 0;
-  if(prevScroll){
-    const cs = getComputedStyle(prevScroll);
-    keepScale = parseFloat(cs.getPropertyValue("--bracketScale")) || keepScale || 1;
-    keepLeft = prevScroll.scrollLeft;
-    keepTop  = prevScroll.scrollTop;
-  }
-
-  if(needBuild){
-    const sideRounds = rounds.filter(r => r < maxRound);
-    const leftCols = [];
-    const rightCols = [];
- sideRounds.forEach(r=>{
-  const list = sortMatches_(byRound[r] || []);
-  const sp = bracketSplitRoundToSides_(list);
-  leftCols.push({ r, list: sp.left });
-  rightCols.push({ r, list: sp.right });
-});
-
-    const finalMatch = (byRound[maxRound] || [])[0] || null;
-    const matchHTML = (m, side, r, i) => {
-      const aId = getMatchPlayerId_(m, "A");
-      const bId = getMatchPlayerId_(m, "B");
-      const aName = (t.byId?.[aId]?.name) || getMatchPlayerName_(m,"A") || aId || "TBD";
-      const bName = (t.byId?.[bId]?.name) || getMatchPlayerName_(m,"B") || bId || "TBD";
-      const aScore = getScoreA_(m);
-      const bScore = getScoreB_(m);
-      const bo = Number(m?.bestOf ?? m?.BestOf ?? t?.bestOf ?? 3) || 3;
-      const need = needWinsFromBestOf(bo);
-      const finished = isMatchDone_(m) || (aScore >= need) || (bScore >= need);
-      const aCls = finished ? (aScore > bScore ? "win" : (bScore > aScore ? "lose" : "")) : "";
-      const bCls = finished ? (bScore > aScore ? "win" : (aScore > bScore ? "lose" : "")) : "";
-      const domId = bracketDomId_(m, (typeof m.__brIdx === "number" ? m.__brIdx : i));
-      const curId = current ? bracketDomId_(current, (typeof current.__brIdx === "number" ? current.__brIdx : 0)) : "";
-      const isCurrent = curId && domId === curId;
-      return `
-        <div class="match-node${isCurrent ? " is-current" : ""}"
-             data-matchid="${escapeHtml(domId)}"
-             data-side="${side}" data-round="${r}" data-index="${i}">
-          <div class="player-row ${aCls}">
-            <div class="player-name">${escapeHtml(aName)}</div>
-            <div class="player-badge">${aScore}</div>
-          </div>
-          <div class="player-row ${bCls}">
-            <div class="player-name">${escapeHtml(bName)}</div>
-            <div class="player-badge">${bScore}</div>
-          </div>
-        </div>
-      `;
-    };
-    const colHTML = (title, matchesArr, side, r) => {
-      const hidden = (r < minRoundToShow);
-      return `
-        <div class="round-col${hidden ? " is-hidden" : ""}" data-round="${r}" data-side="${side}">
-          <div class="round-title">${escapeHtml(title)}</div>
-          ${matchesArr.map((m,i)=> matchHTML(m, side, r, i)).join("")}
-        </div>
-      `;
-    };
-    const leftHTML = leftCols.map(c => colHTML(roundLabel(c.r, maxRound), c.list, "left", c.r)).join("");
-    const rightHTML = rightCols.map(c => colHTML(roundLabel(c.r, maxRound), c.list, "right", c.r)).join("");
-    const centerMatchHTML = finalMatch
-      ? matchHTML(finalMatch, "center", maxRound, 0)
-      : `<div class="rule-empty" style="text-align:center;">Final por definir</div>`;
-    wrap.innerHTML = `
-      <div class="bracket-scroll" id="bracketScroll">
-        <svg id="bracketLines" class="bracket-lines"></svg>
-        <div class="bracket-layout" id="bracketLayout">
-          <div class="bracket-side left" id="bracketLeft">${leftHTML}</div>
-          <div class="bracket-center" id="bracketCenter">
-            <div class="center-title">FINAL</div>
-            ${centerMatchHTML}
-          </div>
-          <div class="bracket-side right" id="bracketRight">${rightHTML}</div>
-        </div>
-      </div>
-    `;
-    const scroll = document.getElementById("bracketScroll");
-    if(scroll){
-      scroll.dataset.maxRound = String(maxRound);
-      scroll.dataset.visibleRounds = JSON.stringify(visibleSideRounds);
-      scroll.style.setProperty("--bracketScale", String(keepScale || 1));
-      scroll.classList.add("no-anim");
-      window.__BRACKET_DRAW_FN = () => requestAnimationFrame(drawBracketLinesStatic_);
-      requestAnimationFrame(() => {
-        scroll.scrollLeft = keepLeft || 0;
-        scroll.scrollTop  = keepTop  || 0;
-        fitBracketToScreen();
-        window.__BRACKET_DRAW_FN();
-        requestAnimationFrame(() => scroll.classList.remove("no-anim"));
-      });
-    }
-    BRACKET_MEM.set(torneoId, { sig, scale: keepScale || 1, left: keepLeft || 0, top: keepTop || 0 });
-  }else{
-    const scroll = document.getElementById("bracketScroll");
-    if(scroll){
-      scroll.dataset.maxRound = String(maxRound);
-      scroll.dataset.visibleRounds = JSON.stringify(visibleSideRounds);
-      bracketApplyVisibilityToDom_(minRoundToShow, maxRound);
-    }
-    bracketPatchNodes_(t, matches, current);
-    const cs = scroll ? getComputedStyle(scroll) : null;
-    const scale = scroll ? (parseFloat(cs.getPropertyValue("--bracketScale")) || 1) : 1;
-    BRACKET_MEM.set(torneoId, {
-      sig,
-      scale,
-      left: scroll ? scroll.scrollLeft : 0,
-      top:  scroll ? scroll.scrollTop  : 0
-    });
-  }
-
-  if(!window.__BRACKET_EVENTS_BOUND){
-    window.__BRACKET_EVENTS_BOUND = 1;
-    const redraw = () => {
-      if(!window.__BRACKET_DRAW_FN) window.__BRACKET_DRAW_FN = () => requestAnimationFrame(drawBracketLinesStatic_);
-      window.__BRACKET_DRAW_FN();
-    };
-    const refitAndRedraw = () => {
-      requestAnimationFrame(() => {
-        const s = document.getElementById("bracketScroll");
-        if(s) s.classList.add("no-anim");
-        fitBracketToScreen();
-        redraw();
-        setTimeout(redraw, 120);
-        requestAnimationFrame(() => { if(s) s.classList.remove("no-anim"); });
-      });
-    };
-    window.addEventListener("resize", refitAndRedraw, { passive:true });
-    document.addEventListener("visibilitychange", () => { if(!document.hidden) refitAndRedraw(); });
-    window.addEventListener("focus", refitAndRedraw, { passive:true });
-    window.addEventListener("pageshow", refitAndRedraw, { passive:true });
-  }
-}
-
-/* Registro */
-$("btnRegister").onclick = async () => {
-  const btn = $("btnRegister");
-  if (btn.dataset.sending === "1") return;
-  const codigo = $("codigo").value.trim();
-  if (!/^\d+$/.test(codigo)){
-    return showToast("⚠ El código entrenador solo debe tener números");
-  }
-  if (codigo.length !== 12){
-    return showToast("⚠ El código entrenador debe tener 12 dígitos");
-  }
-  const contacto = ($("campfire")?.value || "").trim();
-if(!/^\d{9}$/.test(contacto)){
-  return showToast("⚠ El número de contacto debe tener 9 dígitos (solo números)");
-}
-
-  const tSel = TORNEOS.find(x => x.torneoId === SELECTED_ID) || TORNEOS[0];
-  const rulesObj = tSel ? getPerLeagueRules_(tSel) : null;
-  const rulesKeys = rulesObj ? Object.keys(rulesObj.leagues || {}) : [];
-  const isMultiLeague = !!rulesObj && rulesKeys.length > 1;
-
-  const dexFromPid = (pid) => {
-    const m = String(pid || "").trim().match(/^(\d{1,4})/);
-    return m ? Number(m[1]) : null;
-  };
-
-  const getDex = (id) => {
-    const el = document.getElementById(id);
-    const dx = Number(el?.dataset?.dex);
-    if (dx) return dx;
-    const pid = String(el?.dataset?.pid || "").trim();
-    const dx2 = dexFromPid(pid);
-    if (dx2) return dx2;
-    return parseDexFromInput(el?.value);
-  };
-
-  const getPid = (id) => {
-    const el = document.getElementById(id);
-    if (!el) return null;
-    const pid = String(el.dataset.pid || "").trim();
-    if (pid) return pid;
-    const opt = POKE_OPT_BY_LABEL.get(el.value.trim());
-    if (opt?.id) return String(opt.id);
-    const dx = getDex(id);
-    return dx ? String(dx) : null;
-  };
-
-  let pCols = null;
-
-  if(isMultiLeague){
-    modalSaveCurrentLeaguePicks_();
-    const keys = (MODAL_LEAGUE_KEYS && MODAL_LEAGUE_KEYS.length) ? MODAL_LEAGUE_KEYS : rulesKeys;
-    const entries = keys.map(k => {
-      const cp = leagueCpFromLeagueKey_(k);
-      const prefix = cp ? `liga${cp}` : `liga${k}`;
-      const pids = MODAL_PICKS_BY_LEAGUE.get(k) || [];
-      return { key:k, cp, prefix, pids };
-    });
-    for(const e of entries){
-      const labelLiga = e.cp ? `Liga ${e.cp}` : e.key;
-      if(!Array.isArray(e.pids) || e.pids.length !== 6 || e.pids.some(x => !String(x||"").trim())){
-        showToast(`⚠ Completa los 6 Pokémon de ${labelLiga}`);
-        return;
-      }
-      const dexes = e.pids.map(dexFromPid).map(Number).filter(Boolean);
-      if(dexes.length !== 6 || new Set(dexes).size !== 6){
-        showToast(`⚠ No puedes repetir el mismo Pokémon en ${labelLiga}`);
-        return;
-      }
-    }
-    pCols = {};
-    for(let i=0; i<6; i++){
-      const tokens = entries.map(e => `${e.prefix}.${String(e.pids[i]).trim()}`);
-      pCols[`p${i+1}`] = tokens.join(",");
-    }
-  } else {
-    const pid1 = getPid("p1"), pid2 = getPid("p2"), pid3 = getPid("p3"),
-          pid4 = getPid("p4"), pid5 = getPid("p5"), pid6 = getPid("p6");
-    if(!pid1 || !pid2 || !pid3 || !pid4 || !pid5 || !pid6){
-      showToast("⚠ Completa los 6 Pokémon (elige de la lista)");
-      return;
-    }
-    const d1 = getDex("p1"), d2 = getDex("p2"), d3 = getDex("p3"),
-          d4 = getDex("p4"), d5 = getDex("p5"), d6 = getDex("p6");
-    const arrDex = [d1,d2,d3,d4,d5,d6].map(Number).filter(Boolean);
-    if (arrDex.length !== 6 || new Set(arrDex).size !== 6){
-      showToast("⚠ No puedes repetir el mismo Pokémon");
-      return;
-    }
-    pCols = {
-      p1: String(pid1), p2: String(pid2), p3: String(pid3),
-      p4: String(pid4), p5: String(pid5), p6: String(pid6),
-    };
-  }
-
-  btn.dataset.sending = "1";
-  const oldText = btn.textContent;
-  btn.textContent = "⏳ Enviando...";
-  btn.disabled = true;
-
-  try{
-    const payload = {
-      torneoId: SELECTED_ID || "",
-      nombre: $("nombre").value.trim(),
-      nick: $("nick").value.trim(),
-      codigo: $("codigo").value.trim(),
-      campfire: $("campfire").value.trim(),
-      ...pCols
-    };
-    const r = await torneoRegisterGET(payload);
-    if(!r || !r.ok){
-      showToast("⚠ " + (r?.error || "Error"));
-      return;
-    }
-    showToast("✅ Inscrito al torneo");
-    $("formModal").style.display = "none";
-    restaurarScrollBody();
-    resetModalForm(); 
-    await loadAll(true);
-  } finally {
-    btn.dataset.sending = "0";
-    btn.textContent = oldText;
-    btn.disabled = false;
-  }
-};
-
-// ===============================
-// CARGA RÁPIDA (FALLBACK LOCAL)
-// ===============================
-async function loadLocalFallback_() {
-    try {
-        // Intenta cargar el archivo estático descargado
-        const res = await fetch("torneo_backup.json");
-        if (!res.ok) return false;
-        
-        const exp = await res.json();
-        
-        // Usamos exp.torneo como metadata
-        const meta = exp.torneo || {};
-        const t = buildTournamentFromExport_(meta, exp);
-        t._ver = Number(exp.version || 0) || 0;
-        
-        TORNEOS = [t];
-        SELECTED_ID = t.torneoId;
-        
-        renderTabs();
-        renderSelected();
-        console.log("Carga inicial rápida ejecutada desde torneo_backup.json");
-        return true;
-    } catch (e) {
-        console.warn("Fallo al cargar el backup local:", e);
-        return false;
-    }
-}
-
-
-/* Init - Versión Corregida */
-(async function init(){
-  try {
-    // 1) PRIMERO cargamos la base de datos de Pokémon. 
-    // Esto es lo que permite que los IDs se conviertan en nombres.
-    await loadPokemonDB().catch(e => console.warn("Pokemon DB fail:", e));
-    
-    // 2) Una vez que tenemos los nombres en memoria, cargamos los datos del torneo.
-    // Ahora, cuando cacheLoadBootstrap_ intente renderizar, ya conocerá los nombres.
-    const hasCache = cacheLoadBootstrap_();
-
-    // 3) Si no hay caché, cargamos el backup local.
-    if (!hasCache) {
-        await loadLocalFallback_();
-    }
-
-    // 4) Cargamos los movimientos y el resto de datos en segundo plano.
-    loadMovesDB().catch(e => console.warn("Moves DB fail:", e));
-
-    // 5) Refresco desde el servidor de Google.
-    loadAll(true).catch(e => console.warn("Error refrescando torneo:", e));
-
-    // 6) Refresco periódico.
-    setInterval(() => loadAll(false), 12000);
-    
-  } catch(e) {
-    const info = document.getElementById("torneoInfo");
-    if(info) info.textContent = "Error cargando torneo";
-    showToast("⚠ " + (e?.message || e));
-  }
-})();
-
-
-let fitBracketTimer = null;
-let lastKnownScale = 1;
-let lastScrollEl = null;
-
-function fitBracketToScreen(){
-  const scroll = document.getElementById("bracketScroll") || document.querySelector(".bracket-scroll");
-  if(!scroll) return;
-  const layout = scroll.querySelector(".bracket-layout");
-  if(!layout) return;
-
-  if(lastScrollEl !== scroll){
-    lastScrollEl = scroll;
-    lastKnownScale = -1;
-  }
-  if(document.hidden) return;
-
-  const containerW = scroll.parentElement ? scroll.parentElement.clientWidth : scroll.clientWidth;
-  const availableW = containerW;
-  const fullW = layout.scrollWidth || 1;
-  if(availableW <= 0 || fullW <= 0) return;
-
-  const MIN_SCALE = 0.55;
-  const MAX_SCALE = 1;
-
-  const fit = (window.__BRACKET_FIT !== false);
-
-  // ✅ si FIT está activo -> escala para que quepa
-  // ✅ si FIT está apagado -> scale=1 y habrá scroll horizontal real si es ancho
-  let scale = 1;
-  if(fit){
-    const base = availableW / fullW;
-    scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, base));
-  }else{
-    scale = 1;
-  }
-
-  const currentCss = parseFloat(getComputedStyle(scroll).getPropertyValue("--bracketScale")) || 1;
-  if(Math.abs(scale - currentCss) >= 0.005 || Math.abs(scale - lastKnownScale) >= 0.005){
-    scroll.style.setProperty("--bracketScale", scale.toFixed(4));
-    lastKnownScale = scale;
-  }
-
-  const rawH = layout.scrollHeight || layout.offsetHeight || 1;
-  const desiredH = Math.ceil(rawH * scale);
-
-  const parent = scroll.parentElement;
-  const parentH = parent ? (parent.clientHeight || 0) : 0;
-  const maxH = parentH > 0 ? parentH : Math.floor(window.innerHeight * 0.78);
-  const finalH = Math.max(220, Math.min(desiredH, maxH));
-
-  scroll.style.height = finalH + "px";
-  scroll.style.overflowY = (desiredH > finalH + 2) ? "auto" : "hidden";
-
-  scroll.style.width = "100%";
-  scroll.style.margin = "0";
-  scroll.style.overflowX = "auto";
-
-  const scaledW = fullW * scale;
-
-  // Si cabe, centramos con padding (bonito). Si no, padding 0 para scroll real.
-  if(scaledW <= availableW - 2){
-    const pad = Math.max(0, Math.floor((availableW - scaledW) / 2));
-    scroll.style.paddingLeft = pad + "px";
-    scroll.style.paddingRight = pad + "px";
-  }else{
-    scroll.style.paddingLeft = "0px";
-    scroll.style.paddingRight = "0px";
-  }
-}
-
-
-// --- Función de ayuda para BO Inteligente ---
-function getSmartBoLabel_(t, m, maxRound) {
-  const plan = parseBestOfPlan_(m?.bestOf ?? m?.BestOf ?? t?.bestOf);
-  const r = Number(m?.Round ?? m?.round ?? 1);
-  
-  if (r === maxRound) {
-    return plan.final ? `BO${plan.final}` : (plan.bracket ? `BO${plan.bracket}` : "BO1");
-  }
-  if (r === 1 && plan.groups) {
-    return `BO${plan.groups}`;
-  }
-  return plan.bracket ? `BO${plan.bracket}` : "BO1";
-}
-
-
-function fitBracketToScreenDebounced(){
-  clearTimeout(fitBracketTimer);
-  fitBracketTimer = setTimeout(() => {
-    fitBracketToScreen();
-  }, 150); 
-}
-
-window.addEventListener("resize", fitBracketToScreenDebounced);
-document.addEventListener("visibilitychange", () => {
-  if(!document.hidden) {
-    setTimeout(() => {
-      fitBracketToScreen();
-    }, 200);
-  }
-});
-
-/* --- FUNCIONALIDAD DEL MODAL DE BASES --- */
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById("modalBases");
-    const btnOpen = document.getElementById("btnBases");
-    const spanClose = document.querySelector(".modal-close");
-    const btnEntendido = document.getElementById("btnEntendido");
-
-    // Verificar que los elementos existen
-    if (modal && btnOpen) {
-        
-        // Abrir Modal
-        btnOpen.addEventListener('click', function(e) {
-            e.preventDefault(); // Evita saltos raros
-            modal.style.display = "block";
-            document.body.style.overflow = "hidden"; // Bloquea scroll de la web
-        });
-
-        // Función cerrar
-        function cerrarModal() {
-            modal.style.display = "none";
-            document.body.style.overflow = "auto"; // Reactiva scroll
-        }
-
-        // Eventos para cerrar
-        if(spanClose) spanClose.addEventListener('click', cerrarModal);
-        if(btnEntendido) btnEntendido.addEventListener('click', cerrarModal);
-        
-        // Cerrar al dar clic fuera del cuadro
-        window.addEventListener('click', function(e) {
-            if (e.target == modal) {
-                cerrarModal();
-            }
-        });
-    }
-});
-
-// ✅ Función para renderizar la lista en la página principal (fuera del modal)
-function renderMainInscritos(t) {
-    const container = document.getElementById("mainInscritosContainer");
-    const grid = document.getElementById("mainInscritosGrid");
-    const countSpan = document.getElementById("mainInscritosCount");
-    
-    if (!container || !grid || !countSpan) return;
-
-    // ✅ Ocultar SOLO esta caja si el torneo pasa a Preparación o Batalla
-    if (t && (isPrepActive(t) || isBattlePhase(t))) {
-        container.style.display = "none";
-        return; // Detiene la función para que no siga pintando
-    }
-
-    // Buscar la lista de inscritos
-    let inscritosRaw = [];
-    if (t && Array.isArray(t.inscritos)) {
-        inscritosRaw = t.inscritos;
-    } else if (typeof INSCRITOS !== "undefined" && Array.isArray(INSCRITOS)) {
-        inscritosRaw = INSCRITOS;
-    } else if (window.currentInscritos) {
-        inscritosRaw = window.currentInscritos;
-    }
-
-    // Filtrar aprobados/inscritos
-    const players = inscritosRaw.filter(x => {
-        const st = String(x.Estado || x.estado || "").toLowerCase();
-        return st === "inscrito" || st === "aprobado" || st === "approved";
-    });
-
-    // Ocultar si no hay inscritos
-    if (players.length === 0) {
-        container.style.display = "none";
-        return;
-    }
-
-    // Mostrar contenedor y número
-    container.style.display = "block";
-    countSpan.textContent = players.length;
-
-    try {
-        // Ordenar alfabéticamente
-        players.sort((a, b) => {
-            const na = String(a.Nick || a.NombrePokemonGO || a.Nombre || "");
-            const nb = String(b.Nick || b.NombrePokemonGO || b.Nombre || "");
-            return na.localeCompare(nb, "es", { sensitivity: "base" });
-        });
-
-        // Pintar tarjetas
-        grid.innerHTML = players.map(p => {
-const name = p.Nick || p.NombrePokemonGO || p.Nombre || "Jugador";
-            const numBadge = p.Numero ? `<span class="badge-numero">#${escapeHtml(p.Numero)}</span> ` : "";
-            const team = [p.P1, p.P2, p.P3, p.P4, p.P5, p.P6].map(x => String(x || "").trim());
-            
-        let teamHtml = "";
-            // Generamos exactamente 6 círculos con signo de interrogación para ocultar el equipo
-            for(let i = 0; i < 6; i++) {
-                teamHtml += `
-                    <div style="width: 45px; height: 45px; background: rgba(0,0,0,0.4); border: 2px dashed rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: rgba(255,255,255,0.7); font-weight: bold; margin: 3px;">
-                        ?
-                    </div>
-                `;
-            }
-            
-        
-return `
-    <div class="prep-card">
-        <div class="prep-name" title="${escapeHtml(name)}" style="margin-bottom: 12px; text-align: center; font-size: 20px;">
-            ${numBadge}${name}
-        </div>
-                    <div class="prep-team" style="justify-content: center;">
-                        ${teamHtml}
-                    </div>
-                </div>
-            `;
-        }).join("");
-    } catch(err) {
-        console.error("Error pintando inscritos:", err);
-        grid.innerHTML = "<p style='color:red;'>Error al cargar lista.</p>";
-    }
+/* Alturas y colores de cada puesto */
+.podio-flex .silver {
+    width: 150px;
+    height: 160px;
+    background: linear-gradient(180deg, rgba(30,41,59,0.9) 0%, rgba(148,163,184,0.1) 100%);
+    border-top: 4px solid #cbd5e1;
+    box-shadow: 0 -8px 20px rgba(203, 213, 225, 0.15);
+}
+
+.podio-flex .gold {
+    width: 180px;
+    height: 210px; /* El 1er puesto es más alto */
+    background: linear-gradient(180deg, rgba(30,41,59,0.95) 0%, rgba(251,191,36,0.15) 100%);
+    border-top: 4px solid #fbbf24;
+    box-shadow: 0 -10px 25px rgba(251, 191, 36, 0.25);
+    z-index: 2; /* Resalta por encima de los otros */
+}
+
+.podio-flex .bronze {
+    width: 150px;
+    height: 130px; /* El 3er puesto es más bajo */
+    background: linear-gradient(180deg, rgba(30,41,59,0.9) 0%, rgba(217,119,6,0.1) 100%);
+    border-top: 4px solid #d97706;
+    box-shadow: 0 -8px 20px rgba(217, 119, 6, 0.15);
+}
+
+/* Textos dentro del podio */
+.podio-flex .puesto {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    color: #94a3b8;
+}
+.podio-flex .gold .puesto { color: #fde68a; font-weight: bold; }
+
+.podio-flex .monto {
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.2;
+    color: white;
+    word-break: break-word;
+}
+.podio-flex .gold .monto { font-size: 24px; color: #fbbf24; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+.podio-flex .moneda {
+    margin-top: auto; /* Empuja la moneda a la base del pedestal */
+    font-size: 13px;
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.4);
+}
+.podio-flex .gold .moneda { color: #fde68a; background: rgba(251,191,36,0.2); border: 1px solid rgba(251,191,36,0.3); }
+.podio-flex .silver .moneda { color: #f1f5f9; background: rgba(203,213,225,0.2); }
+.podio-flex .bronze .moneda { color: #fcd34d; background: rgba(217,119,6,0.2); }
+
+/* --- Tarjeta Especial para el 4to Puesto --- */
+.fourth-card {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    background: rgba(30, 41, 59, 0.85);
+    border-left: 5px solid #10b981; /* Borde verde a la izquierda */
+    padding: 12px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+}
+.fourth-card .puesto { font-weight: bold; color: #94a3b8; }
+.fourth-card .monto { font-weight: 900; font-size: 18px; color: white; }
+.fourth-card .moneda { color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.15); padding: 4px 10px; border-radius: 8px;}
+
+/* ===============================
+   ESTILOS DEL HISTORIAL Y POKÉMON
+   =============================== */
+.history-match {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    color: #f8fafc;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.history-round {
+    font-weight: 800;
+    color: #fbbf24;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.history-score {
+    font-size: 16px;
+    font-weight: 900;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.history-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.history-opp-name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #e2e8f0;
+}
+
+/* Cuadros redondeados para los Pokémon */
+.history-team {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.history-team img {
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px; /* Redondeado igual a tus cajas */
+    padding: 4px;
+    object-fit: contain;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.history-team img:hover {
+    transform: scale(1.15);
+    border-color: #fbbf24;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+/* ===============================
+   ESTILOS DEL PODIO (prize-item)
+   =============================== */
+.podio-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.prize-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    transition: transform 0.2s;
+    min-width: 160px;
+}
+
+.prize-item:hover {
+    transform: translateY(-5px);
+}
+
+.prize-item.gold { border-top: 4px solid #fbbf24; transform: scale(1.1); z-index: 2; }
+.prize-item.silver { border-top: 4px solid #cbd5e1; }
+.prize-item.bronze { border-top: 4px solid #d97706; }
+.prize-item.fourth { border-top: 4px solid #10b981; padding: 15px 20px; min-width: 140px; }
+
+.prize-item .puesto { font-size: 14px; text-transform: uppercase; color: #94a3b8; font-weight: bold; margin-bottom: 8px;}
+.prize-item.gold .puesto { color: #fde68a; }
+
+.prize-item .monto { font-size: 20px; font-weight: 900; color: white; margin-bottom: 12px; word-break: break-word;}
+.prize-item.gold .monto { color: #fbbf24; font-size: 22px;}
+
+.prize-item .moneda { background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #e2e8f0;}
+.prize-item.gold .moneda { color: #fde68a; background: rgba(251,191,36,0.2); border: 1px solid rgba(251,191,36,0.3); }
+
+/* ===============================
+   ESTILOS DEL HISTORIAL Y POKÉMON (MÁS GRANDES)
+   =============================== */
+.history-match {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    color: #f8fafc;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.history-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px; margin-bottom: 15px; }
+.history-round { font-weight: 800; color: #fbbf24; text-transform: uppercase; font-size: 14px; }
+.history-score { font-size: 16px; font-weight: 900; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); }
+.history-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+.history-opp-name { font-weight: bold; font-size: 16px; color: #e2e8f0; }
+
+/* Caras de los Pokémon más grandes */
+.history-team {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.history-team img {
+    width: 75px; /* TAMAÑO AUMENTADO */
+    height: 75px; /* TAMAÑO AUMENTADO */
+    background: rgba(0, 0, 0, 0.5); 
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px; 
+    padding: 5px;
+    object-fit: contain;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.history-team img:hover {
+    transform: scale(1.15);
+    border-color: #fbbf24;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+/* ===============================
+   NUEVO PODIO PREMIUM
+   =============================== */
+.podio-premium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Alinea los pedestales abajo */
+    gap: 20px;
+    margin-top: 40px;
+    padding-bottom: 20px;
+}
+
+.pedestal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    border-radius: 16px 16px 4px 4px; /* Bordes redondeados solo arriba */
+    padding: 25px 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+}
+
+.pedestal:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* Alturas y Colores */
+.pedestal.gold {
+    width: 200px; height: 260px; order: 2; z-index: 10;
+    background: linear-gradient(180deg, rgba(251, 191, 36, 0.2) 0%, rgba(146, 64, 14, 0.4) 100%);
+    border-top: 5px solid #fbbf24;
+}
+.pedestal.silver {
+    width: 180px; height: 210px; order: 1;
+    background: linear-gradient(180deg, rgba(148, 163, 184, 0.2) 0%, rgba(71, 85, 105, 0.4) 100%);
+    border-top: 5px solid #cbd5e1;
+}
+.pedestal.bronze {
+    width: 180px; height: 170px; order: 3;
+    background: linear-gradient(180deg, rgba(217, 119, 6, 0.2) 0%, rgba(120, 53, 15, 0.4) 100%);
+    border-top: 5px solid #d97706;
+}
+
+/* Textos del Podio */
+.pedestal .posicion { font-size: 50px; font-weight: 900; line-height: 1; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.pedestal.gold .posicion { color: #fbbf24; }
+.pedestal.silver .posicion { color: #cbd5e1; }
+.pedestal.bronze .posicion { color: #d97706; }
+
+.pedestal .jugador-nombre { font-size: 20px; font-weight: bold; color: white; margin-bottom: 15px; word-break: break-word; }
+.pedestal.gold .jugador-nombre { font-size: 24px; color: #fbbf24; }
+
+/* Píldora de Premio */
+.premio-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 30px;
+    font-weight: bold; font-size: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.pedestal.gold .premio-pill { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); }
+.pedestal.silver .premio-pill { background: rgba(203, 213, 225, 0.2); color: #cbd5e1; border: 1px solid rgba(203, 213, 225, 0.4); }
+.pedestal.bronze .premio-pill { background: rgba(217, 119, 6, 0.2); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.4); }
+
+.coin-svg { width: 20px; height: 20px; }
+
+/* Tarjeta de 4to Puesto */
+.fourth-card-new {
+    display: flex; align-items: center; gap: 20px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-left: 5px solid #10b981;
+    padding: 15px 30px; border-radius: 12px;
+}
+.fourth-card-new .puesto-label { font-weight: bold; color: #10b981; font-size: 18px; }
+.fourth-card-new .jugador-nombre { font-weight: bold; color: white; font-size: 20px; }
+.fourth-card-new .premio-pill { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+/* ===============================
+   HISTORIAL Y POKÉMON (DISEÑO ELEGANTE Y PREMIUM)
+   =============================== */
+
+/* El marco principal de la batalla */
+.history-match {
+    background: rgba(15, 23, 42, 0.85); /* Fondo oscuro más elegante */
+    border: 1px solid rgba(251, 191, 36, 0.2); /* Borde sutil dorado */
+    border-top: 1px solid rgba(251, 191, 36, 0.6); /* Brillo superior dorado */
+    border-radius: 16px;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 2px 10px rgba(251, 191, 36, 0.05); /* Efecto de profundidad 3D */
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+/* Efecto al pasar el mouse por toda la tarjeta */
+.history-match:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 2px 15px rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.5);
+}
+
+/* Cabecera (Ronda y Score) */
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Separador más fino */
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.history-round {
+    font-weight: 900;
+    color: #fbbf24;
+    text-transform: uppercase;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+/* Pastilla de puntuación de victoria */
+.history-score {
+    font-size: 16px;
+    font-weight: 900;
+    color: #fff;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%); /* Gradiente verde brillante */
+    padding: 6px 20px;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    letter-spacing: 0.5px;
+    border: 1px solid #34d399;
+}
+
+/* Contenido interior */
+.history-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Placa del nombre del Rival */
+.history-opp-name {
+    font-weight: bold;
+    font-size: 18px;
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 20px;
+    border-radius: 12px;
+    border-left: 4px solid #3b82f6; /* Detalle azul competitivo a la izquierda */
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Fondo contenedor de los Pokémon */
+.history-team {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center; /* Centra todos los Pokémon */
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Contenedor individual de cada Pokémon + Texto */
+.pokemon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 85px; /* Mantiene el tamaño para que no se desordene */
+    position: relative;
+}
+
+/* Las caras de los Pokémon (Círculos) */
+.pokemon-item img {
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(51,65,85,1) 0%, rgba(15,23,42,1) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    padding: 10px;
+    object-fit: contain;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: inset 0 4px 10px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Nombre del Pokémon debajo */
+.pokemon-name {
+    font-size: 11px;
+    color: #94a3b8; /* Gris azulado elegante */
+    text-align: center;
+    font-weight: 800;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+/* Efecto Hover: ¡Ilumina la imagen y el texto! */
+.pokemon-item:hover img {
+    transform: scale(1.15) translateY(-5px);
+    border-color: #fbbf24;
+    background: radial-gradient(circle, rgba(251,191,36,0.2) 0%, rgba(15,23,42,1) 100%);
+    box-shadow: 0 10px 20px rgba(251,191,36,0.3);
+    z-index: 10;
+}
+
+.pokemon-item:hover .pokemon-name {
+    color: #fbbf24; /* El texto se vuelve dorado */
+    text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+}
+/* ===============================
+   NUEVO PODIO PREMIUM (MÁS ANCHO)
+   =============================== */
+.podio-premium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; 
+    gap: 20px;
+    margin-top: 40px;
+    padding-bottom: 20px;
+}
+
+.pedestal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    border-radius: 16px 16px 4px 4px;
+    padding: 25px 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+}
+
+.pedestal:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* TAMAÑOS AGRANDADOS PARA NOMBRES LARGOS */
+.pedestal.gold {
+    width: 240px; height: 260px; order: 2; z-index: 10;
+    background: linear-gradient(180deg, rgba(251, 191, 36, 0.2) 0%, rgba(146, 64, 14, 0.4) 100%);
+    border-top: 5px solid #fbbf24;
+}
+.pedestal.silver {
+    width: 210px; height: 210px; order: 1;
+    background: linear-gradient(180deg, rgba(148, 163, 184, 0.2) 0%, rgba(71, 85, 105, 0.4) 100%);
+    border-top: 5px solid #cbd5e1;
+}
+.pedestal.bronze {
+    width: 210px; height: 170px; order: 3;
+    background: linear-gradient(180deg, rgba(217, 119, 6, 0.2) 0%, rgba(120, 53, 15, 0.4) 100%);
+    border-top: 5px solid #d97706;
+}
+
+/* Textos del Podio Ajustados */
+.pedestal .posicion { font-size: 50px; font-weight: 900; line-height: 1; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.pedestal.gold .posicion { color: #fbbf24; }
+.pedestal.silver .posicion { color: #cbd5e1; }
+.pedestal.bronze .posicion { color: #d97706; }
+
+.pedestal .jugador-nombre { font-size: 19px; font-weight: bold; color: white; margin-bottom: 15px; word-break: break-word; line-height: 1.2; padding: 0 5px; }
+.pedestal.gold .jugador-nombre { font-size: 22px; color: #fbbf24; }
+
+/* Píldora de Premio y Monedas */
+.premio-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 30px;
+    font-weight: bold; font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    margin-top: auto;
+}
+.pedestal.gold .premio-pill { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); }
+.pedestal.silver .premio-pill { background: rgba(203, 213, 225, 0.2); color: #cbd5e1; border: 1px solid rgba(203, 213, 225, 0.4); }
+.pedestal.bronze .premio-pill { background: rgba(217, 119, 6, 0.2); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.4); }
+
+.coin-img { width: 26px; height: 26px; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
+
+/* ===============================
+   CUARTO PUESTO MÁS PEQUEÑO Y CENTRADO
+   =============================== */
+#cuarto-puesto-container {
+    display: flex;
+    justify-content: center; /* ESTO LO CENTRA PERFECTAMENTE */
+    width: 100%;
+    margin-top: 15px;
+}
+
+.fourth-card-new {
+    display: inline-flex; /* LO HACE MÁS COMPACTO */
+    align-items: center; gap: 15px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-left: 5px solid #10b981;
+    padding: 10px 25px; border-radius: 12px;
+}
+.fourth-card-new .puesto-label { font-weight: bold; color: #10b981; font-size: 16px; }
+.fourth-card-new .jugador-nombre { font-weight: bold; color: white; font-size: 18px; }
+.fourth-card-new .premio-pill { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 12px; font-size: 14px; }
+
+/* ===============================
+   CAJA DE AGRADECIMIENTOS (1 SOLA LÍNEA)
+   =============================== */
+.agradecimiento-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 30px; /* Forma de píldora delgada */
+    padding: 8px 25px; /* Más delgado (menos padding arriba y abajo) */
+    margin: 20px auto 0;
+    width: fit-content; /* Se ajusta exactamente al tamaño del texto */
+    max-width: 95%; /* Evita que se salga en celulares */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* En celulares pequeños bajará a 2 líneas automáticamente */
+    gap: 10px;
+    font-size: 13px;
+    color: #94a3b8;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    backdrop-filter: blur(5px);
+    transition: border-color 0.3s ease;
+}
+
+.agradecimiento-box:hover {
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.agradecimiento-box strong {
+    color: #e2e8f0;
+}
+
+.agradecimiento-sep {
+    color: rgba(255, 255, 255, 0.2); /* Separador sutil */
+    user-select: none;
+}
+
+.highlight-matsubara {
+    color: #34d399; 
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 8px rgba(52, 211, 153, 0.3);
 }
