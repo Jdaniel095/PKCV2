@@ -126,7 +126,8 @@ function iniciarRender(data, pokemonData) {
             </div>
         `;
     }
-// ===================================
+
+    // ===================================
     // 3. EQUIPO DEL CAMPEÓN
     // ===================================
     const champTeamContainer = document.getElementById('campeon-equipo-container');
@@ -168,9 +169,16 @@ function iniciarRender(data, pokemonData) {
             const champScore = isPlayerA ? m.scoreA : m.scoreB;
             const oppScore = isPlayerA ? m.scoreB : m.scoreA;
             
-            let roundName = `Ronda ${m.round}`;
-            if (m.round === 4) roundName = "Semifinal";
-            if (m.round === 5) roundName = "Gran Final";
+            // Asignar el nombre correcto según el número de la ronda
+            let roundName = "";
+            switch(m.round) {
+                case 1: roundName = "Ronda 1"; break;
+                case 2: roundName = "Octavos de Final"; break;
+                case 3: roundName = "Cuartos de Final"; break;
+                case 4: roundName = "Semifinal"; break;
+                case 5: roundName = "Gran Final"; break;
+                default: roundName = `Ronda ${m.round}`;
+            }
 
             let teamHTML = '';
             if (opp && opp.team) {
@@ -200,5 +208,4 @@ function iniciarRender(data, pokemonData) {
         });
         historialContainer.innerHTML = html;
     }
-    
 }
